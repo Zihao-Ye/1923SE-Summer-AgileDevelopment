@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.SESummer.Dao.UserDao">
+    <!-- 注册user-->
+    <insert id="registerUser" parameterType="User">
+        insert into user_info(user_pwd, user_name)
+        values(#{userPwd},#{userName})
+    </insert>
+    <!-- 根据userName查找user-->
+    <select id="getUserByUserName" resultType="User">
+        select *
+        from user_info
+        where user_name=#{userName}
+    </select>
+    <!-- 判断用户名与密码是否相符-->
+    <select id="getUserByUserNameAndPwd" resultType="User">
+        select *
+        from user_info
+        where user_name=#{userName} and user_pwd=#{userPwd}
+    </select>
+</mapper>

@@ -20,7 +20,7 @@ public class Questionnaire {
     private Timestamp createTime;
     private Integer recycleVolume;
     private Integer kind;
-    private String questionPWD;
+    private String questionPwd;
     private Integer questionNumber;
     private Integer masterID;
 }

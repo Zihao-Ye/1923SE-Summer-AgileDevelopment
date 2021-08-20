@@ -11,10 +11,10 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_info")
-public class UserInfo {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userID;
-    private String userPWD;
+    private String userPwd;
     private String userName;
 }

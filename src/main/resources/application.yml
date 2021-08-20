@@ -6,25 +6,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-  mail:
-    host: smtp.qq.com
-    username: 1160411003@qq.com
-    password: gdpmrvaiciaighgj
-    port: 587
-    default-encoding: UTF-8
-    properties:
-      mail:
-        smtp:
-          socketFactoryClass: javax.net.ssl.SSLSocketFactory
-        debug: true
 mybatis:
   mapper-locations: classpath:Mapper/*.xml
   type-aliases-package: com.example.SESummer.Entity
   configuration:
     map-underscore-to-camel-case: true
 server:
-  tomcat:
-    uri-encoding: UTF-8
   port: 8080
-  servlet:
-    context-path: /api

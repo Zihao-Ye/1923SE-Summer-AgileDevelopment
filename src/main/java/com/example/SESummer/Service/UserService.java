@@ -1,10 +1,8 @@
-package com.example.SESummer.Dao;
+package com.example.SESummer.Service;
 
 import com.example.SESummer.Entity.User;
-import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
-public interface UserDao {
+public interface UserService {
     //根据userName查找user
     User getUserByUserName(String userName);
 
