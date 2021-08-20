@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/moyun
+    url: jdbc:mysql://127.0.0.1:3306/sesummer
     username: root
     password: BUAAYZH2001
   jpa:
@@ -17,15 +17,9 @@ spring:
         smtp:
           socketFactoryClass: javax.net.ssl.SSLSocketFactory
         debug: true
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 200MB
-      location: /home/moyun/file
-      enabled: true
 mybatis:
   mapper-locations: classpath:Mapper/*.xml
-  type-aliases-package: com.example.moyun.Entity
+  type-aliases-package: com.example.SESummer.Entity
   configuration:
     map-underscore-to-camel-case: true
 server:
