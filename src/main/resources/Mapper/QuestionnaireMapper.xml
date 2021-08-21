@@ -1,19 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace ="com.example.SESummer.Dao.QuestionnaireDao" >
-    <!-- 创建新问卷 -->
+    <!-- 创建问卷 -->
     <insert id="createQuestionnaire" parameterType="Questionnaire">
-        insert into questionnaire(title,create_time,kind,question_pwd,masterid)
-        values(#{title},#{createTime},#{kind},#{questionPwd},#{masterID})
+        insert into questionnaire(title, create_time, kind, question_pwd, is_private, start_time, end_time, masterid)
+        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID})
     </insert>
     <!-- 添加问题 -->
-    <insert id="addQuestion" parameterType="QuestionnaireContent">
-        insert into questionnaire_content(questionnaireid,question_kind,require_sig,question_content)
-        values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent})
+    <insert id="addQuestion" parameterType="QuestionContent">
+        insert into question_content(questionnaireid,question_kind,require_sig,question_content,question_no)
+        values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent},#{questionNo})
     </insert>
-    <!-- 设置选项 -->
+    <!-- 添加选择题选项 -->
     <insert id="setOptions" parameterType="QuestionOption">
-        insert into question_option(questionnaire_contentid,option_content)
-        values(#{questionnaireContentID},#{optionContent})
+        insert into question_option(question_kind, question_contentid, option_content, left_volume)
+        values(#{questionKind},#{questionContentID},#{optionContent},#{leftVolume})
     </insert>
+    <!-- 添加评分题分数上限-->
+    <insert id="setScore" parameterType="ScoreQuestion">
+        insert into score_question(question_contentid, max_score)
+        values(#{questionContentID},#{maxScore})
+    </insert>
+    <!-- 将问卷收入回收站-->
+    <update id="setRubbish" parameterType="Integer">
+        update questionnaire
+        set is_rubbish=1
+        where questionnaireid=#{questionnaireID}
+    </update>
+    <!-- 将问卷移出回收站-->
+    <update id="recoverRubbish" parameterType="Integer">
+        update questionnaire
+        set is_rubbish=0
+        where questionnaireid=#{questionnaireID}
+    </update>
+    <!-- 根据用户ID获取所有不在回收站里的问卷-->
+    <select id="getQuestionnaireListNotRubbishByUserID" resultType="Questionnaire">
+        select *
+        from questionnaire
+        where masterid=#{masterID} and is_rubbish=0
+    </select>
+    <!-- 根据用户ID获取所有在回收站里的问卷-->
+    <select id="getQuestionnaireListIsRubbishByUserID" resultType="Questionnaire">
+        select *
+        from questionnaire
+        where masterid=#{masterID} and is_rubbish=1
+    </select>
+    <!-- 开启问卷-->
+    <update id="openQuestionnaire" parameterType="Integer">
+        update questionnaire
+        set is_visitable=1
+        where questionnaireid=#{questionnaireID}
+    </update>
+    <!-- 关闭问卷-->
+    <update id="closeQuestionnaire" parameterType="Integer">
+        update questionnaire
+        set is_visitable=0
+        where questionnaireid=#{questionnaireID}
+    </update>
 </mapper>

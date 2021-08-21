@@ -21,9 +21,9 @@ public class UserController {
     @PostMapping("/register")
     @ApiOperation("注册用户的接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName",value="用户名",required = true),
-            @ApiImplicitParam(name = "userPwd",value="用户密码",required = true),
-            @ApiImplicitParam(name = "reUserPwd",value="重新确认用户密码",required = true)
+            @ApiImplicitParam(name = "userName",value="用户名",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "userPwd",value="用户密码",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "reUserPwd",value="重新确认用户密码",required = true,dataType = "String")
     })
     public Map<String,Object> registerUser(@RequestParam String userName,@RequestParam String userPwd,@RequestParam String reUserPwd){
         Map<String, Object> map = new HashMap<>();
@@ -55,8 +55,8 @@ public class UserController {
     @PostMapping("/login")
     @ApiOperation("登录接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName",value="用户名",required = true),
-            @ApiImplicitParam(name = "userPwd",value="用户密码",required = true)
+            @ApiImplicitParam(name = "userName",value="用户名",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "userPwd",value="用户密码",required = true,dataType = "String")
     })
     public Map<String,Object> login(HttpServletRequest request, @RequestParam String userName,@RequestParam String userPwd){
         Map<String, Object> map = new HashMap<>();
@@ -93,11 +93,9 @@ public class UserController {
             HttpSession session=request.getSession();
             session.removeAttribute("userID");
             map.put("success",true);
-            map.put("message","成功注销");
         }catch (Exception e){
             e.printStackTrace();
             map.put("success",false);
-            map.put("message","注销失败");
         }
         return map;
     }

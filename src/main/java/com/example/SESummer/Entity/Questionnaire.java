@@ -26,4 +26,5 @@ public class Questionnaire {
     private Timestamp startTime;
     private Timestamp endTime;
     private Integer masterID;
+    private Integer isRubbish;
 }
