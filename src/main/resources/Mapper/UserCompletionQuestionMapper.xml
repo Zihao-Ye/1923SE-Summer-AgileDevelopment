@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace ="com.example.SESummer.Dao.UserCompletionQuestionDao" >
+    <!-- 搜索是否已填写 -->
+    <select id="getCompletionRecordByID" resultType="UserCompletionQuestion">
+        select *
+        from user_completion_question
+        where userid = #{userID} and questionnaireid = #{questionnaireID} and question_contentid = #{questionContentID}
+    </select>
+    <!-- 插入填空题信息 -->
+    <insert id="addCompletionRecord" parameterType="UserCompletionQuestion">
+        insert into user_completion_question(userid,questionnaireid,question_contentid,completion_content)
+        values(#{userID},#{questionnaireID},#{questionContentID},#{completionContent})
+    </insert>
+    <!-- 更新填空题信息 -->
+    <update id="updateCompletionRecord" parameterType="UserCompletionQuestion">
+        update user_completion_question
+        set completion_content = #{completionContent}
+        where userid = #{userID} and questionnaireid = #{questionnaireID} and question_contentid = #{questionContentID}
+    </update>
+</mapper>
