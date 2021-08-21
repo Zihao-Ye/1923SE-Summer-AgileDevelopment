@@ -25,9 +25,9 @@
                     @click:append="show1 = !show1"
                   ></v-text-field>
 
-                  <el-button :disabled="!valid" class="button" @click="Login">
+                  <v-btn :disabled="!valid" class="button" @click="Login" x-large>
                     <p class="login_">登录</p>
-                  </el-button>
+                  </v-btn>
                 </v-col>
               </v-row>
             </v-container>
@@ -76,9 +76,9 @@
                   ></v-text-field>
 
 
-                  <el-button :disabled="!valid" class="button" @click="Register">
+                  <v-btn :disabled="!valid" class="button" @click="Register" x-large>
                     <p class="register_">注册</p>
-                  </el-button>
+                  </v-btn>
                 </v-col>
               </v-row>
             </v-container>
