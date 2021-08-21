@@ -1,28 +1,35 @@
 package com.example.SESummer.Service.Impl;
 
 import com.example.SESummer.Dao.QuestionnaireDao;
+import com.example.SESummer.Entity.QuestionOption;
+import com.example.SESummer.Entity.Questionnaire;
+import com.example.SESummer.Entity.QuestionnaireContent;
+import com.example.SESummer.Service.QuestionnaireService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 
 @Service
-public class QuestionnaireServiceImpl {
+public class QuestionnaireServiceImpl implements QuestionnaireService {
     @Autowired
     private QuestionnaireDao questionnaireDao;
 
+    @Override
     //创建新问卷
-    public void createQuestionnaire(String Title, Timestamp CreateTime, Integer Kind, Integer RecycleVolume,String QuestionnairePwd,Integer UserID){
-        questionnaireDao.createQuestionnaire(Title,CreateTime,Kind,RecycleVolume,QuestionnairePwd,UserID);
+    public void createQuestionnaire(Questionnaire questionnaire){
+        questionnaireDao.createQuestionnaire(questionnaire);
     }
 
+    @Override
     //添加新问题
-    public void addQuestion(Integer QuestionnaireID,Integer QuestionKind,String QuestionContent,Integer QuestionOptionNumber,Integer RequireSig){
-        questionnaireDao.addQuestion(QuestionnaireID,QuestionKind,QuestionContent,QuestionOptionNumber,RequireSig);
+    public void addQuestion(QuestionnaireContent questionnaireContent){
+        questionnaireDao.addQuestion(questionnaireContent);
     }
 
+    @Override
     //添加新选项
-    public void setOptions(Integer QuestionnaireID,Integer QuestionID,Integer VoteVolume,String OptionContent){
-        questionnaireDao.setOptions(QuestionnaireID,QuestionID,OptionContent,VoteVolume);
+    public void setOptions(QuestionOption questionOption){
+        questionnaireDao.setOptions(questionOption);
     }
 }

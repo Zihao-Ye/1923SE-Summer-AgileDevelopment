@@ -1,6 +1,9 @@
 package com.example.SESummer.Controller;
 
-import com.example.SESummer.Service.QuestionnaireServer;
+import com.example.SESummer.Entity.QuestionOption;
+import com.example.SESummer.Entity.Questionnaire;
+import com.example.SESummer.Entity.QuestionnaireContent;
+import com.example.SESummer.Service.QuestionnaireService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,27 +20,34 @@ import java.util.Map;
 @RequestMapping("/questionnaire")
 public class QuestionnaireController {
     @Autowired
-    private QuestionnaireServer questionNaireServer;
+    private QuestionnaireService questionNaireService;
 
-    @PostMapping("/CreateQuestionnaire")
+    @PostMapping("/createQuestionnaire")
     @ApiOperation("问卷操作-创建问卷")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Title",value = "标题",required = true),
-            @ApiImplicitParam(name = "CreateTime",value = "创建时间",required = true),
-            @ApiImplicitParam(name = "Kind",value = "问卷类型",required = true),
-            @ApiImplicitParam(name = "RecycleVolume",value = "回收量",required = true),
-            @ApiImplicitParam(name = "QuestionPwd",value = "问卷密码",required = true),
-            @ApiImplicitParam(name = "UserID",value = "用户ID",required = true),
+            @ApiImplicitParam(name = "title",value = "标题",required = true),
+            @ApiImplicitParam(name = "kind",value = "问卷类型",required = true),
+            @ApiImplicitParam(name = "questionPwd",value = "问卷密码",required = true),
+            @ApiImplicitParam(name = "userID",value = "创建者ID",required = true)
     })
-    public Map<String,Object> CreateQuestionnaire(@RequestParam String Title,@RequestParam Timestamp CreateTime,@RequestParam String QuestionPwd,@RequestParam Integer Kind,@RequestParam Integer RecycleVolume,@RequestParam Integer UserID){
+    public Map<String,Object> createQuestionnaire(@RequestParam String title,@RequestParam String questionPwd,@RequestParam Integer kind,@RequestParam Integer userID){
         Map<String,Object> map = new HashMap<>();
+        Timestamp createTime=new Timestamp(System.currentTimeMillis());
         try {
-            questionNaireServer.createQuestionnaire(Title,CreateTime,Kind,RecycleVolume,QuestionPwd,UserID);
+            Questionnaire questionnaire=new Questionnaire();
+            questionnaire.setTitle(title);
+            questionnaire.setKind(kind);
+            questionnaire.setCreateTime(createTime);
+            questionnaire.setQuestionPwd(questionPwd);
+            questionnaire.setMasterID(userID);
+            questionNaireService.createQuestionnaire(questionnaire);
             map.put("success",true);
+            map.put("message","创建问卷成功");
         }
         catch (Exception e){
             e.printStackTrace();
             map.put("success",false);
+            map.put("message","创建问卷失败");
         }
         return map;
     }
@@ -45,22 +55,28 @@ public class QuestionnaireController {
     @PostMapping("/AddQuestion")
     @ApiOperation("问卷操作-添加问题")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "QuestionnaireID",value = "问卷序号",required = true),
-            @ApiImplicitParam(name = "QuestionID",value = "问题序号",required = true),
-            @ApiImplicitParam(name = "QuestionKind",value = "问题类型",required = true),
-            @ApiImplicitParam(name = "RequireSig",value = "是否必答",required = true),
-            @ApiImplicitParam(name = "QuestionContent",value = "问题题干",required = true)
+            @ApiImplicitParam(name = "questionnaireID",value = "问题序号",required = true),
+            @ApiImplicitParam(name = "questionKind",value = "问题类型",required = true),
+            @ApiImplicitParam(name = "requireSig",value = "是否必答",required = true),
+            @ApiImplicitParam(name = "questionContent",value = "问题题干",required = true)
 
     })
-    public Map<String,Object> addQuestion(@RequestParam Integer QuestionnaireID,@RequestParam Integer QuestionKind,@RequestParam Integer RequireSig,@RequestParam String QuestionContent){
+    public Map<String,Object> addQuestion(@RequestParam Integer questionnaireID,@RequestParam Integer questionKind,@RequestParam Integer requireSig,@RequestParam String questionContent){
         Map<String,Object> map = new HashMap<>();
         try {
-            questionNaireServer.addQuestion(QuestionnaireID,QuestionKind,QuestionContent,0,RequireSig);
+            QuestionnaireContent questionnaireContent=new QuestionnaireContent();
+            questionnaireContent .setQuestionnaireID(questionnaireID);
+            questionnaireContent.setQuestionContent(questionContent);
+            questionnaireContent.setQuestionKind(questionKind);
+            questionnaireContent.setRequireSig(requireSig);
+            questionNaireService.addQuestion(questionnaireContent);
             map.put("success",true);
+            map.put("message","添加问题成功");
         }
         catch (Exception e){
             e.printStackTrace();
             map.put("success",false);
+            map.put("message","添加问题失败");
         }
         return map;
     }
@@ -68,19 +84,23 @@ public class QuestionnaireController {
     @PostMapping("/SetOptions")
     @ApiOperation("问卷操作-设置选项")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "QuestionnaireID",value = "问卷序号",required = true),
-            @ApiImplicitParam(name = "QuestionID",value = "问题序号",required = true),
-            @ApiImplicitParam(name = "OptionContent",value = "选项内容",required = true),
+            @ApiImplicitParam(name = "questionnaireContentID",value = "问题序号",required = true),
+            @ApiImplicitParam(name = "optionContent",value = "选项内容",required = true),
     })
-    public Map<String,Object> setOptions(@RequestParam Integer QuestionnaireID,@RequestParam Integer QuestionID,@RequestParam String OptionContent){
+    public Map<String,Object> setOptions(@RequestParam Integer questionnaireContentID,@RequestParam String optionContent){
         Map<String,Object> map = new HashMap<>();
         try {
-            questionNaireServer.setOptions(QuestionnaireID,QuestionID,OptionContent,0);
+            QuestionOption questionOption=new QuestionOption();
+            questionOption.setQuestionnaireContentID(questionnaireContentID);
+            questionOption.setOptionContent(optionContent);
+            questionNaireService.setOptions(questionOption);
             map.put("success",true);
+            map.put("message","添加选项成功");
         }
         catch (Exception e){
             e.printStackTrace();
             map.put("success",false);
+            map.put("message","添加选项失败");
         }
         return map;
     }

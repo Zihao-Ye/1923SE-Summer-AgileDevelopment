@@ -1,14 +1,12 @@
-package com.example.SESummer.Dao;
+package com.example.SESummer.Service;
 
 import com.example.SESummer.Entity.QuestionOption;
 import com.example.SESummer.Entity.Questionnaire;
 import com.example.SESummer.Entity.QuestionnaireContent;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.sql.Timestamp;
 
-@Mapper
-public interface QuestionnaireDao {
+public interface QuestionnaireService {
     //创建问卷
     void createQuestionnaire(Questionnaire questionnaire);
 
@@ -17,5 +15,4 @@ public interface QuestionnaireDao {
 
     //设置选项
     void setOptions(QuestionOption questionOption);
-
 }

@@ -3,17 +3,17 @@
 <mapper namespace ="com.example.SESummer.Dao.QuestionnaireDao" >
     <!-- 创建新问卷 -->
     <insert id="createQuestionnaire" parameterType="Questionnaire">
-        insert into questionnaire(title,create_time,recycle_volume,kind,question_pwd,question_number,masterid)
-        values(#{Title},#{CreateTime},#{RecycleVolume},#{Kind},#{QuestionPwd},0,#{UserID})
+        insert into questionnaire(title,create_time,kind,question_pwd,masterid)
+        values(#{title},#{createTime},#{kind},#{questionPwd},#{masterID})
     </insert>
     <!-- 添加问题 -->
     <insert id="addQuestion" parameterType="QuestionnaireContent">
-        insert into questionnaire_content(questionnaireid,question_kind,require_sig,question_content,question_option_number)
-        values(#{QuestionnaireID},#{QuestionKind},#{RequireSig},#{QuestionContent},0)
+        insert into questionnaire_content(questionnaireid,question_kind,require_sig,question_content)
+        values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent})
     </insert>
     <!-- 设置选项 -->
-    <insert id="setOptions">
-        insert into question_option(questionnaireid,questionnaire_contentid,option_content,vote_volume)
-        values(#{QuestionnaireID},#{QuestionID},#{OptionContent},#{VoteVolume})
+    <insert id="setOptions" parameterType="QuestionOption">
+        insert into question_option(questionnaire_contentid,option_content)
+        values(#{questionnaireContentID},#{optionContent})
     </insert>
 </mapper>
