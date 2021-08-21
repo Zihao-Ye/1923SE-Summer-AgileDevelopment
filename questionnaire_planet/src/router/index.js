@@ -30,17 +30,17 @@ const routes = [
   {
     path:'/QuestionnaireManage',
     name:'QuestionnaireManage',
-    component: QuestionnaireManage
-  },
-  {
-    path:'/MyQuestionnaire',
-    name:'MyQuestionnaire',
-    component: MyQuestionnaire
-  },
-  {
-    path:'/Recycle',
-    name:'Recycle',
-    component: Recycle
+    component: QuestionnaireManage,
+    children: [
+      {
+          path: '/',
+          component: () => import(/* webpackChunkName: 'root' */ '../views/MyQuestionnaire')
+      },
+      {
+          path: 'Recycle',
+          component: () => import(/* webpackChunkName: 'root' */ '../views/Recycle')
+      }
+  ]
   },
   {
     path:'/normal',

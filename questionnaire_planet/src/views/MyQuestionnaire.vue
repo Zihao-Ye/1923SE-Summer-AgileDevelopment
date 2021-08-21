@@ -1,395 +1,369 @@
 <template>
-    <div class="my-project-container">
-        <div class="filter-view">
-            <div>
-                <span @click="switchDataShowTypeHandle('gird')">
-                    <font-icon
-                        :class="{'show-view-type-icon-active':dataShowType=='gird'}"
-                        class="fas fa-th-large show-view-type-icon "
-                    />
-                </span>
-                <span @click="switchDataShowTypeHandle('table')">
-                    <font-icon
-                        :class="{'show-view-type-icon-active':dataShowType=='table'}"
-                        class="fas  fa-th-list show-view-type-icon"
-                    />
-                </span>
-            </div>
-            <el-form ref="form" label-width="100px">
-                <el-form-item label="项目更新时间">
-                    <el-date-picker
-                        v-model="queryParams.beginDateTime"
-                        placeholder="选择开始时间"
-                        style="width: 20%;"
-                        type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                    />
-                    至
-                    <el-date-picker
-                        v-model="queryParams.endDateTime"
-                        :default-time="'23:59:59'"
-                        placeholder="选择结束时间"
-                        style="width: 20%;"
-                        type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                    />
-                    <el-input
-                        v-model="queryParams.name"
-                        placeholder="请输入项目名称" style="width: 20%; margin-left: 20px;" type="text"
-                    />
-                    <el-button class="ml-20" type="primary" @click="queryProjectPage">查询</el-button>
-                </el-form-item>
-                <el-form-item label="项目状态">
-                    <el-radio-group v-model="queryParams.status" size="small" @change="()=>{
-                        this.queryParams.current=0
-                        this.queryProjectPage()
-                    }"
-                    >
-                        <el-radio-button v-for="status in projectStatusList" :key="status.code" :label="status.code">
-                            {{ status.name }}
-                        </el-radio-button>
-                    </el-radio-group>
-                </el-form-item>
-            </el-form>
-        </div>
-        <div v-if="dataShowType=='gird'" class="project-grid-container">
-            <div
-                v-if="projectList.length"
-                v-loading="projectListLoading"
-                class="project-grid-view"
+  <v-container fluid>
+    <v-data-iterator
+      :items="items"
+      :items-per-page.sync="itemsPerPage"
+      :page.sync="page"
+      :search="search"
+      :sort-by="sortBy.toLowerCase()"
+      :sort-desc="sortDesc"
+      hide-default-footer
+    >
+      <template v-slot:header>
+        <v-toolbar
+          dark
+          color="blue darken-3"
+          class="mb-1"
+        >
+          <v-text-field
+            v-model="search"
+            clearable
+            flat
+            solo-inverted
+            hide-details
+            prepend-inner-icon="mdi-magnify"
+            label="Search"
+          ></v-text-field>
+          <template v-if="$vuetify.breakpoint.mdAndUp">
+            <v-spacer></v-spacer>
+            <v-select
+              v-model="sortBy"
+              flat
+              solo-inverted
+              hide-details
+              :items="sortkeys"
+              prepend-inner-icon="mdi-magnify"
+              label="Sort by"
+            ></v-select>
+            <v-spacer></v-spacer>
+            <v-btn-toggle
+              v-model="sortDesc"
+              mandatory
             >
-                <div v-for="p in projectList" :key="p.id" class="project-grid-item-view pointer">
-                    <el-row align="middle" justify="center" type="flex">
-                        <el-col :span="5">
-                            <span
-                                :style="getStatusColorStyle(p.status)"
-                                class="project-grid-view-status"
-                            />
-                        </el-col>
-                        <el-col :span="19">
-                            <el-tooltip :content="p.name" placement="top">
-                                <p class="project-title">
-                                    {{ p.name }}
-                                </p>
-                            </el-tooltip>
-                        </el-col>
-                    </el-row>
-                    <img class="project-grid-view-preimg"
-                         src="data:image/png;base64,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"
-                    >
-                    <p class="project-grid-view-time">创建时间：{{ p.createTime | formatDate }}</p>
-                    <div class="gird-operating-btns">
-                        <el-button type="text" @click="toProjectHandle(p.key,'editor')">
-                            <i class="el-icon-edit" />
-                            编辑
-                        </el-button>
-                        <span>
-                            <el-button
-                                v-if="p.status!=1" type="text" @click="toProjectHandle(p.key,'statistics')"
-                            >
-                                <i class="el-icon-data-analysis" />
-                                统计
-                            </el-button>
-                        </span>
-                        <el-popconfirm
-                            v-if="p.status==2"
-                            title="确定停止收集该项目吗？"
-                            @confirm="stopProject(p.key)"
-                        >
-                            <el-button slot="reference"
-                                       class="pink-text-btn"
-                                       type="text"
-                            >
-                                <i class="el-icon-video-pause" />
-                                停止
-                            </el-button>
-                        </el-popconfirm>
-                        <el-popconfirm
-                            v-if="p.status!=2"
-                            title="确定删除该项目吗？"
-                            @confirm="deleteProject(p.key)"
-                        >
-                            <el-button slot="reference"
-                                       class="pink-text-btn"
-                                       type="text"
-                            >
-                                <i class="el-icon-delete" />
-                                删除
-                            </el-button>
-                        </el-popconfirm>
-                    </div>
-                </div>
-            </div>
-            <div v-if="!projectListLoading&&projectList.length==0">
-                <data-empty />
-            </div>
-        </div>
-        <div v-if="dataShowType=='table'" class="project-table-view">
-            <el-table
-                :data="projectList"
-                border
-                empty-text="暂无数据"
-                highlight-current-row
+              <v-btn
+                large
+                depressed
+                color="blue"
+                :value="false"
+              >
+                <v-icon>mdi-arrow-up</v-icon>
+              </v-btn>
+              <v-btn
+                large
+                depressed
+                color="blue"
+                :value="true"
+              >
+                <v-icon>mdi-arrow-down</v-icon>
+              </v-btn>
+            </v-btn-toggle>
+          </template>
+        </v-toolbar>
+      </template>
 
-                stripe
-                style="width: 100%;"
-            >
-                <el-table-column
-                    align="center"
-                    label="标题"
-                    prop="name"
-                    show-overflow-tooltip
-                />
-                <el-table-column
-                    align="center"
-                    label="描述"
-                    prop="describe"
-                    show-overflow-tooltip
-                />
-                <el-table-column
-                    align="center"
-                    label="状态"
-                >
-                    <template slot-scope="scope">
-                        <span v-for="status in projectStatusList" :key="status.code">
-                            <span
-                                v-if="status.code==scope.row.status"
-                            >
-                                {{ status.name }}
-                            </span>
-                        </span>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    align="center"
-                    label="创建时间"
-                    prop="createTime"
-                />
-                <el-table-column
-                    align="center"
-                    label="更新时间"
-                    prop="updateTime"
-                />
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <el-button type="text"
-                                   @click="toProjectHandle(scope.row.key,'editor')"
-                        >
-                            编辑
-                        </el-button>
-                        <span>
-                            <el-button
-                                v-if="scope.row.status!=1"
-                                class="green-text-btn"
-                                type="text"
-                                @click="toProjectHandle(scope.row.key,'statistics')"
-                            >
-                                统计
-                            </el-button>
-                        </span>
-                        <el-popconfirm
-                            v-if="scope.row.status==2"
-                            title="确定停止收集该项目吗？"
-                            @confirm="stopProject(scope.row.key)"
-                        >
-                            <el-button slot="reference"
-                                       class="pink-text-btn"
-                                       type="text"
-                            >
-                                停止
-                            </el-button>
-                        </el-popconfirm>
-                        <el-popconfirm
-                            v-if="scope.row.status!=2"
-                            title="确定删除该项目吗？"
-                            @confirm="deleteProject(scope.row.key)"
-                        >
-                            <el-button slot="reference"
-                                       class="pink-text-btn"
-                                       type="text"
-                            >
-                                删除
-                            </el-button>
-                        </el-popconfirm>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </div>
-        <div class="project-page-view">
-            <el-pagination
-                v-if="total>10"
-                :current-page.sync="queryParams.current"
-                :page-size.sync="queryParams.size"
-                :total="total"
-                background
-                layout="total, prev, pager, next"
-                @current-change="queryProjectPage"
-            />
-        </div>
-    </div>
+      <template v-slot:default="props">
+        <v-row>
+          <v-col
+            v-for="item in props.items"
+            :key="item.title"
+            cols="12"
+            sm="6"
+            md="4"
+            lg="3"
+          >
+            <v-card>
+              <v-card-title class="subheading font-weight-bold">
+                {{ item.title }}
+              </v-card-title>
+
+              <v-divider></v-divider>
+
+              <v-list dense>
+                <v-list-item>
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'count' }">
+                    已回收数量:
+                  </v-list-item-content>
+                  <v-list-item-content
+                    class="align-end"
+                    :class="{ 'blue--text': sortBy === 'count' }"
+                  >
+                    {{ item.count }}
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'buildTime' }">
+                    创建时间:
+                  </v-list-item-content>
+                  <v-list-item-content
+                    class="align-end"
+                    :class="{ 'blue--text': sortBy === 'buildTime' }"
+                  >
+                    {{ item.buildTime }}
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'firstBeginTime' }">
+                    第一次发布时间:
+                  </v-list-item-content>
+                  <v-list-item-content
+                    class="align-end"
+                    :class="{ 'blue--text': sortBy === 'firstBeginTime' }"
+                  >
+                    {{ item.firstBeginTime }}
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'lastBeginTime' }">
+                    最后一次发布时间:
+                  </v-list-item-content>
+                  <v-list-item-content
+                    class="align-end"
+                    :class="{ 'blue--text': sortBy === 'lastBeginTime' }"
+                  >
+                    {{ item.lastBeginTime }}
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'status' }">
+                    状态:
+                  </v-list-item-content>
+                  <v-list-item-content
+                    class="align-end"
+                    :class="{ 'blue--text': sortBy === 'status' }"
+                  >
+                    {{ item.status }}
+                  </v-list-item-content>
+                </v-list-item>
+
+                <v-divider></v-divider>
+
+                <v-list-item>
+                    <v-btn v-if='!isOpening' color="primary">
+                        开启问卷
+                        <i class="el-icon-video-play"></i>
+                    </v-btn>
+                    <v-btn v-else color="error">
+                        停止问卷
+                        <i class="el-icon-video-pause"></i>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn tile color="success"><v-icon left>mdi-pencil</v-icon>编辑问卷</v-btn>
+                </v-list-item>
+                <v-list-item>
+                    <v-btn :loading="loading3" 
+                           :disabled="loading3" 
+                           color="blue-grey" 
+                           class="ma-2 white--text" 
+                           @click="loader = 'loading3'">
+                           导出问卷                               
+                           <v-icon right dark>mdi-cloud-upload</v-icon>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn depressed>
+                        复制问卷
+                        <i class="el-icon-document-copy"></i>
+                        </v-btn>
+                </v-list-item>
+                <v-list-item>
+                    <v-btn color="error">
+                        删除问卷
+                        <i class="el-icon-delete-solid"></i>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn class="ma-2"
+                           :loading="loading"
+                           :disabled="loading"
+                            color="secondary"
+                            @click="loader = 'loading'">
+                            预览问卷
+                            <i class="el-icon-view"></i>
+                            </v-btn>
+
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
+        </v-row>
+      </template>
+
+      <template v-slot:footer>
+        <v-row
+          class="mt-2"
+          align="center"
+          justify="center"
+        >
+          <span class="grey--text">每页问卷数</span>
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                dark
+                text
+                color="primary"
+                class="ml-2"
+                v-bind="attrs"
+                v-on="on"
+              >
+                {{ itemsPerPage }}
+                <v-icon>mdi-chevron-down</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(number, index) in itemsPerPageArray"
+                :key="index"
+                @click="updateItemsPerPage(number)"
+              >
+                <v-list-item-title>{{ number }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
+          <v-spacer></v-spacer>
+
+          <span
+            class="mr-4
+            grey--text"
+          >
+            Page {{ page }} of {{ numberOfPages }}
+          </span>
+          <v-btn
+            fab
+            dark
+            color="blue darken-3"
+            class="mr-1"
+            @click="formerPage"
+          >
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+          <v-btn
+            fab
+            dark
+            color="blue darken-3"
+            class="ml-1"
+            @click="nextPage"
+          >
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-row>
+      </template>
+    </v-data-iterator>
+  </v-container>
 </template>
+
 <script>
-import dayjs from 'dayjs'
-
-let projectStatusList = [
-    {code: 1, name: '未发布', color: '#006EFF'},
-    {code: 2, name: '收集中', color: '#34C82A'},
-    {code: 3, name: '已结束', color: '#955A45'}
-]
-
-export default {
-    name: 'MyProject',
-    filters: {
-        formatDate(time) {
-            return dayjs(time).format('YYYY/MM/DD')
-        }
-    },
-    data() {
-        return {
-            dataShowType: 'gird',
-            total: 0,
-            queryParams: {
-                current: 1,
-                size: 10,
-                name: '',
-                beginDateTime: null,
-                endDateTime: null,
-                status: null
-            },
-            projectStatusList: projectStatusList,
-            projectList: [],
-            projectListLoading: true
-        }
+  export default {
+    data () {
+      return {
+        isOpening: false,
+        itemsPerPageArray: [4, 8, 12],
+        search: '',
+        filter: {},
+        sortDesc: false,
+        page: 1,
+        itemsPerPage: 4,
+        sortBy: 'title',
+        sortkeys: [
+          'title',
+          'count',
+          'firstBeginTime',
+          'lastBeginTime',
+          'buildTime',
+        ],
+        keys: [
+          'title',
+          'count',
+          'firstBeginTime',
+          'lastBeginTime',
+          'buildTime',
+          'status',
+        ],
+        items: [
+          {
+            title: 'Frozen Yogurt',
+            count: 156,
+            firstBeginTime: '2021-08-03 18:00',
+            lastBeginTime: '2021-08-03 18:00',
+            buildTime: '2021-08-03 18:00',
+            status:'收集中'
+          },
+          {
+            title: 'Frozen Yogurt',
+            count: 154,
+            firstBeginTime: '2021-08-03 18:00',
+            lastBeginTime: '2021-08-03 18:00',
+            buildTime: '2021-08-03 18:00',
+            status:'收集中'
+          },
+          {
+            title: 'Frozen Yogurt',
+            count: 159,
+            firstBeginTime: '2021-08-03 18:00',
+            lastBeginTime: '2021-08-03 18:00',
+            buildTime: '2021-08-03 18:00',
+            status:'收集中'
+          },
+          {
+            title: 'Frozen Yogurt',
+            count: 159,
+            firstBeginTime: '2021-08-03 18:00',
+            lastBeginTime: '2021-08-03 18:00',
+            buildTime: '2021-08-03 18:00',
+            status:'收集中'
+          },
+          {
+            title: 'Frozen Yogurt',
+            count: 159,
+            firstBeginTime: '2021-08-03 18:00',
+            lastBeginTime: '2021-08-03 18:00',
+            buildTime: '2021-08-03 18:00',
+            status:'收集中'
+          },
+          {
+            title: 'Frozen Yogurt',
+            count: 159,
+            firstBeginTime: '2021-08-03 18:00',
+            lastBeginTime: '2021-08-03 18:00',
+            buildTime: '2021-08-03 18:00',
+            status:'收集中'
+          },
+          {
+            title: 'Frozen Yogurt',
+            count: 159,
+            firstBeginTime: '2021-08-03 18:00',
+            lastBeginTime: '2021-08-03 18:00',
+            buildTime: '2021-08-03 18:00',
+            status:'收集中'
+          },
+          {
+            title: 'Frozen Yogurt',
+            count: 159,
+            firstBeginTime: '2021-08-03 18:00',
+            lastBeginTime: '2021-08-03 18:00',
+            buildTime: '2021-08-03 18:00',
+            status:'收集中'
+          },
+          
+        ],
+      }
     },
     computed: {
-        getStatusColorStyle() {
-            return function(code) {
-                let color = this.projectStatusList.find(item => item.code == code).color
-                return {
-                    backgroundColor: color,
-                    borderColor: color
-                }
-            }
-        }
-    },
-    created() {
-        this.queryProjectPage()
+      numberOfPages () {
+        return Math.ceil(this.items.length / this.itemsPerPage)
+      },
+      filteredKeys () {
+        return this.keys.filter(key => key !== 'title')
+      },
     },
     methods: {
-        switchDataShowTypeHandle(type) {
-            this.dataShowType = type
-        },
-        toProjectHandle(key, type) {
-            this.$router.push({path: `/project/form/${type}`, query: {key: key, active: type}})
-        },
-    }
-}
+      nextPage () {
+        if (this.page + 1 <= this.numberOfPages) this.page += 1
+      },
+      formerPage () {
+        if (this.page - 1 >= 1) this.page -= 1
+      },
+      updateItemsPerPage (number) {
+        this.itemsPerPage = number
+      },
+    },
+  }
 </script>
-
-<style lang="scss" scoped>
-.my-project-container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-    align-items: center;
-    align-content: center;
-}
-.back-view {
-    display: flex;
-    width: 80%;
-    align-content: flex-start;
-    margin: 10px;
-}
-.filter-view {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: row;
-}
-.show-view-type-icon {
-    color: white;
-    font-size: 18px;
-    -webkit-text-stroke: 0.5px #a8a8a8;
-    margin: 5px;
-    cursor: pointer;
-}
-.show-view-type-icon-active {
-    color: rgba(92, 155, 249, 100);
-    -webkit-text-stroke: 0.5px rgba(92, 155, 249, 100);
-}
-.project-grid-container {
-    margin-top: 20px;
-    display: flex;
-    width: 100%;
-    justify-content: center;
-}
-.project-grid-view {
-    display: flex;
-    width: 950px;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-.project-table-view {
-    margin-top: 20px;
-    width: 80%;
-}
-.project-grid-item-view {
-    width: 169px;
-    height: 199px;
-    line-height: 20px;
-    border-radius: 4px;
-    background-color: rgba(255, 255, 255, 100);
-    text-align: center;
-    margin: 10px;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
-    .project-title {
-        color: rgba(16, 16, 16, 100);
-        font-size: 14px;
-        text-align: left;
-        line-height: 20px;
-        max-height: 20px;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    .project-grid-view-status {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        line-height: 20px;
-        background-color: rgba(0, 110, 255, 100);
-        text-align: center;
-        border: 1px solid rgba(0, 110, 255, 100);
-        border-radius: 20px;
-    }
-}
-.gird-operating-btns {
-    position: absolute;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-    bottom: 0;
-    display: none;
-    border: none;
-}
-.project-grid-item-view:hover .gird-operating-btns {
-    display: block;
-}
-.project-grid-view-preimg {
-    width: 143px;
-    height: 121px;
-}
-.project-grid-view-time {
-    color: rgba(144, 147, 153, 100);
-    font-size: 12px;
-    line-height: 20px;
-    text-align: center;
-    margin: 0;
-}
-.project-page-view {
-    margin-top: 30px;
-}
-</style>

@@ -1,9 +1,13 @@
 <template>
     <div class="home-container">
+        <el-container>
+            <el-header class="header-container" height="38">
+                <div>管理问卷页面</div>
+            </el-header>
             <el-container>
                 <el-aside width="280px">
                     <el-card>
-                        <el-button type="primary" @click="createBlankTemplate">新建项目</el-button>
+                        <el-button type="primary" @click="createBlankQuestionnaire">新建问卷</el-button>
                         <div class="menu-view">
                             <div v-for="menu in menuList" :key="menu.route"
                                  :class="defaultActiveMenu==menu.route?'menu-item-active menu-item':'menu-item'"
@@ -17,17 +21,16 @@
                 </el-aside>
                 <el-container>
                     <el-main>
+                        <!-- <div>{{defaultActiveMenu}}</div> -->
                         <router-view></router-view>
                     </el-main>
                 </el-container>
             </el-container>
+        </el-container>
     </div>
 </template>
 
 <script>
-import {formConf} from '@/components/generator/config'
-import store from '@/store'
-import router from '@/router'
 
 export default {
     name: 'NewIndex',
@@ -37,12 +40,12 @@ export default {
             defaultActiveMenu: '',
             menuList: [
                 {
-                    route: '/MyQuestionnaire',
+                    route: '/QuestionnaireManage',
                     name: '我的问卷',
                     icon: 'el-icon-user-solid'
                 },
                 {
-                    route: '/Recycle',
+                    route: '/QuestionnaireManage/Recycle',
                     name: '回收站',
                     icon: 'el-icon-delete-solid'
                 }
@@ -50,13 +53,6 @@ export default {
         }
     },
     computed: {
-        getStore() {
-            return store
-        },
-        getUserInfo() {
-            let user = JSON.parse(this.getStore.getters['user/userInfo'])
-            return user
-        }
     },
     created() {
         this.defaultActiveMenu = this.$route.path
@@ -64,6 +60,10 @@ export default {
     methods: {
         menuClickHandle(menu) {
             this.$router.replace({path: menu.route})
+            this.defaultActiveMenu = menu.route
+        },
+        createBlankQuestionnaire() {
+            console.log('新建成功')
         },
     }
 }
@@ -84,6 +84,7 @@ $menuActiveText: #409eff;
     justify-content: space-between;
     background-color: #fff;
     line-height: 38px;
+    font-size: 30px;
     height: 38px;
     min-width: 1024px;
     .header-logo-img {
