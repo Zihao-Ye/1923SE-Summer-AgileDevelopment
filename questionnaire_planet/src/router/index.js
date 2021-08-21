@@ -5,6 +5,7 @@ import Login from '../views/Login'
 import QuestionnaireManage from '../views/QuestionnaireManage'
 import MyQuestionnaire from '../views/MyQuestionnaire'
 import Recycle from '../views/Recycle'
+import Normal from '../views/Normal'
 Vue.use(VueRouter)
 
 const routes = [
@@ -40,7 +41,12 @@ const routes = [
     path:'/Recycle',
     name:'Recycle',
     component: Recycle
-  }
+  },
+  {
+    path:'/normal',
+    name:'Normal',
+    component: Normal
+  },
 ]
 
 const router = new VueRouter({
