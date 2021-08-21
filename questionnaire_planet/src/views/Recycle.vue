@@ -11,43 +11,46 @@
             empty-text="暂无数据"
         >
             <el-table-column
-                prop="name"
+                prop="title"
                 show-overflow-tooltip
                 align="center"
                 label="标题"
             />
             <el-table-column
-                prop="resultCount"
+                prop="count"
                 align="center"
-                label="收集数"
+                label="已收集数"
             />
             <el-table-column
                 align="center"
-                prop="createTime"
+                prop="buildTime"
                 label="创建时间"
             />
             <el-table-column
                 align="center"
-                prop="updateTime"
-                label="删除时间"
+                prop="firstBeginTime"
+                label="第一次发布时间"
+            />
+            <el-table-column
+                align="center"
+                prop="lastBeginTime"
+                label="最后一次发布时间"
             />
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text"
-                               @click="restoreProject(scope.row.key,1)"
-                    >
-                        恢复
-                    </el-button>
+                    <v-btn text color="primary" @click="restoreProject(scope.row.key,1)">恢复</v-btn>
                     <el-popconfirm
                         title="确定删除该项目吗？"
                         @confirm="deleteProject(scope.row.key)"
                     >
-                        <el-button slot="reference"
+                        <!-- <v-btn text color="error">删除</v-btn> -->
+                        <el-button type="danger" slot="reference" plain>删除</el-button>
+                        <!-- <el-button slot="reference"
                                    class="pink-text-btn"
                                    type="text"
                         >
                             删除
-                        </el-button>
+                        </el-button> -->
                     </el-popconfirm>
                 </template>
             </el-table-column>
@@ -81,7 +84,16 @@ export default {
                 endDateTime: null,
                 status: null
             },
-            projectList: [],
+            projectList: [
+                {
+                  title: 'Frozen Yogurt',
+                  count: 159,
+                  firstBeginTime: '2021-08-03 18:00',
+                  lastBeginTime: '2021-08-03 18:00',
+                  buildTime: '2021-08-03 18:00',
+                  status:'收集中'
+          },
+            ],
             projectListLoading: true
         }
     },
@@ -92,7 +104,33 @@ export default {
         this.queryRecycleProjectPage()
     },
     methods: {
-
+        restoreProject(key) {
+            this.$api.post('/user/project/recycle/restore', {'key': key}).then(res => {
+                if (res.data) {
+                    this.msgSuccess('恢复成功')
+                    this.queryRecycleProjectPage()
+                }
+            })
+        },
+        deleteProject(key) {
+            this.$api.post('/user/project/recycle/delete', {'key': key}).then(res => {
+                if (res.data) {
+                    this.msgSuccess('刪除成功')
+                    this.queryRecycleProjectPage()
+                }
+            })
+        },
+        queryRecycleProjectPage() {
+            this.$api.get('/user/project/recycle/page', {
+                params: this.queryParams
+            }).then(res => {
+                let {records, total, size} = res.data
+                this.projectList = records
+                this.total = total
+                this.queryParams.size = size
+                this.projectListLoading = false
+            })
+        }
     }
 }
 </script>

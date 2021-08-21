@@ -29,18 +29,19 @@ const routes = [
   {
     path:'/QuestionnaireManage',
     name:'QuestionnaireManage',
-    component: QuestionnaireManage
+    component: QuestionnaireManage,
+    children: [
+      {
+          path: '/',
+          component: () => import(/* webpackChunkName: 'root' */ '../views/MyQuestionnaire')
+      },
+      {
+          path: 'Recycle',
+          component: () => import(/* webpackChunkName: 'root' */ '../views/Recycle')
+      }
+  ]
   },
-  {
-    path:'/MyQuestionnaire',
-    name:'MyQuestionnaire',
-    component: MyQuestionnaire
-  },
-  {
-    path:'/Recycle',
-    name:'Recycle',
-    component: Recycle
-  }
+  
 ]
 
 const router = new VueRouter({
