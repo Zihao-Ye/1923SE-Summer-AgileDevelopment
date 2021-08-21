@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @Api(tags = "用户相关接口")
-@RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;

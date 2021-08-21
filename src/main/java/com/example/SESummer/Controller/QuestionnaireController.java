@@ -31,11 +31,11 @@ public class QuestionnaireController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "title",value = "标题",required = true,dataType = "String"),
             @ApiImplicitParam(name = "questionPwd",value = "问卷密码",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "kind",value = "问卷类型",required = true,dataType = "Integer"),
+            @ApiImplicitParam(name = "kind",value = "问卷类型",required = true,dataType = "int"),
             @ApiImplicitParam(name = "userID",value = "创建者ID",required = true,dataType = "Integer"),
             @ApiImplicitParam(name = "isPrivate",value = "是否公开",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "startTime",value = "问卷开始时间",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "endTime",value = "问卷结束时间",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "startTime",value = "问卷开始时间",required = false,dataType = "String"),
+            @ApiImplicitParam(name = "endTime",value = "问卷结束时间",required = false,dataType = "String"),
     })
     public Map<String,Object> createQuestionnaire(@RequestParam String title,@RequestParam String questionPwd,@RequestParam Integer kind,@RequestParam Integer userID,@RequestParam Integer isPrivate,@RequestParam String startTime,@RequestParam String endTime){
         Map<String,Object> map = new HashMap<>();
