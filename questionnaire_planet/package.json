@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "cesium": "^1.84.0",
     "core-js": "^3.6.5",
     "dayjs": "^1.10.6",
     "element-ui": "^2.15.5",
