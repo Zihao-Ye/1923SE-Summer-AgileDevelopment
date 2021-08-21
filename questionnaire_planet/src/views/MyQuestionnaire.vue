@@ -138,15 +138,16 @@
                 <v-divider></v-divider>
 
                 <v-list-item>
-                    <v-btn color="primary">
+                    <v-btn v-if='!isOpening' color="primary">
                         开启问卷
                         <i class="el-icon-video-play"></i>
                     </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn color="error">
+                    <v-btn v-else color="error">
                         停止问卷
                         <i class="el-icon-video-pause"></i>
                     </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn tile color="success"><v-icon left>mdi-pencil</v-icon>编辑问卷</v-btn>
                 </v-list-item>
                 <v-list-item>
                     <v-btn :loading="loading3" 
@@ -253,6 +254,7 @@
   export default {
     data () {
       return {
+        isOpening: false,
         itemsPerPageArray: [4, 8, 12],
         search: '',
         filter: {},
