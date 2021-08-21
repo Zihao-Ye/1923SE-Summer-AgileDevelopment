@@ -5,6 +5,7 @@ import store from './store'
 import ElementUI from "element-ui";
 import axios from "axios"
 import vuetify from './plugins/vuetify'
+import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(ElementUI);
 

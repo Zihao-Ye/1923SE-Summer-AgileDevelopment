@@ -2,6 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login'
+import QuestionnaireManage from '../views/QuestionnaireManage'
+import MyQuestionnaire from '../views/MyQuestionnaire'
+import Recycle from '../views/Recycle'
 Vue.use(VueRouter)
 
 const routes = [
@@ -22,6 +25,21 @@ const routes = [
     path:'/login',
     name:'Login',
     component: Login
+  },
+  {
+    path:'/QuestionnaireManage',
+    name:'QuestionnaireManage',
+    component: QuestionnaireManage
+  },
+  {
+    path:'/MyQuestionnaire',
+    name:'MyQuestionnaire',
+    component: MyQuestionnaire
+  },
+  {
+    path:'/Recycle',
+    name:'Recycle',
+    component: Recycle
   }
 ]
 
