@@ -152,26 +152,17 @@ export default {
       this.validate();
       this.$http({
         method: "post",
-        url: "/Login",
+        url: "/login",
         data: {
-          UserID: this.id,
-          Password: this.password,
+          userName: this.id,
+          userPwd: this.password,
         },
       })
         .then((res) => {
           this.message = res.data.message;
-
           if (res.data.success) {
             this.$store.commit("setLogin");
             this.$store.commit("setUserID",this.id);
-            
-            if (res.data.isAdmin) {
-              this.$store.commit("setAdmin");
-              this.$router.push({ path: "/Admin" });
-            } else {
-              this.$store.commit("setIsTeacher",res.data.user.isTeacher);
-              this.$router.push({ path: "/" });
-            }
           }
         })
         .catch((err) => {
@@ -183,12 +174,11 @@ export default {
       this.validate();
       this.$http({
         method: "post",
-        url: "/Register",
+        url: "/register",
         data: {
-          UserID: this.id,
-          Password: this.password,
-          rePassword: this.rePassword,
-          Email: this.Email,
+          userName: this.id,
+          userPwd: this.password,
+          reUserName: this.rePassword,
         },
       })
         .then((res) => {

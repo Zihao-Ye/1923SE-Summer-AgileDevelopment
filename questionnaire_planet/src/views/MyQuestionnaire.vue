@@ -281,7 +281,7 @@
           {
             title: 'Frozen Yogurt',
             count: 156,
-            firstBeginTime: '2021-08-03 18:00',
+            firstBeginTime: '2021 08 03 18:00',
             lastBeginTime: '2021-08-03 18:00',
             buildTime: '2021-08-03 18:00',
             status:'收集中'
@@ -289,7 +289,7 @@
           {
             title: 'Frozen Yogurt',
             count: 154,
-            firstBeginTime: '2021-08-03 18:00',
+            firstBeginTime: '2021 08 03 18:00',
             lastBeginTime: '2021-08-03 18:00',
             buildTime: '2021-08-03 18:00',
             status:'收集中'
@@ -297,7 +297,7 @@
           {
             title: 'Frozen Yogurt',
             count: 159,
-            firstBeginTime: '2021-08-03 18:00',
+            firstBeginTime: '2021 08 03 18:00',
             lastBeginTime: '2021-08-03 18:00',
             buildTime: '2021-08-03 18:00',
             status:'收集中'
@@ -305,7 +305,7 @@
           {
             title: 'Frozen Yogurt',
             count: 159,
-            firstBeginTime: '2021-08-03 18:00',
+            firstBeginTime: '2021 08 03 18:00',
             lastBeginTime: '2021-08-03 18:00',
             buildTime: '2021-08-03 18:00',
             status:'收集中'
@@ -313,7 +313,7 @@
           {
             title: 'Frozen Yogurt',
             count: 159,
-            firstBeginTime: '2021-08-03 18:00',
+            firstBeginTime: '2021 08 03 18:00',
             lastBeginTime: '2021-08-03 18:00',
             buildTime: '2021-08-03 18:00',
             status:'收集中'
@@ -321,7 +321,7 @@
           {
             title: 'Frozen Yogurt',
             count: 159,
-            firstBeginTime: '2021-08-03 18:00',
+            firstBeginTime: '2021 08 03 17:00',
             lastBeginTime: '2021-08-03 18:00',
             buildTime: '2021-08-03 18:00',
             status:'收集中'
@@ -329,7 +329,7 @@
           {
             title: 'Frozen Yogurt',
             count: 159,
-            firstBeginTime: '2021-08-03 18:00',
+            firstBeginTime: '2021 08 03 18:00',
             lastBeginTime: '2021-08-03 18:00',
             buildTime: '2021-08-03 18:00',
             status:'收集中'
@@ -337,7 +337,7 @@
           {
             title: 'Frozen Yogurt',
             count: 159,
-            firstBeginTime: '2021-08-03 18:00',
+            firstBeginTime: '2021 08 03 18:00',
             lastBeginTime: '2021-08-03 18:00',
             buildTime: '2021-08-03 18:00',
             status:'收集中'

@@ -24,7 +24,6 @@
           <template v-else>
             <v-btn
                 color="indigo"
-                absolute
                 dark
                 :to="{name:'Login'}"
                 outlined
@@ -67,7 +66,6 @@
 .btn1{
   top:10%;
   left:5%;
-
 }
 .btn2{
   top:18%;

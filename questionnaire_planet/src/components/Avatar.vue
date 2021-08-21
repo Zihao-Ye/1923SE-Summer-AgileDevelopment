@@ -13,7 +13,6 @@
           <v-avatar color="#96CDCD">
               <span>{{$store.state.userID.substr(0,1)}}</span>
           </v-avatar>
-          <h3>{{$store.state.userName}}</h3>
           <v-btn depressed rounded text @click="logout"> 退出登录 </v-btn>
         </div>
       </v-list-item-content>
