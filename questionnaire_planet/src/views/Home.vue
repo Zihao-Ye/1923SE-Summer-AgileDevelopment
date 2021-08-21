@@ -3,7 +3,6 @@
     <v-main>
       <earth></earth>
       <div class="text-center">
-
         <v-btn
             class="btn1"
             color="#dcd0d0"
@@ -18,15 +17,22 @@
         >
           管理问卷
         </v-btn>
-        <v-btn
-            class="btn3"
-            color="indigo"
-            absolute
-            dark
-            :to="{name:'Login'}"
-        >
-          登陆
-        </v-btn>
+        <div class="btn3">
+          <template v-if="this.$store.state.login">
+            <avatar ></avatar>
+          </template>
+          <template v-else>
+            <v-btn
+                color="indigo"
+                absolute
+                dark
+                :to="{name:'Login'}"
+                outlined
+            >
+              登陆
+            </v-btn>
+          </template>
+        </div>
         <v-btn
             class="btn2"
             color="#dcd0d0"
@@ -48,9 +54,11 @@
 
 <script>
   import earth from '../components/Earth.vue'
+  import avatar from '../components/Avatar.vue'
   export default {
     components: {
-      earth
+      earth,
+      avatar
     },
   }
 </script>
@@ -66,6 +74,7 @@
   left:5%
 }
 .btn3{
+  position: absolute;
   top:1%;
   right:1%
 }

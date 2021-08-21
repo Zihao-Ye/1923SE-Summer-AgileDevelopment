@@ -11,10 +11,7 @@ export default {
   },
   methods: {
     initcesiumViewer() {
-      // var earth = new Cesium.UrlTemplateImageryProvider({
-      //   url: "images/taile_blue/{z}/{x}/{y}.jpg",
-      //   fileExtension: "jpg"
-      // });
+
       var Cesium=this.Cesium
       this.Cesium.Ion.defaultAccessToken =
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxMjg3MmQyYS1mMjc0LTQwYzgtYjViNy1hODI5MTYxOTE4ZjAiLCJpZCI6NjQ3ODMsImlhdCI6MTYyOTUxMzY1NX0.NB2ZLSAiPnGXMaBQAlHIDsaxr750CupD7hmK8Xlmvoo";
@@ -33,10 +30,10 @@ export default {
         // selectedImageryProviderViewModel: img_arcgis_jcdt,//当前地形图层的显示模型，仅baseLayerPicker设为true有意义
         // scene3DOnly: true, //如果设置为true，则所有几何图形以3D模式绘制以节约GPU资源
          homeButton: false, //是否显示Home按钮
-        // showRenderLoopErrors: false //如果设为true，
+
 
       });
-      //去除版权信息
+
       viewer.scene.globe.enableLighting = true//必须开启光照效果，
       viewer._cesiumWidget._creditContainer.style.display = "none";
       viewer.terrainProvider = new Cesium.createWorldTerrain({
@@ -56,7 +53,7 @@ export default {
   width: 100%;
   margin: 0 auto;
 }
-.cesium-widget-credits{ /* 去除logo */
+.cesium-widget-credits{
   display:none !important;
 }
 </style>
