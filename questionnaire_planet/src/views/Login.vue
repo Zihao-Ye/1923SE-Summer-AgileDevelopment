@@ -11,7 +11,7 @@
                   <v-text-field
                     v-model="id"
                     :rules="idRules"
-                    label="学号/教工号"
+                    label="账号"
                     required
                   ></v-text-field>
 
@@ -25,9 +25,9 @@
                     @click:append="show1 = !show1"
                   ></v-text-field>
 
-                  <v-btn :disabled="!valid" class="button" @click="Login" large>
+                  <el-button :disabled="!valid" class="button" @click="Login">
                     <p class="login_">登录</p>
-                  </v-btn>
+                  </el-button>
                 </v-col>
               </v-row>
             </v-container>
@@ -37,9 +37,6 @@
           <v-col justify="center" cols="12">
             <v-btn text color="primary" class="register" @click="toRegister"
               >注册</v-btn
-            >
-            <v-btn text color="primary" class="forget" :to="'/ForgetPassword'"
-              >忘记密码</v-btn
             >
           </v-col>
         </v-container>
@@ -54,7 +51,7 @@
                   <v-text-field
                     v-model="id"
                     :rules="idRules"
-                    label="学号/教工号"
+                    label="账号"
                     required
                   ></v-text-field>
 
@@ -78,16 +75,10 @@
                     @click:append="show3 = !show3"
                   ></v-text-field>
 
-                  <v-text-field
-                    v-model="Email"
-                    :rules="emailRules"
-                    label="E-mail"
-                    required
-                  ></v-text-field>
 
-                  <v-btn :disabled="!valid" class="button" @click="Register">
+                  <el-button :disabled="!valid" class="button" @click="Register">
                     <p class="register_">注册</p>
-                  </v-btn>
+                  </el-button>
                 </v-col>
               </v-row>
             </v-container>
@@ -253,19 +244,20 @@ export default {
 }
 
 .button {
+  font-size: 20px;
   color: #596275;
   box-shadow: 9px 9px 18px rgba(0, 0, 0, 0.1),
-    -9px -9px 18px rgba(255, 255, 255, 1);
+  -9px -9px 18px rgba(255, 255, 255, 1);
   border-radius: 3rem;
-  transition: box-shadow 0.2s ease-out;
+  transition: box-shadow .2s ease-out;
   background-color: #efeeee;
   position: relative;
-  top: 15%;
-  margin-top: 20px;
+  top: 10%;
+  margin-top: 10px;
   width: 130px;
   height: 55px;
   outline: none;
-  border: none;
+  border:none;
 }
 .button:hover {
   font-size: 19px;
@@ -288,8 +280,8 @@ export default {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  height: 700px;
-  width: 550px;
+  height: 650px;
+  width: 400px;
 
   transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -314,11 +306,9 @@ export default {
   backface-visibility: hidden;
 }
 .register {
-  top: 130px;
+  top: 5px;
 }
-.forget {
-  top: 130px;
-}
+
 .turn {
   text-align: right;
 }
