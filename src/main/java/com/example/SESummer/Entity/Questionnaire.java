@@ -21,6 +21,9 @@ public class Questionnaire {
     private Integer recycleVolume;
     private Integer kind;
     private String questionPwd;
-    private Integer questionNumber;
+    private Integer isPrivate;
+    private Integer isVisitable;
+    private Timestamp startTime;
+    private Timestamp endTime;
     private Integer masterID;
 }

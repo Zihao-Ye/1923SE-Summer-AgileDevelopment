@@ -15,8 +15,9 @@ public class QuestionOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer questionOptionID;
-    private Integer questionnaireID;
+    private Integer questionKind;
     private Integer questionnaireContentID;
     private String optionContent;
     private Integer voteVolume;
+    private Integer leftVolume;
 }

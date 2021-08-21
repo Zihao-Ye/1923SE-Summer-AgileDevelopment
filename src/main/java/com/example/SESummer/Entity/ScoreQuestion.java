@@ -10,12 +10,11 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_info")
-public class User {
+@Table(name = "score_question")
+public class ScoreQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userID;
-    private String userPwd;
-    private String userName;
-    private Integer isVisitor;
+    private Integer scoreQuestionID;
+    private Integer questionContentID;
+    private Integer maxScore;
 }

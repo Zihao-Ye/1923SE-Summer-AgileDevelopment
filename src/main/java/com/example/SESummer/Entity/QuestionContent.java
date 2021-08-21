@@ -10,14 +10,14 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "questionnaire_content")
-public class QuestionnaireContent {
+@Table(name = "question_content")
+public class QuestionContent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer questionnaireContentID;
+    private Integer questionContentID;
     private Integer questionnaireID;
     private Integer questionKind;
     private Integer requireSig;
     private String questionContent;
-    private Integer questionOptionNumber;
+    private Integer questionNo;
 }
