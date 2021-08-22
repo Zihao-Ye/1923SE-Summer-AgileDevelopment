@@ -9,12 +9,18 @@ module.exports = {
   transpileDependencies: [
     'vuetify'
   ],
-  lintOnSave: false,
-  devServer: {
-    overlay: {
-      warning: false,
-      errors: false
-    },
+  devServer:{
+    host:'localhost',
+    port:8080,
+    proxy:{
+      '/api':{
+        target:'http://39.105.38.175:8080/api/',
+        changeOrigin:true,
+        pathRewrite:{
+          '/api':''
+        }
+      }
+    }
   },
   publicPath: '/',
   outputDir: 'dist',
