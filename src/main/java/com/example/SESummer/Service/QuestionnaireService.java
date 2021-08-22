@@ -5,6 +5,7 @@ import com.example.SESummer.Entity.QuestionOption;
 import com.example.SESummer.Entity.Questionnaire;
 import com.example.SESummer.Entity.ScoreQuestion;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface QuestionnaireService {
@@ -32,6 +33,9 @@ public interface QuestionnaireService {
     //根据用户ID获取所有在回收站里的问卷
     List<Questionnaire> getQuestionnaireListIsRubbishByUserID(Integer userID);
 
+    //发布问卷
+    void publishQuestionnaire(Integer questionnaireID, Timestamp startTime);
+
     //开启问卷
     void openQuestionnaire(Integer questionnaireID);
 
@@ -51,8 +55,8 @@ public interface QuestionnaireService {
     ScoreQuestion getScoreQuestionByQuestionContentID(Integer questionContentID);
 
     //编辑问卷-修改问卷信息
-    void editQuestionnaire(Integer questionnaireID,String title,String questionPwd,Integer isPrivate);
+    void editQuestionnaire(Integer questionnaireID, String title, String questionPwd, Integer isPrivate, String questionnaireNote);
 
     //编辑问卷-修改问题信息
-    void editQuestion(Integer questionContentID,Integer requireSig,String questionContent);
+    void editQuestion(Integer questionContentID, Integer requireSig, String questionContent, String questionNote);
 }

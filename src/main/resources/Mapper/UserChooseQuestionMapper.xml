@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace ="com.example.SESummer.Dao.UserChooseQuestionDao" >
+    <!-- 根据用户ID、问卷ID、题目ID删除已选选项记录-->
+    <delete id="delChooseRecord" parameterType="UserChooseQuestion">
+        delete from user_choose_question
+        where userid=#{userID} and questionnaireid=#{questionnaireID} and question_contentid=#{questionContentID}
+    </delete>
+    <!-- 检索用户是否回答过该选择题-->
+    <select id="getUserChooseRecordByID" resultType="UserChooseQuestion">
+        select *
+        from user_choose_question
+        where userid=#{userID} and questionnaireid=#{questionnaireID} and question_contentid=#{questionContentID}
+    </select>
+    <!-- 添加用户选择题答题记录-->
+    <insert id="addChooseRecord" parameterType="UserChooseQuestion">
+        insert into user_choose_question(userid, questionnaireid, question_contentid, question_optionid)
+        values(#{userID},#{questionnaireID},#{questionContentID},#{questionOptionID})
+    </insert>
+</mapper>    

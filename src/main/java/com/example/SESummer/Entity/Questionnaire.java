@@ -27,4 +27,6 @@ public class Questionnaire {
     private Timestamp endTime;
     private Integer masterID;
     private Integer isRubbish;
+    private String questionnaireNote;
+    private Integer havePublish;
 }

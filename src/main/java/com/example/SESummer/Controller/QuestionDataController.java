@@ -1,6 +1,5 @@
 package com.example.SESummer.Controller;
 
-import com.example.SESummer.Dao.QuestionDataDao;
 import com.example.SESummer.Service.QuestionDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -32,7 +31,7 @@ public class QuestionDataController {
             map.put("success",true);
         }
         catch (Exception e){
-            map.put("suceess",false);
+            map.put("success",false);
         }
         return map;
     }

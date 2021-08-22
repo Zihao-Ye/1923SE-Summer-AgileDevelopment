@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +34,11 @@ public class QuestionnaireController {
             @ApiImplicitParam(name = "kind",value = "问卷类型",required = true,dataType = "int"),
             @ApiImplicitParam(name = "userID",value = "创建者ID",required = true,dataType = "Integer"),
             @ApiImplicitParam(name = "isPrivate",value = "是否公开",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "startTime",value = "问卷开始时间",required = false,dataType = "String"),
-            @ApiImplicitParam(name = "endTime",value = "问卷结束时间",required = false,dataType = "String")
+            @ApiImplicitParam(name = "startTime",value = "问卷开始时间",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "endTime",value = "问卷结束时间",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "questionnaireNote",value = "问卷说明",required = true,dataType = "String")
     })
-    public Map<String,Object> createQuestionnaire(@RequestParam String title,@RequestParam String questionPwd,@RequestParam Integer kind,@RequestParam Integer userID,@RequestParam Integer isPrivate,@RequestParam String startTime,@RequestParam String endTime){
+    public Map<String,Object> createQuestionnaire(@RequestParam String title,@RequestParam String questionPwd,@RequestParam Integer kind,@RequestParam Integer userID,@RequestParam Integer isPrivate,@RequestParam String startTime,@RequestParam String endTime,@RequestParam String questionnaireNote){
         Map<String,Object> map = new HashMap<>();
         Timestamp createTime=new Timestamp(System.currentTimeMillis());
 
@@ -60,6 +62,7 @@ public class QuestionnaireController {
             questionnaire.setStartTime(StartTime);
             questionnaire.setEndTime(EndTime);
             questionnaire.setIsPrivate(isPrivate);
+            questionnaire.setQuestionnaireNote(questionnaireNote);
             questionNaireService.createQuestionnaire(questionnaire);
             map.put("success",true);
             map.put("message","创建问卷成功");
@@ -207,6 +210,22 @@ public class QuestionnaireController {
         return map;
     }
 
+    @PostMapping("/publishQuestionnaire")
+    @ApiOperation("问卷操作-发布问卷")
+    @ApiImplicitParam(name = "questionnaireID",value = "问卷编号",required = true,dataType = "Integer")
+    public Map<String,Object> publishQuestionnaire(@RequestParam Integer questionnaireID){
+        Map<String,Object> map = new HashMap<>();
+        try {
+            Timestamp startTime=new Timestamp(System.currentTimeMillis());
+            questionNaireService.publishQuestionnaire(questionnaireID,startTime);
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
     @PostMapping("/openQuestionnaire")
     @ApiOperation("问卷操作-开启问卷")
     @ApiImplicitParam(name = "questionnaireID",value = "问卷编号",required = true,dataType = "Integer")
@@ -228,6 +247,7 @@ public class QuestionnaireController {
     public Map<String,Object> closeQuestionnaire(@RequestParam Integer questionnaireID){
         Map<String,Object> map = new HashMap<>();
         try {
+            Timestamp endTime=new Timestamp(System.currentTimeMillis());
             questionNaireService.closeQuestionnaire(questionnaireID);
             map.put("success",true);
         }catch (Exception e){
@@ -294,11 +314,12 @@ public class QuestionnaireController {
             @ApiImplicitParam(name = "title",value = "标题",required = true,dataType = "String"),
             @ApiImplicitParam(name = "questionPwd",value = "问卷密码",required = true,dataType = "String"),
             @ApiImplicitParam(name = "isPrivate",value = "是否公开",required = true,dataType = "Integer"),
+            @ApiImplicitParam(name = "questionnaireNote",value = "问卷说明",required = true,dataType = "String")
     })
-    public Map<String,Object> editQuestionnaire(@RequestParam Integer questionnaireID,@RequestParam String title,@RequestParam String questionPwd,@RequestParam Integer isPrivate){
+    public Map<String,Object> editQuestionnaire(@RequestParam Integer questionnaireID,@RequestParam String title,@RequestParam String questionPwd,@RequestParam Integer isPrivate,@RequestParam String questionnaireNote){
         Map<String,Object> map = new HashMap<>();
         try {
-            questionNaireService.editQuestionnaire(questionnaireID,title,questionPwd,isPrivate);
+            questionNaireService.editQuestionnaire(questionnaireID,title,questionPwd,isPrivate,questionnaireNote);
             map.put("success",false);
         }catch (Exception e){
             e.printStackTrace();
@@ -312,12 +333,13 @@ public class QuestionnaireController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "Integer"),
             @ApiImplicitParam(name = "requireSig",value = "是否必答",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "questionContent",value = "问题题干",required = true,dataType = "String")
+            @ApiImplicitParam(name = "questionContent",value = "问题题干",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "questionNote",value = "题目备注",required = true,dataType = "String")
     })
-    public Map<String,Object> editQuestion(@RequestParam Integer questionContentID,@RequestParam Integer requireSig,@RequestParam String questionContent){
+    public Map<String,Object> editQuestion(@RequestParam Integer questionContentID,@RequestParam Integer requireSig,@RequestParam String questionContent,@RequestParam String questionNote){
         Map<String,Object> map = new HashMap<>();
         try {
-            questionNaireService.editQuestion(questionContentID,requireSig,questionContent);
+            questionNaireService.editQuestion(questionContentID,requireSig,questionContent,questionNote);
             map.put("success",true);
         }catch (Exception e){
             e.printStackTrace();

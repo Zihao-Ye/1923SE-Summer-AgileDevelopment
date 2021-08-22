@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace ="com.example.SESummer.Dao.UserScoreQuestionDao" >
-    <!-- 搜索是否已填写 -->
+    <!-- 检索用户是否已评分 -->
     <select id="getScoreRecordByID" resultType="UserScoreQuestion">
         select *
         from user_score_question
         where userid = #{userID} and questionnaireid = #{questionnaireID} and question_contentid = #{questionContentID}
     </select>
 
-    <!-- 添加评分记录 -->
+    <!-- 添加用户评分记录 -->
     <insert id="addScoreRecord" parameterType="UserScoreQuestion">
         insert into user_score_question(userid,questionnaireid,question_contentid,score)
         values(#{userID},#{questionnaireID},#{questionContentID},#{score})
     </insert>
 
-    <!-- 修改评分记录 -->
+    <!-- 修改用户评分记录 -->
     <update id="updateScoreRecord" parameterType="UserScoreQuestion">
         update user_score_question
         set score = #{score}

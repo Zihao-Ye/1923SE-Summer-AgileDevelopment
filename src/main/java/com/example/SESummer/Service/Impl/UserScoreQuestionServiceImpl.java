@@ -12,17 +12,20 @@ public class UserScoreQuestionServiceImpl implements UserScoreQuestionService {
     private UserScoreQuestionDao userScoreQuestionDao;
 
     @Override
+    //检索用户是否已评分
     public UserScoreQuestion getScoreRecordByID(Integer userID,Integer questionnaireID,Integer questionContentID){
         return userScoreQuestionDao.getScoreRecordByID(userID,questionnaireID,questionContentID);
     }
 
     @Override
+    //添加用户评分记录
     public void addScoreRecord(UserScoreQuestion score){
         userScoreQuestionDao.addScoreRecord(score);
     }
 
     @Override
-    public void updateScoreRecord(UserScoreQuestion score){
-        userScoreQuestionDao.updateScoreRecord(score);
+    //修改用户评分记录
+    public void updateScoreRecord(Integer userID,Integer questionnaireID,Integer questionContentID,Integer score){
+        userScoreQuestionDao.updateScoreRecord(userID,questionnaireID,questionContentID,score);
     }
 }

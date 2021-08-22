@@ -20,4 +20,5 @@ public class QuestionContent {
     private Integer requireSig;
     private String questionContent;
     private Integer questionNo;
+    private String questionNote;
 }

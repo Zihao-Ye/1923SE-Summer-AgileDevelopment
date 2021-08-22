@@ -3,13 +3,13 @@
 <mapper namespace ="com.example.SESummer.Dao.QuestionnaireDao" >
     <!-- 创建问卷 -->
     <insert id="createQuestionnaire" parameterType="Questionnaire">
-        insert into questionnaire(title, create_time, kind, question_pwd, is_private, start_time, end_time, masterid)
-        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID})
+        insert into questionnaire(title, create_time, kind, question_pwd, is_private, start_time, end_time, masterid,questionnaire_note)
+        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionnaireNote})
     </insert>
     <!-- 添加问题 -->
     <insert id="addQuestion" parameterType="QuestionContent">
-        insert into question_content(questionnaireid,question_kind,question_no)
-        values(#{questionnaireID},#{questionKind},#{questionNo})
+        insert into question_content(questionnaireid,question_kind,question_no,question_note)
+        values(#{questionnaireID},#{questionKind},#{questionNo},#{questionNote})
     </insert>
     <!-- 添加选择题选项 -->
     <insert id="setOptions" parameterType="QuestionOption">
@@ -45,6 +45,12 @@
         from questionnaire
         where masterid=#{masterID} and is_rubbish=1
     </select>
+    <!-- 发布问卷-->
+    <update id="publishQuestionnaire" parameterType="Questionnaire">
+        update questionnaire
+        set have_publish=1,start_time=#{startTime}
+        where questionnaireid=#{questionnaireID}
+    </update>
     <!-- 开启问卷-->
     <update id="openQuestionnaire" parameterType="Integer">
         update questionnaire
@@ -84,13 +90,13 @@
     <!-- 编辑问卷-修改问卷信息-->
     <update id="editQuestionnaire" parameterType="Questionnaire">
         update questionnaire
-        set title=#{title},question_pwd=#{questionPwd},is_private=#{isPrivate}
+        set title=#{title},question_pwd=#{questionPwd},is_private=#{isPrivate},questionnaire_note=#{questionnaireNote}
         where questionnaireid=#{questionnaireID}
     </update>
     <!-- 编辑问卷-修改问题信息-->
     <update id="editQuestion" parameterType="QuestionContent">
         update question_content
-        set question_content=#{questionContent},require_sig=#{requireSig}
+        set question_content=#{questionContent},require_sig=#{requireSig},question_note=#{questionNote}
         where question_contentid=#{questionContentID}
     </update>
 </mapper>

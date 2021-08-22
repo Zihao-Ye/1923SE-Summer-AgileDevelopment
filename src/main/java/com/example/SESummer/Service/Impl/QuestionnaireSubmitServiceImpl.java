@@ -12,11 +12,13 @@ public class QuestionnaireSubmitServiceImpl implements QuestionSubmitService {
     private QuestionnaireSubmitDao questionnaireSubmitDao;
 
     @Override
+    //保存提交问卷记录
     public void addQuestionSubmit(QuestionnaireSubmit submit){
         questionnaireSubmitDao.addQuestionSubmit(submit);
     }
 
     @Override
+    //删除提交问卷记录
     public void deleteQuestionSubmit(QuestionnaireSubmit submit){
         questionnaireSubmitDao.deleteQuestionSubmit(submit);
     }

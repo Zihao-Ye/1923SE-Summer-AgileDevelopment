@@ -9,6 +9,7 @@ import com.example.SESummer.Service.QuestionnaireService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -65,6 +66,12 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     }
 
     @Override
+    //发布问卷
+    public void publishQuestionnaire(Integer questionnaireID, Timestamp startTime){
+        questionnaireDao.publishQuestionnaire(questionnaireID,startTime);
+    }
+
+    @Override
     //开启问卷
     public void openQuestionnaire(Integer questionnaireID){
         questionnaireDao.openQuestionnaire(questionnaireID);
@@ -102,13 +109,13 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
     @Override
     //编辑问卷-修改问卷信息
-    public void editQuestionnaire(Integer questionnaireID,String title,String questionPwd,Integer isPrivate){
-        questionnaireDao.editQuestionnaire(questionnaireID,title,questionPwd,isPrivate);
+    public void editQuestionnaire(Integer questionnaireID, String title, String questionPwd, Integer isPrivate, String questionnaireNote){
+        questionnaireDao.editQuestionnaire(questionnaireID,title,questionPwd,isPrivate,questionnaireNote);
     }
 
     @Override
     //编辑问卷-修改问题信息
-    public void editQuestion(Integer questionContentID,Integer requireSig,String questionContent){
-        questionnaireDao.editQuestion(questionContentID,requireSig,questionContent);
+    public void editQuestion(Integer questionContentID, Integer requireSig, String questionContent, String questionNote){
+        questionnaireDao.editQuestion(questionContentID,requireSig,questionContent,questionNote);
     }
 }
