@@ -75,4 +75,40 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     public void closeQuestionnaire(Integer questionnaireID){
         questionnaireDao.closeQuestionnaire(questionnaireID);
     }
+
+    @Override
+    //预览问卷-问卷信息
+    public Questionnaire getQuestionnaireByQuestionnaireID(Integer questionnaireID){
+        return questionnaireDao.getQuestionnaireByQuestionnaireID(questionnaireID);
+    }
+
+    @Override
+    //预览问卷-问卷题目信息
+    public List<QuestionContent> getAllQuestionContentOfQuestionnaireByQuestionnaireID(Integer questionnaireID){
+        return questionnaireDao.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
+    }
+
+    @Override
+    //预览问卷-题目选项信息
+    public List<QuestionOption> getAllQuestionOptionOfQuestionByQuestionContentID(Integer questionContentID){
+        return questionnaireDao.getAllQuestionOptionOfQuestionByQuestionContentID(questionContentID);
+    }
+
+    @Override
+    //预览问卷-评分题分数上限
+    public ScoreQuestion getScoreQuestionByQuestionContentID(Integer questionContentID){
+        return questionnaireDao.getScoreQuestionByQuestionContentID(questionContentID);
+    }
+
+    @Override
+    //编辑问卷-修改问卷信息
+    public void editQuestionnaire(Integer questionnaireID,String title,String questionPwd,Integer isPrivate){
+        questionnaireDao.editQuestionnaire(questionnaireID,title,questionPwd,isPrivate);
+    }
+
+    @Override
+    //编辑问卷-修改问题信息
+    public void editQuestion(Integer questionContentID,Integer requireSig,String questionContent){
+        questionnaireDao.editQuestion(questionContentID,requireSig,questionContent);
+    }
 }

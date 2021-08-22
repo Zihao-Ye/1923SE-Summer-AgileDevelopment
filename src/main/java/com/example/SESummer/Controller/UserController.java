@@ -98,4 +98,13 @@ public class UserController {
         }
         return map;
     }
+
+    @GetMapping("/test")
+    @ApiOperation("测试接口")
+    public Map<String,Object> test (){
+        Map<String ,Object> map=new HashMap<>();
+        map.put("success",true);
+        map.put("message","test");
+        return map;
+    }
 }

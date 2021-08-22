@@ -8,8 +8,8 @@
     </insert>
     <!-- 添加问题 -->
     <insert id="addQuestion" parameterType="QuestionContent">
-        insert into question_content(questionnaireid,question_kind,require_sig,question_content,question_no)
-        values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent},#{questionNo})
+        insert into question_content(questionnaireid,question_kind,question_no)
+        values(#{questionnaireID},#{questionKind},#{questionNo})
     </insert>
     <!-- 添加选择题选项 -->
     <insert id="setOptions" parameterType="QuestionOption">
@@ -56,5 +56,41 @@
         update questionnaire
         set is_visitable=0
         where questionnaireid=#{questionnaireID}
+    </update>
+    <!-- 预览问卷-问卷信息-->
+    <select id="getQuestionnaireByQuestionnaireID" resultType="Questionnaire">
+        select *
+        from questionnaire
+        where questionnaireid=#{questionnaireID}
+    </select>
+    <!-- 预览问卷-问卷题目信息-->
+    <select id="getAllQuestionContentOfQuestionnaireByQuestionnaireID" resultType="QuestionContent">
+        select *
+        from question_content
+        where questionnaireid=#{questionnaireID}
+    </select>
+    <!-- 预览问卷-题目选项信息-->
+    <select id="getAllQuestionOptionOfQuestionByQuestionContentID" resultType="QuestionOption">
+        select *
+        from question_option
+        where question_contentid=#{questionContentID}
+    </select>
+    <!-- 预览问卷-评分题分数上限-->
+    <select id="getScoreQuestionByQuestionContentID" resultType="ScoreQuestion">
+        select *
+        from score_question
+        where question_contentid=#{questionContentID}
+    </select>
+    <!-- 编辑问卷-修改问卷信息-->
+    <update id="editQuestionnaire" parameterType="Questionnaire">
+        update questionnaire
+        set title=#{title},question_pwd=#{questionPwd},is_private=#{isPrivate}
+        where questionnaireid=#{questionnaireID}
+    </update>
+    <!-- 编辑问卷-修改问题信息-->
+    <update id="editQuestion" parameterType="QuestionContent">
+        update question_content
+        set question_content=#{questionContent},require_sig=#{requireSig}
+        where question_contentid=#{questionContentID}
     </update>
 </mapper>

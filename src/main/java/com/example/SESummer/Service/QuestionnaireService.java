@@ -37,4 +37,22 @@ public interface QuestionnaireService {
 
     //关闭问卷
     void closeQuestionnaire(Integer questionnaireID);
+
+    //预览问卷-问卷信息
+    Questionnaire getQuestionnaireByQuestionnaireID(Integer questionnaireID);
+
+    //预览问卷-问卷题目信息
+    List<QuestionContent> getAllQuestionContentOfQuestionnaireByQuestionnaireID(Integer questionnaireID);
+
+    //预览问卷-题目选项信息
+    List<QuestionOption> getAllQuestionOptionOfQuestionByQuestionContentID(Integer questionContentID);
+
+    //预览问卷-评分题分数上限
+    ScoreQuestion getScoreQuestionByQuestionContentID(Integer questionContentID);
+
+    //编辑问卷-修改问卷信息
+    void editQuestionnaire(Integer questionnaireID,String title,String questionPwd,Integer isPrivate);
+
+    //编辑问卷-修改问题信息
+    void editQuestion(Integer questionContentID,Integer requireSig,String questionContent);
 }
