@@ -5,6 +5,7 @@
     <v-card
         class="mx-auto"
         max-width="800"
+        min-height=auto
     >
       <v-card-title>
         问题一
@@ -15,7 +16,7 @@
       <v-container>
       <v-radio-group v-model="model0" mandatory>
         <v-radio
-            v-for="option in options"
+            v-for="(option,n) in options"
             :key="n"
             :label="option.title"
             :value="n"
@@ -37,7 +38,7 @@
       <v-container>
         <v-radio-group v-model="model1" >
           <v-radio
-              v-for="option in options"
+              v-for="(option,n) in options"
               :key="n"
               :label="option.title"
               :value="n"
@@ -59,7 +60,7 @@
       <v-container>
         <el-checkbox-group v-model="model2" :min="1" >
           <el-checkbox
-              v-for="option in options"
+              v-for="(option,n) in options"
               :key="n"
               :label="option.title"
               border
@@ -81,7 +82,7 @@
       <v-container>
         <el-checkbox-group v-model="model3">
         <el-checkbox
-            v-for="option in options"
+            v-for="(option,n) in options"
             :key="n"
             :label="option.title"
             border
