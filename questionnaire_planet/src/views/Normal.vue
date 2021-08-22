@@ -1,4 +1,3 @@
-
 <template>
 <div class="container">
   <div class="left-group">
@@ -34,7 +33,7 @@
               问题{{index+1}}--{{item.name}}
             </div>
             </br>
-              <div v-if="problems[index].type==='单选题'">
+              <div v-if="problems[index].type==='1'">
                   <v-radio-group v-model="problems[index].answer">
                   <v-radio
                       v-for="(it,i) in problems[index].options"
@@ -44,7 +43,7 @@
                   ></v-radio>
                   </v-radio-group>
               </div>
-              <div v-if="problems[index].type==='多选题'">
+              <div v-if="problems[index].type==='4'">
                   <v-radio-group v-model="problems[index].answer">
                   <v-checkbox
                       v-for="(it,i) in problems[index].options"
@@ -54,19 +53,18 @@
                   ></v-checkbox>
                   </v-radio-group>
               </div>
-              <div v-if="problems[index].type==='评分题'">
+              <div v-if="problems[index].type==='3'">
                 <v-col cols="12">
                   <v-slider
                     class="nodrag"
                     v-model="slider"
                     :max="problems[index].max"
-                    :min="problems[index].min"
                     :thumb-size="24"
                     thumb-label="always"
                   ></v-slider>
                 </v-col>
               </div>
-              <div v-if="problems[index].type==='填空题'">
+              <div v-if="problems[index].type==='2'">
                 <v-text-field
                       v-model="problems[index].answer"
                       label="答案"
@@ -117,6 +115,14 @@
         ></v-text-field>
           <v-row align="center" justify="space-around">
           <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
+          <v-row>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field
+                v-model="problem.multi"
+                label="最大选择次数"
+              ></v-text-field>
+            </v-col>
+          </v-row>
         </v-row>
         <div v-for="(item,index) in problem.options">
             {{item}}
@@ -188,12 +194,6 @@
           <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-            <v-text-field
-              v-model="problem.min"
-              label="最小值"
-            ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="3">
               <v-text-field
                 v-model="problem.max"
                 label="最大值"
@@ -225,7 +225,7 @@
           ></v-text-field>
           <v-row align="center" justify="space-around">
             <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
-            <v-switch v-model="problem.multi" class="ma-2" label="多选题"></v-switch>
+            <v-switch v-model="problem.multi" class="ma-2" label="4"></v-switch>
           </v-row>
           <div v-for="(item,index) in problem.options">
               {{item}}
@@ -252,7 +252,7 @@
               </v-btn>
           </v-card-actions>
       </div>
-        <div v-else-if="problem.type === '填空题' ">
+        <div v-else-if="problem.type === '2' ">
           <v-text-field
               v-model="problem.name"
               label="问题"
@@ -268,7 +268,7 @@
               </v-btn>
           </v-card-actions>
         </div>
-        <div v-else-if="problem.type === '评分题' ">
+        <div v-else-if="problem.type === '3' ">
           <v-text-field
               v-model="problem.name"
               label="问题"
@@ -392,7 +392,12 @@
       </v-dialog>
     </div>
   </div>
-  <div class="right-group"></div>
+  <v-btn
+    text
+    color="teal accent-4"
+    @click="save">
+    保存问卷
+  </v-btn>
 </div>    
 </template>
 
@@ -404,6 +409,7 @@
             },
     data() {
       return {
+      qid:12321,
       id:1,
       reveal:0,
       titleReveal:false,
@@ -411,11 +417,10 @@
       problem:{
         id:1,
         name:"",
-        type:"",
+        type:0,
         options:[],
         must:false,
-        multi:false,
-        min:0,
+        multi:1,
         max:100,
       },
       option:"",
@@ -431,23 +436,23 @@
       finishProblem() {
           switch (this.reveal) {
             case 1:
-              this.problem.type='单选题'
+              this.problem.type='1'
               break;
             case 2:
-              this.problem.type='填空题'
+              this.problem.type='2'
               break;
             case 3:
-              this.problem.type='评分题'
+              this.problem.type='3'
               break;
             case 4:
-              this.problem.type='多选题'
+              this.problem.type='4'
               break;
             default:
               break;
           }
           if(this.problem.name.length==0) {
               this.problemDialog=true
-          }else if((this.problem.type=="单选题" || this.problem.type=="多选题") && this.problem.options.length==0){
+          }else if((this.problem.type=="1" || this.problem.type=="4") && this.problem.options.length==0){
               this.optionDialog3=true
           }else {
                 if(this.alter==0){
@@ -461,11 +466,10 @@
                 this.problem={
                   id:this.id,
                   name:"",
-                  type:"",
+                  type:0,
                   options:[],
                   must:false,
-                  multi:false,
-                  min:0,
+                  multi:1,
                   max:100,
                 }
                 this.option=""
@@ -496,16 +500,16 @@
           this.alter=1
           this.problem=this.problems[i]
           switch (this.problem.type) {
-            case '单选题':
+            case '1':
               this.reveal=1
               break;
-            case '填空题':
+            case '2':
               this.reveal=2
               break;
-            case '评分题':
+            case '3':
               this.reveal=3
               break;
-            case '多选题':
+            case '4':
               this.reveal=4
               break;
             default:
@@ -529,11 +533,57 @@
           type:"",
           options:[],
           must:false,
-          multi:false,
-          min:0,
+          multi:1,
           max:100,
         };
         this.option="";
+      },
+      save() {
+        var i
+        for(i=0;i<this.problems.length;i++){
+          this.$http({
+          method: "post",
+          url: "/addQuestion",
+          data: {
+            questionKind:this.problems[i].type,
+            questionNo:this.problems[i].id,
+            questionnaireID:this.qid
+          },
+        })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              alter("保存成功")
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+          if(this.problem[i].type==1||this.problem[i].type==4){
+            this.$http({
+              method: "post",
+              url: "/setOptions",
+              data: {
+
+                //传选择题
+                leftVolume:this.problems[i].multi,
+                questionKind:this.problems[i].type,
+                questionNo:this.problems[i].id,
+                questionnaireID:this.qid
+              },
+            })
+              .then((res) => {
+                console.log(res.data)
+                if (res.data.success) {
+                  alter("保存成功")
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        }
+        
       }
   }
 }
