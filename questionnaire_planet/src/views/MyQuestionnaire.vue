@@ -261,7 +261,7 @@
         sortDesc: false,
         page: 1,
         itemsPerPage: 4,
-        sortBy: 'title',
+        sortBy: '',
         sortkeys: [
           'title',
           'count',
