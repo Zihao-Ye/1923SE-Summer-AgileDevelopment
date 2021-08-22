@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace ="com.example.SESummer.Dao.QuestionDataDao" >
+    <update id="addRecycleVolume" parameterType="Integer">
+        update questionnaire
+        set recycle_volume=recycle_volume+1
+        where questionnaireid = #{questionnaireID}
+    </update>
+    <update id="addVoteVolume" parameterType="Integer">
+        update question_option
+        set vote_volume = vote_volume +1
+        where question_optionid = #{questionOptionID}
+    </update>
+    <update id="reduceLeftVolume" parameterType="Integer">
+        update question_option
+        set left_volume = left_volume -1
+        where question_optionid = #{questionOptionID}
+    </update>
+</mapper>
