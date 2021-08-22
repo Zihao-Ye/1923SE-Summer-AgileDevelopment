@@ -1,11 +1,12 @@
 <template>
-  <v-card class="mx-auto" max-width="1000">
+  <v-card class="mx-auto" max-width="1000" elevation="10">
       <h1 class="text-center">问卷</h1>
     <!--单选必做题-->
     <v-card
         class="mx-auto"
         max-width="800"
         min-height=auto
+        flat
     >
       <v-card-title>
         问题一
@@ -28,6 +29,7 @@
     <v-card
         class="mx-auto"
         max-width="800"
+        flat
     >
       <v-card-title>
         问题二
@@ -50,6 +52,7 @@
     <v-card
         class="mx-auto"
         max-width="800"
+        flat
     >
       <v-card-title>
         问题三
@@ -72,6 +75,7 @@
     <v-card
         class="mx-auto"
         max-width="800"
+        flat
     >
       <v-card-title>
         问题四
@@ -94,6 +98,7 @@
     <v-card
         class="mx-auto"
         max-width="800"
+        flat
     >
       <v-card-title>
         问题五
@@ -115,6 +120,7 @@
     <v-card
         class="mx-auto"
         max-width="800"
+        flat
     >
       <v-card-title>
         问题六
@@ -134,6 +140,7 @@
     <v-card
         class="mx-auto"
         max-width="800"
+        flat
     >
       <v-card-title>
         问题七
@@ -157,6 +164,7 @@
     <v-card
         class="mx-auto"
         max-width="800"
+        flat
     >
       <v-card-title>
         问题八
