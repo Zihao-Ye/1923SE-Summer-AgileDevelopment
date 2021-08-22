@@ -78,16 +78,6 @@
   </draggable> 
       
 
-
-      <v-btn
-          text
-          color="teal accent-4"
-          @click="reveal = true"
-      >
-          添加问题
-      </v-btn>
-
-      
       <v-card v-if="titleReveal"
       class="card"
       
@@ -143,7 +133,7 @@
         <v-btn
           text
           color="teal accent-4"
-          @click="reveal=false">
+          @click="cancel">
           取消
         </v-btn>
       </v-card>
@@ -169,11 +159,11 @@
           <v-btn
             text
             color="teal accent-4"
-            @click="reveal=false">
+            @click="cancel">
             取消
         </v-btn>
       </v-card>
-      
+
       <v-card
         v-if="reveal==3"
         class="card2"
@@ -210,7 +200,7 @@
         <v-btn
           text
           color="teal accent-4"
-          @click="reveal=false">
+          @click="cancel">
           取消
         </v-btn>
       </v-card>
@@ -491,7 +481,19 @@
       alterProblem(i) {
           this.alter=1
           this.problem=this.problems[i]
-          this.reveal=true
+          switch (this.problem.type) {
+            case '单选题':
+              this.reveal=1
+              break;
+            case '填空题':
+              this.reveal=2
+              break;
+            case '评分题':
+              this.reveal=3
+              break;
+            default:
+              break;
+          }
       },
       //开始拖拽事件
       onStart(){
@@ -500,7 +502,22 @@
       //拖拽结束事件
        onEnd() {
        this.drag=false;
-    }
+      },
+      cancel() {
+        this.reveal=0;
+        this.id=this.id+1;
+        this.problem={
+          id:this.id,
+          name:"",
+          type:"",
+          options:[],
+          must:false,
+          multi:false,
+          min:0,
+          max:100,
+        };
+        this.option="";
+      }
   }
 }
 </script>
@@ -536,6 +553,10 @@
   box-sizing: border-box;/*为元素指定的任何内边距和边框都将在已设定的宽度和高度内进行绘制*/
   min-height: 100%;
   padding-bottom: 300px;
+  overflow-y:scroll;
+  overflow-x:hidden;
+  height:100%
+  
 }
 .line{
   float:right;
