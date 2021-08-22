@@ -7,6 +7,7 @@ import MyQuestionnaire from '../views/MyQuestionnaire'
 import Recycle from '../views/Recycle'
 import Normal from '../views/Normal'
 import Test from "../views/Test";
+import Preview from "../views/Preview";
 Vue.use(VueRouter)
 
 const routes = [
@@ -52,6 +53,11 @@ const routes = [
     path: '/test',
     name:'Test',
     component: Test
+  },
+  {
+    path: '/preview',
+    name:'Preview',
+    component: Preview
   }
 ]
 
