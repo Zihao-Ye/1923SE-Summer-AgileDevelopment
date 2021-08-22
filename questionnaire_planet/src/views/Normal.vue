@@ -5,6 +5,9 @@
     <v-btn text color="teal accent-4" @click="reveal=1">
           添加单选题
       </v-btn>
+    <v-btn text color="teal accent-4" @click="reveal=4">
+          添加多选题
+      </v-btn>
       <v-btn text color="teal accent-4" @click="reveal=2">
           添加填空题
       </v-btn>
@@ -37,8 +40,18 @@
                       v-for="(it,i) in problems[index].options"
                       :key="i"
                       :label="problems[index].options[i]"
-                      :value="n"
+                      :value="i"
                   ></v-radio>
+                  </v-radio-group>
+              </div>
+              <div v-if="problems[index].type==='多选题'">
+                  <v-radio-group v-model="problems[index].answer">
+                  <v-checkbox
+                      v-for="(it,i) in problems[index].options"
+                      :key="i"
+                      :label="problems[index].options[i]"
+                      :value="i"
+                  ></v-checkbox>
                   </v-radio-group>
               </div>
               <div v-if="problems[index].type==='评分题'">
@@ -94,7 +107,7 @@
       </v-card>
 
       <v-card
-      v-if="reveal==1"
+      v-if="reveal==1 || reveal==4"
       class="card2"
       >
         <v-text-field
@@ -104,7 +117,6 @@
         ></v-text-field>
           <v-row align="center" justify="space-around">
           <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
-          <v-switch v-model="problem.multi" class="ma-2" label="多选题"></v-switch>
         </v-row>
         <div v-for="(item,index) in problem.options">
             {{item}}
@@ -408,7 +420,6 @@
       },
       option:"",
       problems:[],
-      problemTypes:["选择题","填空题","评分题"],
       alter:0,
       optionDialog:false,
       optionDialog2:false,
@@ -428,12 +439,15 @@
             case 3:
               this.problem.type='评分题'
               break;
+            case 4:
+              this.problem.type='多选题'
+              break;
             default:
               break;
           }
           if(this.problem.name.length==0) {
               this.problemDialog=true
-          }else if(this.problem.type=="选择题" && this.problem.options.length==0){
+          }else if((this.problem.type=="单选题" || this.problem.type=="多选题") && this.problem.options.length==0){
               this.optionDialog3=true
           }else {
                 if(this.alter==0){
@@ -490,6 +504,9 @@
               break;
             case '评分题':
               this.reveal=3
+              break;
+            case '多选题':
+              this.reveal=4
               break;
             default:
               break;
