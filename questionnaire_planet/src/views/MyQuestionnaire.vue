@@ -134,6 +134,17 @@
                     {{ item.status }}
                   </v-list-item-content>
                 </v-list-item>
+                <v-list-item>
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'kind' }">
+                    问卷类型:
+                  </v-list-item-content>
+                  <v-list-item-content
+                    class="align-end"
+                    :class="{ 'blue--text': sortBy === 'kind' }"
+                  >
+                    {{ item.kind }}
+                  </v-list-item-content>
+                </v-list-item>
 
                 <v-divider></v-divider>
 
@@ -265,8 +276,6 @@
         sortkeys: [
           'title',
           'count',
-          'firstBeginTime',
-          'lastBeginTime',
           'buildTime',
         ],
         keys: [
@@ -276,6 +285,7 @@
           'lastBeginTime',
           'buildTime',
           'status',
+          'kind'
         ],
         items: [
           {
@@ -284,7 +294,8 @@
             firstBeginTime: '2021-08-03 18:00:11',
             lastBeginTime: '2021-08-03 18:00:11',
             buildTime: '2021-08-03 18:00:11',
-            status:'收集中'
+            status:'收集中',
+            kind:'普通问卷'
           },
           {
             title: 'Arozen Yogurt',
