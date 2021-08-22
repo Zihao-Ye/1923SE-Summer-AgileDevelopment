@@ -590,7 +590,7 @@
 </script>
 
 <style>
-.card {
+.card1 {
   position: absolute;
   margin:10px;
         left: 50%;
@@ -623,7 +623,6 @@
   overflow-y:scroll;
   overflow-x:hidden;
   height:100%
-  
 }
 .line{
   float:right;
@@ -651,7 +650,7 @@
 .bord{
   border-style: dotted
 }
-.container{
+.container1{
     position: absolute;
     width: 100%;
     display: flex;
