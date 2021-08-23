@@ -13,7 +13,7 @@
             min-width="180px"
             rounded
             outlined
-            :to="{name:'QuestionnaireManage'}"
+            :to="{path:'/QuestionnaireManage'}"
         >
           管理问卷
         </v-btn>
@@ -42,6 +42,7 @@
             min-width="180px"
             rounded
             outlined
+            :to="{path: '/normal'}"
         >
           创建问卷
         </v-btn>

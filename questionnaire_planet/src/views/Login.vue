@@ -153,7 +153,7 @@ export default {
       this.$http({
         method: "post",
         url: "/login",
-        data: {
+        params: {
           userName: this.id,
           userPwd: this.password,
         },
@@ -163,6 +163,7 @@ export default {
           if (res.data.success) {
             this.$store.commit("setLogin");
             this.$store.commit("setUserID",this.id);
+            this.$router.push(({name:'QuestionnaireManage'}))
           }
         })
         .catch((err) => {
@@ -175,10 +176,10 @@ export default {
       this.$http({
         method: "post",
         url: "/register",
-        data: {
+        params: {
           userName: this.id,
           userPwd: this.password,
-          reUserName: this.rePassword,
+          reUserPwd: this.rePassword,
         },
       })
         .then((res) => {

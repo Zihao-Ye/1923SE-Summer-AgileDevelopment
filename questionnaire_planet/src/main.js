@@ -17,6 +17,9 @@ Vue.config.productionTip = false
 axios.defaults.baseURL ='/api/'
 Vue.config.devtools = true;
 Vue.prototype.$http = axios
+Vue.prototype.msgSuccess = function(msg) {
+  this.$message({showClose: true, message: msg, type: 'success'})
+}
 
 new Vue({
   router,

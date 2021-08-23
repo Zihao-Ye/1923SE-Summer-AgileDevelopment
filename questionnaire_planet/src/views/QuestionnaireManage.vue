@@ -17,6 +17,7 @@
                                 <span>{{ menu.name }}</span>
                             </div>
                         </div>
+                        <avatar></avatar>
                     </el-card>
                 </el-aside>
                 <el-container>
@@ -31,10 +32,11 @@
 </template>
 
 <script>
+import Avatar from '../components/Avatar.vue'
 
 export default {
     name: 'NewIndex',
-    components: {},
+    components: {Avatar},
     data() {
         return {
             defaultActiveMenu: '',
