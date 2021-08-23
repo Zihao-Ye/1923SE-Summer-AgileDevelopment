@@ -35,11 +35,11 @@ export default {
       });
 
       viewer.scene.globe.enableLighting = true//必须开启光照效果，
-      viewer._cesiumWidget._creditContainer.style.display = "none";
-      viewer.terrainProvider = new Cesium.createWorldTerrain({
-        requestVertexNormals: true,
-        requestWaterMask: true
-      });
+      //viewer._cesiumWidget._creditContainer.style.display = "none";
+      //viewer.terrainProvider = new Cesium.createWorldTerrain({
+      //  requestVertexNormals: true,
+      //  requestWaterMask: true
+      //});
     }
   },
   mounted() {

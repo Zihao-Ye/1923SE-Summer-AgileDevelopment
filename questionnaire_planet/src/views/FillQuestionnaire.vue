@@ -1,6 +1,4 @@
 <template>
-
-  <div>
   <v-card class="mx-auto" max-width="1000" elevation="10">
     <h1 class="text-center">{{questionnaire.title}}</h1>
     <h3 class="text-center">{{questionnaire.questionnaireNote}}</h3>
@@ -24,13 +22,13 @@
           {{question.questionNote}}
         </v-card-subtitle>
         <v-container>
-          <v-radio-group v-model="radioModel[question.questionNo]" >
+          <v-radio-group v-model="radioModel[question.questionNo]">
             <v-radio
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
                 :label="option.optionContent"
                 :value="n"
-                @change="radioAnswer[question.questionNo]=option"
+                @change="radioAnswer[question.questionNo]=option;requirePlus(question)"
             ></v-radio>
           </v-radio-group>
         </v-container>
@@ -76,7 +74,7 @@
                 :key="n"
                 :label="option.optionContent"
                 border
-                @change="checkboxAnswer(option)"
+                @change="checkboxAnswer(option);requirePlus(question)"
             ></el-checkbox>
           </el-checkbox-group>
         </v-container>
@@ -122,6 +120,7 @@
               label="填空"
               required
               outlined
+              @change="requirePlus(question)"
           ></v-text-field>
         </v-container>
       </template>
@@ -164,6 +163,7 @@
               min="1"
               :max="100"
               thumb-label="always"
+              @change="requirePlus(question)"
           ></v-slider>
         </v-container>
       </template>
@@ -190,26 +190,12 @@
         </v-container>
       </template>
     </v-card>
-    <div class="text-center">
-      <v-btn class="ma-2" color="info" >
+      <div class="text-center">
+      <v-btn class="ma-2" color="info" :disabled="!submitValid" @click="submit">
         提交
       </v-btn>
-    </div>
+      </div>
   </v-card>
-    <v-btn
-        absolute
-        class="goback"
-        fab
-        dark
-        small
-        color="primary"
-        :to="{path:'/QuestionnaireManage'}"
-    >
-      <v-icon dark>
-        mdi-close
-      </v-icon>
-    </v-btn>
-  </div>
 </template>
 
 <script>
@@ -308,7 +294,14 @@ export default {
       7:{maxScore:100},
       8:{maxScore: 50}
     },
-
+    require:{},
+    requireNum:4,
+    user:{
+      userID:"",
+      userName:"",
+      userPwd:"visitor"
+    },
+    success:false,
   }),
   methods:{
     getQuestionnaire() {
@@ -324,7 +317,11 @@ export default {
             if (res.data.success) {
               this.questionnaire=res.data.questionnaire
               this.questions=res.data.questionList
+              this.require=0
               for(const question of this.questions){
+                if(question.requireSig===1){
+                  this.requireNum++
+                }
                 if(question.questionKind===1){
                   this.radioModel[question.questionNo]=null
                   this.getOptions(question)
@@ -385,17 +382,146 @@ export default {
       }else{
         this.optionAnswer[option.questionOptionID]=option
       }
-    }
+    },
+    requirePlus(question){
+      console.log("hahaha")
+      this.$set(this.require,question.questionNo,1)
+    },
+    getUser(){
+      this.user.userName=Math.random().toString(36).slice(-8)
+      this.$http({
+        method: "post",
+        url: "/fakeRegister",
+        params: {
+          userName:this.user.userName,
+          userPwd:this.user.userPwd
+        },
+      })
+          .then((res) => {
+            if (res.data.success) {
+              this.fakeLogin()
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    fakeLogin(){
+      this.$http({
+        method: "post",
+        url: "/login",
+        params: {
+          userName: this.user.userName,
+          userPwd: this.user.userPwd,
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if(res.data.success){
+              this.user.userID=res.data.user.userID
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submitChoose(option){
+      this.$http({
+        method: "post",
+        url: "/choose",
+        params: {
+          questionContentID:option.questionContentID,
+          questionOptionID:option.questionOptionID,
+          questionnaireID:this.$route.params.id,
+          userID:this.user.userID
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              this.success=true
+            }else {
+              this.success=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submitCompletion(content){
+      this.$http({
+        method: "post",
+        url: "/completion",
+        params: {
+          questionContentID:option.questionContentID,
+          questionnaireID:this.$route.params.id,
+          userID:this.user.userID,
+          completionContent:content
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              this.success=true
+            }else {
+              this.success=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submitScore(score){
+      this.$http({
+        method: "post",
+        url: "/completion",
+        params: {
+          questionContentID:option.questionContentID,
+          questionnaireID:this.$route.params.id,
+          userID:this.user.userID,
+          score:score
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              this.success=true
+            }else {
+              this.success=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submit(){
+      for(const index of this.radioAnswer){
+        this.submitChoose(this.radioAnswer[index])
+      }
+      for(const index of this.optionAnswer){
+        this.submitChoose(this.optionAnswer[index])
+      }
+      for(const index of this.text){
+        this.submitCompletion(this.text[index])
+      }
+      for(const index of this.score){
+        this.submitScore(this.score[index])
+      }
+    },
+  },
+  computed:{
+    submitValid() {
+        let l = Object.keys(this.require).length
+        return l === this.requireNum;
+      }
   },
   created() {
-   this.getQuestionnaire()
+    this.getQuestionnaire()
+    this.getUser()
   }
 }
 </script>
 
 <style scoped>
-.goback{
-  top:2%;
-  right:2%;
-}
+
 </style>

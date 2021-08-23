@@ -8,6 +8,7 @@ import Recycle from '../views/Recycle'
 import Normal from '../views/Normal'
 import Test from "../views/Test";
 import Preview from "../views/Preview";
+import FillQuestionnaire from "../views/FillQuestionnaire";
 Vue.use(VueRouter)
 
 const routes = [
@@ -55,9 +56,14 @@ const routes = [
     component: Test
   },
   {
-    path: '/preview',
+    path: '/preview/:id',
     name:'Preview',
     component: Preview
+  },
+  {
+    path: '/fillQuestionnaire/:id',
+    name: 'FillQuestionnaire',
+    component: FillQuestionnaire,
   }
 ]
 
