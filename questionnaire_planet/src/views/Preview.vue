@@ -15,7 +15,7 @@
     >
       <template v-if="question.questionKind===1 && question.requireSig===1">
         <v-card-title>
-          {{question.questionContent}}
+          {{question.questionNo}}.{{question.questionContent}}
         </v-card-title>
         <v-card-subtitle class="orange--text">
           单选 * 必做
@@ -38,7 +38,7 @@
       <!--单选非必做题-->
       <template v-else-if="question.questionKind===1 && question.requireSig===0">
         <v-card-title>
-          {{question.questionContent}}
+          {{question.questionNo}}.{{question.questionContent}}
         </v-card-title>
         <v-card-subtitle class="blue-grey--text">
           单选 * 非必做
@@ -61,7 +61,7 @@
       <!--多选必做题-->
       <template v-else-if="question.questionKind===2 && question.requireSig===1">
         <v-card-title>
-          {{question.questionContent}}
+          {{question.questionNo}}.{{question.questionContent}}
         </v-card-title>
         <v-card-subtitle class="orange--text">
           多选 * 必做
@@ -84,7 +84,7 @@
       <!--多选非必做题-->
       <template v-else-if="question.questionKind===2 && question.requireSig===0">
         <v-card-title>
-          {{question.questionContent}}
+          {{question.questionNo}}.{{question.questionContent}}
         </v-card-title>
         <v-card-subtitle class="blue-grey--text">
           多选 * 非必做
@@ -107,7 +107,7 @@
       <!--填空必做题-->
       <template v-else-if="question.questionKind===3 && question.requireSig===1">
         <v-card-title>
-          {{question.questionContent}}
+          {{question.questionNo}}.{{question.questionContent}}
         </v-card-title>
         <v-card-subtitle class="orange--text">
           填空 * 必做
@@ -128,7 +128,7 @@
       <!--填空非必做题-->
       <template v-else-if="question.questionKind===3 && question.requireSig===0">
         <v-card-title>
-          {{question.questionContent}}
+          {{question.questionNo}}.{{question.questionContent}}
         </v-card-title>
         <v-card-subtitle class="blue-grey--text">
           填空 * 非必做
@@ -147,7 +147,7 @@
       <!--评分必做题-->
       <template v-else-if="question.questionKind===4 && question.requireSig===1">
         <v-card-title>
-          {{question.questionContent}}
+          {{question.questionNo}}.{{question.questionContent}}
         </v-card-title>
         <v-card-subtitle class="orange--text">
           评分 * 必做
@@ -170,7 +170,7 @@
       <!--评分非必做题-->
       <template v-else-if="question.questionKind===4 && question.requireSig===0">
         <v-card-title>
-          {{question.questionContent}}
+          {{question.questionNo}}.{{question.questionContent}}
         </v-card-title>
         <v-card-subtitle class="blue-grey--text">
           评分 * 非必做
