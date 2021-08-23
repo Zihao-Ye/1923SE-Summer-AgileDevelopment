@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace ="com.example.SESummer.Dao.DataOutputDao" >
+    <select id="getQuestionsByQuestionnaireID" resultType="QuestionContent">
+        select *
+        from question_content
+        where userid = #{userID} and questionnaireid = #{questionnaireID}
+    </select>
+    <select id="getCompletionByID" resultType="UserCompletionQuestion">
+        select *
+        from user_completion_question
+        where questionnaireid = #{questionnaireID} and userid = #{userID}
+    </select>
+    <select id="getScoreByID" resultType="UserScoreQuestion">
+        select * from user_score_question
+        where questionnaireid = #{questionnaireID} and userid = #{userID}
+    </select>
+    <select id="getChooseByID" resultType="UserChooseQuestion">
+        select * from user_choose_question
+        where questionnaireid = #{questionnaireID} and userid = #{userID}
+    </select>
+    <select id="getUserNameByUserID" resultType="String">
+        select user_name from user_info
+        where userid = #{userID}
+    </select>
+    <!-- 根据问卷号搜索所有已提交的用户记录 -->
+    <select id="getUserIDByQuestionnaireID" resultType="QuestionnaireSubmit">
+        select *
+        from questionnaire_submit
+        where questionnaireid = #{questionnaireID} and is_submit = 1
+    </select>
+    <select id="getTitleByQuestionnaireID" resultType="String">
+        select title
+        from questionnaire
+        where questionnaireid = #{questionnaireID}
+    </select>
+    <select id="getContentByQuestionID" resultType="String">
+        select question_content
+        from question_content
+        where question_contentid = #{questionContentID}
+    </select>
+    <select id="getAllOptionsByQuestionID" resultType="QuestionOption">
+        select *
+        from question_option
+        where question_contentid = #{questionContentID}
+    </select>
+    <select id="getOptionByOptionID" resultType="UserChooseQuestion">
+        select *
+        from user_choose_question
+        where question_optionid = #{questionOptionID} and userid = #{userid}
+    </select>
+</mapper>
