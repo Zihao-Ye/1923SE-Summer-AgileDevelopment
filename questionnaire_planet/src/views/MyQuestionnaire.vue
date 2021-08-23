@@ -177,7 +177,7 @@
                         <i class="el-icon-delete-solid"></i>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn text color="#FBC02D">
+                    <v-btn :to="'/preview/' + item.questionnaireID" text color="#FBC02D">
                             预览问卷
                             <i class="el-icon-view"></i>
                             </v-btn>
