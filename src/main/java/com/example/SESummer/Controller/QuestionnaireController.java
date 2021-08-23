@@ -42,8 +42,15 @@ public class QuestionnaireController {
         Timestamp createTime = new Timestamp(System.currentTimeMillis());
 
         try {
-            Timestamp StartTime = Timestamp.valueOf(startTime);
-            Timestamp EndTime = Timestamp.valueOf(endTime);
+            Timestamp StartTime = new Timestamp(System.currentTimeMillis());
+            Timestamp EndTime = new Timestamp(System.currentTimeMillis());
+            try {
+                StartTime = Timestamp.valueOf(startTime);
+                EndTime = Timestamp.valueOf(endTime);
+            }catch (Exception e){
+                e.printStackTrace();
+                map.put("success",false);
+            }
             Questionnaire questionnaire = new Questionnaire();
             questionnaire.setTitle(title);
             questionnaire.setKind(kind);
@@ -394,8 +401,15 @@ public class QuestionnaireController {
             Questionnaire questionnaire = questionNaireService.getQuestionnaireByQuestionnaireID(questionnaireID);
             List<QuestionContent> questionList = questionNaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
             Integer userID=questionnaire.getMasterID();
-            Timestamp startTime=Timestamp.valueOf("0000-00-00 00:00:00");
-            Timestamp endTime=Timestamp.valueOf("0000-00-00 00:00:00");
+            Timestamp startTime=new Timestamp(System.currentTimeMillis());
+            Timestamp endTime=new Timestamp(System.currentTimeMillis());
+            try{
+                startTime=Timestamp.valueOf("0000-00-00 00:00:00");
+                endTime=Timestamp.valueOf("0000-00-00 00:00:00");
+            }catch (Exception e){
+                e.printStackTrace();
+                map.put("success",false);
+            }
             Timestamp createTime=new Timestamp(System.currentTimeMillis());
             questionnaire.setCreateTime(createTime);
             questionnaire.setStartTime(startTime);
