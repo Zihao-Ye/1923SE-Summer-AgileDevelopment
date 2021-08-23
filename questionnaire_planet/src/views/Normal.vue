@@ -115,7 +115,7 @@
       </v-card>
 
       <v-card
-      v-if="reveal==1 || reveal==4"
+      v-if="reveal==1 || reveal==2"
       class="card2"
       >
         <v-text-field
@@ -173,7 +173,7 @@
       </v-card>
 
       <v-card
-        v-if="reveal==2"
+        v-if="reveal==3"
         class="card2"
         >
           <v-text-field
@@ -205,7 +205,7 @@
       </v-card>
 
       <v-card
-        v-if="reveal==3"
+        v-if="reveal==4"
         class="card2"
         >
           <v-text-field
@@ -436,7 +436,7 @@
       finishProblem() {
           if(this.problem.name.length==0) {
               this.problemDialog=true
-          }else if((this.problem.type==1 || this.problem.type==4) && this.problem.options.length==0){
+          }else if((this.problem.type==1 || this.problem.type==2) && this.problem.options.length==0){
               this.optionDialog3=true
           }else {
               this.$http({
@@ -461,7 +461,7 @@
                   .catch((err) => {
                     console.log(err);
                   });
-              if(this.problem.type==1||this.problem.type==4){
+              if(this.problem.type==1||this.problem.type==2){
                 var j
                 for(j=0;j<this.problem.options.length;j++){
                   this.$http({
@@ -509,7 +509,7 @@
                   })
                 }
               }
-              if(this.problem.type==3){
+              if(this.problem.type==4){
                 this.$http({
                   method: "post",
                   url: "/setScore",
