@@ -11,4 +11,8 @@ public interface UserService {
 
     //判断用户名与密码是否相符
     User getUserByUserNameAndPwd(String userName,String userPwd);
+
+    //虚假注册
+    void addFakeUser(String userName,String userPwd);
+
 }

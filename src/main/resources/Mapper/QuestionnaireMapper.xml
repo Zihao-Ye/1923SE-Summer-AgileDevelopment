@@ -21,6 +21,12 @@
         insert into score_question(question_contentid, max_score)
         values(#{questionContentID},#{maxScore})
     </insert>
+    <!-- 问题排序-->
+    <update id="rankQuestion" parameterType="QuestionContent">
+        update question_content
+        set question_no=#{questionNo}
+        where question_contentid=#{questionContentID}
+    </update>
     <!-- 将问卷收入回收站-->
     <update id="setRubbish" parameterType="Integer">
         update questionnaire
@@ -38,6 +44,7 @@
         select *
         from questionnaire
         where masterid=#{masterID} and is_rubbish=0
+        order by create_time desc
     </select>
     <!-- 根据用户ID获取所有在回收站里的问卷-->
     <select id="getQuestionnaireListIsRubbishByUserID" resultType="Questionnaire">
@@ -115,4 +122,28 @@
         delete from question_option
         where question_optionid=#{questionOptionID}
     </delete>
+    <!-- 复制问卷-复制问卷基本信息-->
+    <insert id="copyQuestionnaire" parameterType="Questionnaire">
+        insert into questionnaire(title, create_time, kind, question_pwd, is_private,start_time, end_time, masterid,questionnaire_note)
+        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionNote})
+    </insert>
+    <!-- 获取最近创建的问卷-->
+    <select id="getRecentQuestionnaireByUserID" resultType="Questionnaire">
+        select *
+        from questionnaire
+        where masterid=#{masterID}
+        order by create_time desc
+    </select>
+    <!-- 复制问卷-复制问题基本信息 -->
+    <insert id="copyQuestion" parameterType="QuestionContent">
+        insert into question_content(questionnaireid, question_kind, require_sig, question_content, question_no, question_note)
+        values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent},#{questionNo},#{questionNote})
+    </insert>
+    <!-- 获取最近创建的问题-->
+    <select id="getRecentQuestionByQuestionnaireID" resultType="QuestionContent">
+        select *
+        from question_content
+        where questionnaireid=#{questionnairedID}
+        order by question_contentid desc
+    </select>
 </mapper>

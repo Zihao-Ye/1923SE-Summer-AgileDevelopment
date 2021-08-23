@@ -99,6 +99,24 @@ public class UserController {
         return map;
     }
 
+    @PostMapping("/fakeRegister")
+    @ApiOperation("虚假注册-随机生成一个账号用于未登录问卷的填写")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userName",value = "用户名",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "userPwd",value = "用户密码",required = true,dataType = "String")
+    })
+    public Map<String,Object> fakeRegister(@RequestParam String userName,@RequestParam String userPwd){
+        Map<String ,Object> map=new HashMap<>();
+        try {
+            userService.addFakeUser(userName,userPwd);
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
     @GetMapping("/test")
     @ApiOperation("测试接口")
     public Map<String,Object> test (){

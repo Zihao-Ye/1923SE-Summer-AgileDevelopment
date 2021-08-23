@@ -18,4 +18,9 @@
         from user_info
         where user_name=#{userName} and user_pwd=#{userPwd}
     </select>
+    <!-- 虚假注册-->
+    <insert id="addFakeUser" parameterType="User">
+        insert into user_info(user_pwd, user_name,is_visitor)
+        values(#{userPwd},#{userName},1)
+    </insert>
 </mapper>

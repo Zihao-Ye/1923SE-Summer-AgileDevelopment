@@ -24,6 +24,9 @@ public interface QuestionnaireDao {
     //添加评分题分数上限
     void setScore(ScoreQuestion scoreQuestion);
 
+    //问题排序
+    void rankQuestion(Integer questionContentID,Integer questionNo);
+
     //将问卷收入回收站
     void setRubbish(Integer questionnaireID);
 
@@ -71,4 +74,16 @@ public interface QuestionnaireDao {
 
     //编辑问卷-删除选项
     void delQuestionOption(Integer questionOptionID);
+
+    //复制问卷-复制问卷基本信息
+    void copyQuestionnaire(Questionnaire questionnaire);
+
+    //获取最近创建的问卷
+    Questionnaire getRecentQuestionnaireByUserID(Integer masterID);
+
+    //复制问卷-复制问题基本信息
+    void copyQuestion(QuestionContent questionContent);
+
+    //获取最近创建的问题
+    QuestionContent getRecentQuestionByQuestionnaireID(Integer questionnaireID);
 }

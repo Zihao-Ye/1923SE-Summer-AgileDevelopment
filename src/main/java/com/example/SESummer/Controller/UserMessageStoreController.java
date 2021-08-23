@@ -88,7 +88,6 @@ public class UserMessageStoreController {
     public Map<String,Object> storeUserCompletionQuestion(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer questionContentID,@RequestParam String completionContent){
         Map<String,Object> map = new HashMap<>();
         try {
-
             if (userCompletionQuestionService.getCompletionRecordByID(userID,questionnaireID,questionContentID) == null){
                 UserCompletionQuestion userCompletion = new UserCompletionQuestion();
                 userCompletion.setUserID(userID);

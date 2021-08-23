@@ -28,4 +28,10 @@ public class UserServiceImpl implements UserService {
     public User getUserByUserNameAndPwd(String userName,String userPwd){
         return userDao.getUserByUserNameAndPwd(userName,userPwd);
     }
+
+    @Override
+    //虚假注册
+    public void addFakeUser(String userName,String userPwd){
+        userDao.addFakeUser(userName,userPwd);
+    }
 }

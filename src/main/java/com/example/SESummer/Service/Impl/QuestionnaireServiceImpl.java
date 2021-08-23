@@ -42,6 +42,12 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     }
 
     @Override
+    //问题排序
+    public void rankQuestion(Integer questionContentID,Integer questionNo){
+        questionnaireDao.rankQuestion(questionContentID,questionNo);
+    }
+
+    @Override
     //将问卷收入回收站
     public void setRubbish(Integer questionnaireID){
         questionnaireDao.setRubbish(questionnaireID);
@@ -135,5 +141,29 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     //编辑问卷-删除选项
     public void delQuestionOption(Integer questionOptionID){
         questionnaireDao.delQuestionOption(questionOptionID);
+    }
+
+    @Override
+    //复制问卷-复制问卷基本信息
+    public void copyQuestionnaire(Questionnaire questionnaire){
+        questionnaireDao.copyQuestionnaire(questionnaire);
+    }
+
+    @Override
+    //获取最近创建的问卷
+    public Questionnaire getRecentQuestionnaireByUserID(Integer masterID){
+        return questionnaireDao.getRecentQuestionnaireByUserID(masterID);
+    }
+
+    @Override
+    //复制问卷-复制问题基本信息
+    public void copyQuestion(QuestionContent questionContent){
+        questionnaireDao.copyQuestion(questionContent);
+    }
+
+    @Override
+    //获取最近创建的问题
+    public QuestionContent getRecentQuestionByQuestionnaireID(Integer questionnaireID){
+        return questionnaireDao.getRecentQuestionByQuestionnaireID(questionnaireID);
     }
 }
