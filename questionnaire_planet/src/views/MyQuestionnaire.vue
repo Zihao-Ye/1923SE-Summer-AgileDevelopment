@@ -65,7 +65,7 @@
         <v-row>
           <v-col
             v-for="item in props.items"
-            :key="item.title"
+            :key="item.questionnaireID"
             cols="12"
             sm="6"
             md="4"
@@ -80,47 +80,47 @@
 
               <v-list dense>
                 <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'count' }">
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'recycleVolume' }">
                     已回收数量:
                   </v-list-item-content>
                   <v-list-item-content
                     class="align-end"
-                    :class="{ 'blue--text': sortBy === 'count' }"
+                    :class="{ 'blue--text': sortBy === 'recycleVolume' }"
                   >
-                    {{ item.count }}
+                    {{ item.recycleVolume }}
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'buildTime' }">
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'createTime' }">
                     创建时间:
                   </v-list-item-content>
                   <v-list-item-content
                     class="align-end"
-                    :class="{ 'blue--text': sortBy === 'buildTime' }"
+                    :class="{ 'blue--text': sortBy === 'createTime' }"
                   >
-                    {{ item.buildTime }}
+                    {{ item.createTime | formatDate }}
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'firstBeginTime' }">
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'startTime' }">
                     第一次发布时间:
                   </v-list-item-content>
                   <v-list-item-content
                     class="align-end"
-                    :class="{ 'blue--text': sortBy === 'firstBeginTime' }"
+                    :class="{ 'blue--text': sortBy === 'startTime' }"
                   >
-                    {{ item.firstBeginTime }}
+                    {{ item.startTime | formatDate }}
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'lastBeginTime' }">
+                  <v-list-item-content :class="{ 'blue--text': sortBy === 'endTime' }">
                     最后一次发布时间:
                   </v-list-item-content>
                   <v-list-item-content
                     class="align-end"
-                    :class="{ 'blue--text': sortBy === 'lastBeginTime' }"
+                    :class="{ 'blue--text': sortBy === 'endTime' }"
                   >
-                    {{ item.lastBeginTime }}
+                    {{ item.endTime | formatDate }}
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -131,7 +131,7 @@
                     class="align-end"
                     :class="{ 'blue--text': sortBy === 'status' }"
                   >
-                    {{ item.status }}
+                    {{ questionnaireStatus(item) }}
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -149,47 +149,49 @@
                 <v-divider></v-divider>
 
                 <v-list-item>
-                    <v-btn v-if='!isOpening' color="primary">
+                    <v-btn text v-if='!item.isVisitable' @click="openQuestionnaire(item.questionnaireID)" color="primary">
                         开启问卷
                         <i class="el-icon-video-play"></i>
                     </v-btn>
-                    <v-btn v-else color="error">
+                    <v-btn text v-else color="error" @click="closeQuestionnaire(item.questionnaireID)">
                         停止问卷
                         <i class="el-icon-video-pause"></i>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn tile color="success"><v-icon left>mdi-pencil</v-icon>编辑问卷</v-btn>
+                    <v-btn text color="#00796B">编辑问卷<i class="el-icon-edit"></i></v-btn>
                 </v-list-item>
                 <v-list-item>
-                    <v-btn :loading="loading3" 
-                           :disabled="loading3" 
-                           color="blue-grey" 
-                           class="ma-2 white--text" 
-                           @click="loader = 'loading3'">
+                    <v-btn color="#546E7A" text >
                            导出问卷                               
-                           <v-icon right dark>mdi-cloud-upload</v-icon>
+                           <i class="el-icon-upload"></i>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn depressed>
+                    <v-btn text color="#000000">
                         复制问卷
                         <i class="el-icon-document-copy"></i>
                         </v-btn>
                 </v-list-item>
                 <v-list-item>
-                    <v-btn color="error">
+                    <v-btn text color="error" @click="deleteQuestionnaire(item.questionnaireID)">
                         删除问卷
                         <i class="el-icon-delete-solid"></i>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn class="ma-2"
-                           :loading="loading"
-                           :disabled="loading"
-                            color="secondary"
-                            @click="loader = 'loading'">
+                    <v-btn text color="#FBC02D">
                             预览问卷
                             <i class="el-icon-view"></i>
                             </v-btn>
 
+                </v-list-item>
+                <v-list-item>
+                    <v-btn color="#546E7A" text >                              
+                      分享链接 <i class="el-icon-link"></i>
+                </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="#B388FF">
+                        数据分析
+                        <i class="el-icon-s-data"></i>
+                        </v-btn>
                 </v-list-item>
               </v-list>
             </v-card>
@@ -262,7 +264,16 @@
 </template>
 
 <script>
+import {formatDate} from '../common/date.js';
   export default {
+    filters: {
+      formatDate(time) {
+        // time = time * 1000
+        let date = new Date(time)
+        console.log(new Date(time))
+        return formatDate(date, 'yyyy-MM-dd hh:mm')
+      }
+    },
     data () {
       return {
         isOpening: false,
@@ -275,82 +286,82 @@
         sortBy: '',
         sortkeys: [
           'title',
-          'count',
-          'buildTime',
+          'recycleVolume',
+          'createTime',
         ],
         keys: [
           'title',
-          'count',
-          'firstBeginTime',
-          'lastBeginTime',
-          'buildTime',
+          'recycleVolume',
+          'startTime',
+          'endTime',
+          'createTime',
           'status',
           'kind'
         ],
         items: [
           {
             title: 'Frozen Yogurt',
-            count: 156,
-            firstBeginTime: '2021-08-03 18:00:11',
-            lastBeginTime: '2021-08-03 18:00:11',
-            buildTime: '2021-08-03 18:00:11',
+            recycleVolume: 156,
+            startTime: '2021-08-03 18:00:11',
+            endTime: '2021-08-03 18:00:11',
+            createTime: '2021-08-03 18:00:11',
             status:'收集中',
             kind:'普通问卷'
           },
           {
             title: 'Arozen Yogurt',
-            count: 154,
-            firstBeginTime: '2021-08-02 18:00:11',
-            lastBeginTime: '2021-08-02 18:00:11',
-            buildTime: '2021-08-02 18:00:11',
+            recycleVolume: 154,
+            startTime: '2021-08-02 18:00:11',
+            endTime: '2021-08-02 18:00:11',
+            createTime: '2021-08-02 18:00:11',
             status:'收集中'
           },
           {
             title: 'Brozen Yogurt',
-            count: 159,
-            firstBeginTime: '2021-08-01 18:00:11',
-            lastBeginTime: '2021-08-01 18:00:11',
-            buildTime: '2021-08-01 18:00:11',
+            recycleVolume: 159,
+            startTime: '2021-08-01 18:00:11',
+            endTime: '2021-08-01 18:00:11',
+            createTime: '2021-08-01 18:00:11',
             status:'收集中'
           },
           {
             title: 'Frozen Yogurt',
-            count: 159,
-            firstBeginTime: '2021 08 03 18:00',
-            lastBeginTime: '2021-08-03 18:00',
-            buildTime: '2021-08-03 18:00',
+            recycleVolume: 159,
+            startTime: '2021 08 03 18:00',
+            endTime: '2021-08-03 18:00',
+            createTime: '2021-08-03 18:00',
             status:'收集中'
           },
           {
             title: 'Frozen Yogurt',
-            count: 159,
-            firstBeginTime: '2021 08 03 18:00',
-            lastBeginTime: '2021-08-03 18:00',
-            buildTime: '2021-08-03 18:00',
+            recycleVolume: 159,
+            startTime: '2021 08 03 18:00',
+            endTime: '2021-08-03 18:00',
+            createTime: '2021-08-03 18:00',
             status:'收集中'
           },
           {
             title: 'Frozen Yogurt',
-            count: 159,
-            firstBeginTime: '2021 08 03 17:00',
-            lastBeginTime: '2021-08-03 18:00',
-            buildTime: '2021-08-03 18:00',
+            recycleVolume: 159,
+            startTime: '2021 08 03 17:00',
+            endTime: '2021-08-03 18:00',
+            createTime: '2021-08-03 18:00',
             status:'收集中'
           },
           {
             title: 'Frozen Yogurt',
-            count: 159,
-            firstBeginTime: '2021 08 03 18:00',
-            lastBeginTime: '2021-08-03 18:00',
-            buildTime: '2021-08-03 18:00',
+            recycleVolume: 159,
+            startTime: '2021 08 03 18:00',
+            endTime: '2021-08-03 18:00',
+            createTime: '2021-08-03 18:00',
             status:'收集中'
           },
           {
             title: 'Frozen Yogurt',
-            count: 159,
-            firstBeginTime: '2021 08 03 18:00',
-            lastBeginTime: '2021-08-03 18:00',
-            buildTime: '2021-08-03 18:00',
+            recycleVolume: 159,
+            startTime: '2021 08 03 18:00',
+            endTime: '2021-08-03 18:00',
+            createTime: '2021-08-03 18:00',
             status:'收集中'
           },
           
@@ -365,7 +376,26 @@
         return this.keys.filter(key => key !== 'title')
       },
     },
+    created() {
+        this.showMyQuestionnaire();
+    },
+
     methods: {
+      questionnaireStatus (item) {
+        if(item.havePublish == 0) return '未发布';
+        else if(item.havePublish == 1 && item.isVisitable == 0) return '已暂停收集'
+        else return '收集中'
+      },
+      showMyQuestionnaire() {
+      this.$http({
+        method: "get",
+        url: "/notRubbish",
+      }).then((res) => {
+          this.items = res.data.questionnaireList;
+        }).catch((err) => {
+          console.log(err);
+      });
+    },
       nextPage () {
         if (this.page + 1 <= this.numberOfPages) this.page += 1
       },
@@ -374,6 +404,60 @@
       },
       updateItemsPerPage (number) {
         this.itemsPerPage = number
+      },
+      openQuestionnaire (questionnaireID) {
+        this.$http({
+        method: "post",
+        url: "/openQuestionnaire",
+        params: {
+          questionnaireID:questionnaireID
+        },
+      })
+        .then((res) => {
+          if (res.data.success) {
+            this.msgSuccess('开启成功');
+            this.showMyQuestionnaire();
+          } 
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      },
+      closeQuestionnaire (questionnaireID) {
+        this.$http({
+        method: "post",
+        url: "/closeQuestionnaire",
+        params: {
+          questionnaireID:questionnaireID
+        },
+      })
+        .then((res) => {
+          if (res.data.success) {
+            this.msgSuccess('停止成功');
+            this.showMyQuestionnaire();
+          } 
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      },
+      deleteQuestionnaire (questionnaireID) {
+        this.$http({
+        method: "post",
+        url: "/setRubbish",
+        params: {
+          questionnaireID:questionnaireID
+        },
+      })
+        .then((res) => {
+          if (res.data.success) {
+            this.msgSuccess('删除成功');
+            this.showMyQuestionnaire();
+          } 
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       },
     },
   }
