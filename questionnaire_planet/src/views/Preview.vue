@@ -1,7 +1,17 @@
 <template>
+  <div>
   <v-card class="mx-auto" max-width="1000" elevation="10">
     <h1 class="text-center">{{questionnaire.title}}</h1>
     <h3 class="text-center">{{questionnaire.questionnaireNote}}</h3>
+    <v-container>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-btn color="#546E7A" text >
+        导出问卷
+        <i class="el-icon-upload"></i>
+      </v-btn>
+    </v-row>
+      </v-container>
     <!--单选必做题-->
     <v-card
         v-for="(question,i) in questions"
@@ -196,6 +206,20 @@
       </v-btn>
     </div>
   </v-card>
+  <v-btn
+      absolute
+      class="goback"
+      fab
+      dark
+      small
+      color="primary"
+      :to="{path:'/QuestionnaireManage'}"
+  >
+    <v-icon dark>
+      mdi-close
+    </v-icon>
+  </v-btn>
+  </div>
 </template>
 
 <script>
@@ -445,11 +469,13 @@ export default {
   },
   created() {
     this.getQuestionnaire()
-
   }
 }
 </script>
 
 <style scoped>
-
+.goback{
+  top:2%;
+  right:2%;
+}
 </style>
