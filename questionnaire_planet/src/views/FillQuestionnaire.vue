@@ -201,74 +201,9 @@
 <script>
 export default {
   data: () => ({
-    questionnaire:{
-      title:"问卷",
-      questionnaireNote:"备注"
-    },
-    questions:[
-      {
-        questionContent:"问题一",
-        questionNote:"备注",
-        questionKind:1,
-        requireSig:1,
-        questionNo:1,
-      },
-      {
-        questionContent:"问题二",
-        questionNote:"备注",
-        questionKind:1,
-        requireSig:0,
-        questionNo:2,
-      },
-      {
-        questionContent:"问题三",
-        questionNote:"备注",
-        questionKind:2,
-        requireSig:1,
-        questionNo:3,
-      },
-      {
-        questionContent:"问题四",
-        questionNote:"备注",
-        questionKind:2,
-        requireSig:0,
-        questionNo:4,
-      },
-      {
-        questionContent:"问题五",
-        questionNote:"备注",
-        questionKind:3,
-        requireSig:1,
-        questionNo:5,
-      },
-      {
-        questionContent:"问题六",
-        questionNote:"备注",
-        questionKind:3,
-        requireSig:0,
-        questionNo:6,
-      },
-      {
-        questionContent:"问题七",
-        questionNote:"备注",
-        questionKind:4,
-        requireSig:1,
-        questionNo:7,
-      },
-      {
-        questionContent:"问题八",
-        questionNote:"备注",
-        questionKind:4,
-        requireSig:0,
-        questionNo:8,
-      },
-    ],
-    options: {
-      1: [{optionContent: "选项1",questionOptionID:1}, {optionContent: "选项2",questionOptionID:2}, {optionContent: "选项3",questionOptionID:3}, {optionContent: "选项4",questionOptionID:4},],
-      2: [{optionContent: "选项1",questionOptionID:5}, {optionContent: "选项2",questionOptionID:6}, {optionContent: "选项3",questionOptionID:7}, {optionContent: "选项4",questionOptionID:8},],
-      3: [{optionContent: "选项1",questionOptionID:9}, {optionContent: "选项2",questionOptionID:10}, {optionContent: "选项3",questionOptionID:11}, {optionContent: "选项4",questionOptionID:12},],
-      4: [{optionContent: "选项1",questionOptionID:13}, {optionContent: "选项2",questionOptionID:14}, {optionContent: "选项3",questionOptionID:15}, {optionContent: "选项4",questionOptionID:16},]
-    },
+    questionnaire:{},
+    questions:[],
+    options: {},
     radioModel:{},
     radioAnswer:{},
     optionAnswer:{},
@@ -286,7 +221,7 @@ export default {
       userName:"",
       userPwd:"visitor"
     },
-    success:false,
+    fillsuccess:false,
   }),
   methods:{
     getQuestionnaire() {
@@ -308,16 +243,16 @@ export default {
                   this.requireNum+=1
                 }
                 if(question.questionKind===1){
-                  this.radioModel[question.questionNo]=null
+                  this.$set(this.radioModel,question.questionNo,null)
                   this.getOptions(question)
                 }else if(question.questionKind===4){
-                  this.score[question.questionNo]=0
+                  this.$set(this.score,question.questionNo,0)
                   this.getMaxScore(question)
                 }else if(question.questionKind===2){
                   this.$set(this.checkboxModel,question.questionNo,[])
                   this.getOptions(question)
                 }else if(question.questionKind===3){
-                  this.text[question.questionNo]=""
+                  this.$set(this.text,question.questionNo,"")
                 }
               }
             }
@@ -336,7 +271,7 @@ export default {
       }).then((res) => {
         console.log(res.data)
         if (res.data.success) {
-          this.options[question.questionNo]=res.data.questionOptionList
+          this.$set(this.options,question.questionNo,res.data.questionOptionList)
         }
       })
           .catch((err) => {
@@ -424,21 +359,23 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              this.success=true
+              this.fillsuccess=true
             }else {
-              this.success=false
+              this.fillsuccess=false
             }
           })
           .catch((err) => {
             console.log(err);
           });
     },
-    submitCompletion(content){
+    submitCompletion(content,index){
+      const question=this.questions[index]
+      console.log(question)
       this.$http({
         method: "post",
         url: "/completion",
         params: {
-          questionContentID:option.questionContentID,
+          questionContentID:question.questionContentID,
           questionnaireID:this.$route.params.id,
           userID:this.user.userID,
           completionContent:content
@@ -447,21 +384,22 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              this.success=true
+              this.fillsuccess=true
             }else {
-              this.success=false
+              this.fillsuccess=false
             }
           })
           .catch((err) => {
             console.log(err);
           });
     },
-    submitScore(score){
+    submitScore(score,index){
+      const question=this.questions[index]
       this.$http({
         method: "post",
-        url: "/completion",
+        url: "/score",
         params: {
-          questionContentID:option.questionContentID,
+          questionContentID:question.questionContentID,
           questionnaireID:this.$route.params.id,
           userID:this.user.userID,
           score:score
@@ -470,9 +408,9 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              this.success=true
+              this.fillsuccess=true
             }else {
-              this.success=false
+              this.fillsuccess=false
             }
           })
           .catch((err) => {
@@ -480,21 +418,23 @@ export default {
           });
     },
     submit(){
-      for(const index of this.radioAnswer){
+      for(const index in this.radioAnswer){
+        console.log(this.radioAnswer[index])
         this.submitChoose(this.radioAnswer[index])
       }
-      for(const index of this.optionAnswer){
+      for(const index in this.optionAnswer){
+        console.log(this.optionAnswer[index])
         this.submitChoose(this.optionAnswer[index])
       }
-      for(const index of this.text){
-        this.submitCompletion(this.text[index])
+      for(const index in this.text){
+        console.log(this.text[index])
+        this.submitCompletion(this.text[index],index-1)
       }
-      for(const index of this.score){
-        this.submitScore(this.score[index])
+      for(const index in this.score){
+        console.log(this.score[index])
+        this.submitScore(this.score[index],index-1)
       }
-      if(this.success===true){
-        this.$router.push({path:"/thanksNormal"})
-      }
+      this.$router.push(({name:'ThanksNormal'}))
     },
   },
   computed:{
