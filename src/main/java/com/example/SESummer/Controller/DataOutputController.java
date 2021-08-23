@@ -70,7 +70,7 @@ public class DataOutputController {
                 }
                 mapList.add(map);
             }
-            filename = userID +String.valueOf(questionnaireID);
+            filename = "userid-"+userID +"-"+String.valueOf(questionnaireID);
             title = String.valueOf(questionnaireID);
             DataOutput dataOutput = DataOutput.getInstance();
             dataOutput.createExcel(mapList,filename,title);

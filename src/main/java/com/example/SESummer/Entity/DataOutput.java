@@ -61,7 +61,7 @@ public class DataOutput {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         // 使用项目根目录, 文件名加上时间戳
-        String path = "C:\\Users\\不觉\\OneDrive\\桌面\\软件工程小学期\\test" + "\\" + filename + dateFormat.format(date) + ".xlsx";
+        String path = "/home/sesummer/data" + "\\" + filename  + ".xlsx";
         try {
             File file = new File(path);
             FileOutputStream fileOutputStream = new FileOutputStream(file);
