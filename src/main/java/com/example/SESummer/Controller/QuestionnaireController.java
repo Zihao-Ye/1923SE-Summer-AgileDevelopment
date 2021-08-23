@@ -103,11 +103,11 @@ public class QuestionnaireController {
             @ApiImplicitParam(name = "optionContent", value = "选项内容", required = true, dataType = "String"),
             @ApiImplicitParam(name = "leftVolume", value = "最大选择次数", required = true, dataType = "int")
     })
-    public Map<String, Object> setOptions(@RequestParam Integer questionKind, @RequestParam Integer questionnaireContentID, @RequestParam String optionContent, @RequestParam Integer leftVolume) {
+    public Map<String, Object> setOptions(@RequestParam Integer questionKind, @RequestParam Integer questionContentID, @RequestParam String optionContent, @RequestParam Integer leftVolume) {
         Map<String, Object> map = new HashMap<>();
         try {
             QuestionOption questionOption = new QuestionOption();
-            questionOption.setQuestionContentID(questionnaireContentID);
+            questionOption.setQuestionContentID(questionContentID);
             questionOption.setOptionContent(optionContent);
             questionOption.setLeftVolume(leftVolume);
             questionOption.setQuestionKind(questionKind);
