@@ -507,6 +507,9 @@ export default {
       for(const index of this.score){
         this.submitScore(this.score[index])
       }
+      if(this.success===true){
+        this.$router.push({path:"/thanksNormal"})
+      }
     },
   },
   computed:{

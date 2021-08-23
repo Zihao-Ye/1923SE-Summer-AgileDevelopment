@@ -9,6 +9,7 @@ import Normal from '../views/Normal'
 import Test from "../views/Test";
 import Preview from "../views/Preview";
 import FillQuestionnaire from "../views/FillQuestionnaire";
+import ThanksNormal from "../views/ThanksNormal";
 Vue.use(VueRouter)
 
 const routes = [
@@ -64,7 +65,12 @@ const routes = [
     path: '/fillQuestionnaire/:id',
     name: 'FillQuestionnaire',
     component: FillQuestionnaire,
-  }
+  },
+  {
+    path: '/thanksNormal',
+    name: 'ThanksNormal',
+    component: ThanksNormal,
+  },
 ]
 
 const router = new VueRouter({
