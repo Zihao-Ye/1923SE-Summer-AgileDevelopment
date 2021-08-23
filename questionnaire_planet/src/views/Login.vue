@@ -132,7 +132,7 @@ export default {
         (v) => /.+@.+\..+/.test(v) || "邮箱格式不合法",
       ],
       checkbox: false,
-      message: "error",
+      message: "登录成功",
     };
   },
   methods: {
@@ -162,7 +162,8 @@ export default {
           this.message = res.data.message;
           if (res.data.success) {
             this.$store.commit("setLogin");
-            this.$store.commit("setUserID",this.id);
+            this.$store.commit("setUserName",this.id);
+            this.$store.commit("setUserID",res.data.user.userID)
             this.$router.push(({name:'QuestionnaireManage'}))
           }
         })
