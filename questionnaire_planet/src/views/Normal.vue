@@ -1,16 +1,16 @@
 <template>
-<div class="container">
+<div class="container1">
   <div class="left-group">
-    <v-btn text color="teal accent-4" @click="reveal=1">
+    <v-btn text color="#2196F3" @click="addProblem(1)">
           添加单选题
       </v-btn>
-    <v-btn text color="teal accent-4" @click="reveal=4">
+    <v-btn text color="#2196F3" @click="addProblem(2)">
           添加多选题
       </v-btn>
-      <v-btn text color="teal accent-4" @click="reveal=2">
+      <v-btn text color="#2196F3" @click="addProblem(3)">
           添加填空题
       </v-btn>
-      <v-btn text color="teal accent-4" @click="reveal=3">
+      <v-btn text color="#2196F3" @click="addProblem(4)">
           添加评分题
       </v-btn>
   </div>
@@ -18,53 +18,63 @@
     <div class="ques">
       </br>
       <h1>{{title}}</h1>
-      <v-btn text color="teal accent-4" @click="titleReveal=true">
+      <v-btn text color="#2196F3" @click="titleReveal=true">
           编辑标题
       </v-btn>
+<!-- 
+<v-text-field
+            v-model="problem.name"
+            label="问题"
+            required
+        ></v-text-field>
+ -->
+
       </br>
+      <div style="font-size: 15px;">问卷介绍:{{desciption}}</div>
+
 
       </br>
       </br>
       <draggable v-model="problems"  chosenClass="chosen" forceFallback="false" animation="400" filter=".nodrag" @start="onStart" @end="onEnd">
       <transition-group>
-        <div v-for="(item,index) in problems" :key="item.id">
+        <div v-for="(item,index) in problems" :key="item.no">
           <div class="bord">
             <div style="font-weight:900">
-              问题{{index+1}}--{{item.name}}
+              问题{{index+1}}--{{problems[index].name}}
             </div>
+            {{problems[index].desciption}}
             </br>
-              <div v-if="problems[index].type==='1'">
+              <div v-if="problems[index].type===1">
                   <v-radio-group v-model="problems[index].answer">
                   <v-radio
                       v-for="(it,i) in problems[index].options"
                       :key="i"
-                      :label="problems[index].options[i]"
+                      :label="problems[index].options[i].content"
                       :value="i"
                   ></v-radio>
                   </v-radio-group>
               </div>
-              <div v-if="problems[index].type==='4'">
+              <div v-if="problems[index].type===2">
                   <v-radio-group v-model="problems[index].answer">
                   <v-checkbox
                       v-for="(it,i) in problems[index].options"
                       :key="i"
-                      :label="problems[index].options[i]"
+                      :label="problems[index].options[i].content"
                       :value="i"
                   ></v-checkbox>
                   </v-radio-group>
               </div>
-              <div v-if="problems[index].type==='3'">
+              <div v-if="problems[index].type===4">
                 <v-col cols="12">
                   <v-slider
                     class="nodrag"
-                    v-model="slider"
                     :max="problems[index].max"
                     :thumb-size="24"
                     thumb-label="always"
                   ></v-slider>
                 </v-col>
               </div>
-              <div v-if="problems[index].type==='2'">
+              <div v-if="problems[index].type===3">
                 <v-text-field
                       v-model="problems[index].answer"
                       label="答案"
@@ -72,10 +82,10 @@
                   ></v-text-field>
               </div>
           <div>
-              <v-btn text color="teal accent-4" @click="alterProblem(index)">
+              <v-btn class="nodrag" text color="#2196F3" @click="alterProblem(index)">
                   编辑问题
               </v-btn>    
-              <v-btn text color="teal accent-4" @click="deleteProblem(index)">
+              <v-btn class="nodrag" text color="#2196F3" @click="deleteProblem(index)">
                   删除问题
               </v-btn>    
           </div>  
@@ -98,7 +108,7 @@
               label="标题"
               required
           ></v-text-field>
-          <v-btn text color="teal accent-4" @click="titleReveal=false">
+          <v-btn text color="#2196F3" @click="titleReveal=false">
               完成
           </v-btn>
 
@@ -113,9 +123,15 @@
             label="问题"
             required
         ></v-text-field>
+        <v-textarea
+          solo
+          name="input-7-4"
+          label="问题描述"
+          v-model="problem.desciption"
+        ></v-textarea>
           <v-row align="center" justify="space-around">
           <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
-          <v-row>
+          <v-row v-if="reveal==4">
             <v-col cols="12" sm="6" md="3">
               <v-text-field
                 v-model="problem.multi"
@@ -125,32 +141,32 @@
           </v-row>
         </v-row>
         <div v-for="(item,index) in problem.options">
-            {{item}}
-            <v-btn text color="teal accent-4" @click="deleteOption(index)">
+            {{item.content}}
+            <v-btn text color="#2196F3" @click="deleteOption(index)">
               删除选项
             </v-btn>
         </div>
         <v-text-field
-                        v-model="option"
+                        v-model="option.content"
                         label="添加选项"
                     ></v-text-field>
         <v-card-actions class="pt-0">
             <v-btn
             text
-            color="teal accent-4"
+            color="#2196F3"
             @click="finishOption">
             完成选项
             </v-btn>
             <v-btn
             text
-            color="teal accent-4"
+            color="#2196F3"
             @click="finishProblem">
             完成问题
             </v-btn>
         </v-card-actions>
         <v-btn
           text
-          color="teal accent-4"
+          color="#2196F3"
           @click="cancel">
           取消
         </v-btn>
@@ -165,18 +181,24 @@
               label="问题"
               required
           ></v-text-field>
+          <v-textarea
+            solo
+            name="input-7-4"
+            label="问题描述"
+            v-model="problem.desciption"
+          ></v-textarea>
           <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
           <v-card-actions class="pt-0">
               <v-btn
               text
-              color="teal accent-4"
+              color="#2196F3"
               @click="finishProblem">
               完成问题
               </v-btn>
           </v-card-actions>
           <v-btn
             text
-            color="teal accent-4"
+            color="#2196F3"
             @click="cancel">
             取消
         </v-btn>
@@ -191,6 +213,12 @@
               label="问题"
               required
           ></v-text-field>
+          <v-textarea
+            solo
+            name="input-7-4"
+            label="问题描述"
+            v-model="problem.desciption"
+          ></v-textarea>
           <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
           <v-row>
             <v-col cols="12" sm="6" md="3">
@@ -204,108 +232,51 @@
           <v-card-actions class="pt-0">
               <v-btn
               text
-              color="teal accent-4"
+              color="#2196F3"
               @click="finishProblem">
               完成问题
               </v-btn>
           </v-card-actions>
         <v-btn
           text
-          color="teal accent-4"
+          color="#2196F3"
           @click="cancel">
           取消
         </v-btn>
       </v-card>
-  <!--
-        <div v-if="problem.type === '选择题' ">
-          <v-text-field
-              v-model="problem.name"
-              label="问题"
-              required
-          ></v-text-field>
-          <v-row align="center" justify="space-around">
-            <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
-            <v-switch v-model="problem.multi" class="ma-2" label="4"></v-switch>
-          </v-row>
-          <div v-for="(item,index) in problem.options">
-              {{item}}
-              <v-btn text color="teal accent-4" @click="deleteOption(index)">
-                删除选项
-              </v-btn>
-          </div>
-          <v-text-field
-                          v-model="option"
-                          label="添加选项"
-                      ></v-text-field>
-          <v-card-actions class="pt-0">
-              <v-btn
-              text
-              color="teal accent-4"
-              @click="finishOption">
-              完成选项
-              </v-btn>
-              <v-btn
-              text
-              color="teal accent-4"
-              @click="finishProblem">
-              完成问题
-              </v-btn>
-          </v-card-actions>
-      </div>
-        <div v-else-if="problem.type === '2' ">
-          <v-text-field
-              v-model="problem.name"
-              label="问题"
-              required
-          ></v-text-field>
-          <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
-          <v-card-actions class="pt-0">
-              <v-btn
-              text
-              color="teal accent-4"
-              @click="finishProblem">
-              完成问题
-              </v-btn>
-          </v-card-actions>
-        </div>
-        <div v-else-if="problem.type === '3' ">
-          <v-text-field
-              v-model="problem.name"
-              label="问题"
-              required
-          ></v-text-field>
-          <v-switch v-model="problem.must" class="ma-2" label="必做题"></v-switch>
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-            <v-text-field
-              v-model="problem.min"
-              label="最小值"
-            ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="3">
-              <v-text-field
-                v-model="problem.max"
-                label="最大值"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          
-          <v-card-actions class="pt-0">
-              <v-btn
-              text
-              color="teal accent-4"
-              @click="finishProblem">
-              完成问题
-              </v-btn>
-          </v-card-actions>
-        </div>
+
+      <v-card
+      v-if="reveal==9"
+      class="card2"
+      >
+        <v-text-field
+          v-model="title1"
+          label="问卷标题"
+          required
+        ></v-text-field>
+        <v-textarea
+          solo
+          name="input-7-4"
+          label="问卷说明"
+          v-model="questionnaireNote"
+        ></v-textarea>
+        <v-text-field
+          v-model="start"
+          label="开始时间"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="end"
+          label="结束时间"
+          required
+        ></v-text-field>
         <v-btn
-        text
-        color="teal accent-4"
-        @click="reveal=false">
-        取消
+          text
+          color="#2196F3"
+          @click="save0">
+          保存
         </v-btn>
-  -->
+      </v-card>
 
       <v-dialog v-model="optionDialog"  width="500">
         <v-card>
@@ -392,105 +363,233 @@
       </v-dialog>
     </div>
   </div>
-  <v-btn
+  <!-- <v-btn
     text
-    color="teal accent-4"
+    color="#2196F3"
     @click="save">
     保存问卷
-  </v-btn>
+  </v-btn> -->
 </div>    
 </template>
 
 <script>
   import draggable from 'vuedraggable'
+  import {formatDate} from '../common/date.js';
   export default {
     components: {
       draggable,
             },
+    filters: {
+      formatDate(time) {
+        // time = time * 1000
+        let date = new Date(time)
+        console.log(new Date(time))
+        return formatDate(date, 'yyyy-MM-dd hh:mm')
+      }
+    },
     data() {
       return {
-      qid:12321,
-      id:1,
-      reveal:0,
+      desciption:"",
+      questionnaireNote:"",
+      start:"0000-00-00 00:00",
+      end:"0000-00-00 00:00",
+      userid:"",
+      qid:0,
+      no:1,
+      reveal:9,
       titleReveal:false,
       title:"",
+      title1:"",
       problem:{
-        id:1,
+        id:0,
+        no:1,
         name:"",
         type:0,
         options:[],
         must:false,
         multi:1,
         max:100,
+        desciption:"",
       },
-      option:"",
+      option:{
+        id:0,
+        content:""
+      },
       problems:[],
       alter:0,
+      alertId:0,
       optionDialog:false,
       optionDialog2:false,
       optionDialog3:false,
       problemDialog:false
       } 
     },
+    watch:{
+      problems:{
+        handler(){
+          console.log("xiugai")
+        },
+        deep:true
+      }
+    },
     methods: {
       finishProblem() {
-          switch (this.reveal) {
-            case 1:
-              this.problem.type='1'
-              break;
-            case 2:
-              this.problem.type='2'
-              break;
-            case 3:
-              this.problem.type='3'
-              break;
-            case 4:
-              this.problem.type='4'
-              break;
-            default:
-              break;
-          }
           if(this.problem.name.length==0) {
               this.problemDialog=true
-          }else if((this.problem.type=="1" || this.problem.type=="4") && this.problem.options.length==0){
+          }else if((this.problem.type==1 || this.problem.type==4) && this.problem.options.length==0){
               this.optionDialog3=true
           }else {
-                if(this.alter==0){
+              this.$http({
+                  method: "post",
+                  url: "/editQuestion",
+                  data: {
+
+                    //传选择题
+                    questionContent:this.problem.name,
+                    questionContentID:this.problem.id,
+                    questionNote:this.problem.desciption,
+                    requireSig:this.problem.must
+                    },
+                  })
+                  .then((res) => {
+                    console.log("传问题信息")
+                    console.log(res.data)
+                    if (res.data.success) {
+                      alert("保存成功")
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              if(this.problem.type==1||this.problem.type==4){
+                var j
+                for(j=0;j<this.problem.options.length;j++){
+                  this.$http({
+                  method: "post",
+                  url: "/setOptions",
+                  data: {
+
+                    //传选择题
+                    leftVolume:this.problem.multi,
+                    optionContent:this.problem.options[j].content,
+                    questionContentID:this.problem.id,
+                    questionKind:this.problem.type,
+                    questionnaireID:this.qid
+                    },
+                  })
+                  .then((res) => {
+                    console.log("传选项")
+                    console.log(res.data)
+                    if (res.data.success) {
+                      alert("保存成功")
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                this.$http({
+                  method:"get",
+                  url:"/showQuestionOptions",
+                  data:{
+                    questionContentID:this.problem.id
+                  },
+                })
+                  .then((res) => {
+                    console.log(res.data)
+                    if(res.data.success){
+                      var li=res.data.questionOptionList
+                      var j
+                      for(j=0;j<li.length;j++){
+                        this.question.options[j].id=li[j].questionOptionID
+                      }
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err)
+                  })
+                }
+              }
+              if(this.problem.type==3){
+                this.$http({
+                  method: "post",
+                  url: "/setScore",
+                  data: {
+                    maxScore:this.problem.max,
+                    questionContentID:this.problem.id,
+                  },
+                })
+                  .then((res) => {
+                    console.log("传评分")
+                    console.log(res.data)
+                    if (res.data.success) {
+                      alert("保存成功")
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
+              if(this.alter==0){
                 this.problems.push(this.problem)
                 
             } else if(this.alter==1){
                 this.alter=0
+                this.problems[this.alertId]=JSON.parse( JSON.stringify(this.problem) )
             }
                 this.reveal=0
-                this.id=this.id+1
                 this.problem={
-                  id:this.id,
+                  id:0,
+                  no:0,
                   name:"",
                   type:0,
                   options:[],
                   must:false,
                   multi:1,
                   max:100,
+                  desciption:"",
                 }
-                this.option=""
+                this.option={
+                  id:0,
+                  content:""
+                }
+                console.log(this.problems)
           }
-        console.log(this.problems)
+        // console.log(this.problems)
       },
       finishOption() {
-          if(this.option.length==0){
+          if(this.option.content.length==0){
               this.optionDialog2=true
           }else {
-                if(this.problem.options.indexOf(this.option)==-1){
+                // if(this.problem.options.indexOf(this.option)==-1){
                 this.problem.options.push(this.option)
-                this.option="";
-            } else{
-                this.optionDialog=true
-            }
+                this.option={
+                id:0,
+                content:""
+                }
+            // } else{
+            //     this.optionDialog=true
+            // }
           }
-          console.log(this)
           
       },
       deleteOption(i) {
+          this.$http({
+            method: "post",
+            url: "/delQuestion",
+            data: {
+              questionOptionID :this.problem.options[i].id
+              },
+            })
+            .then((res) => {
+              console.log("删除选项")
+              console.log(res.data)
+              if (res.data.success) {
+                alert("保存成功")
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
           this.problem.options.splice(i,1)
       },
       deleteProblem(i) {
@@ -498,23 +597,53 @@
       },
       alterProblem(i) {
           this.alter=1
-          this.problem=this.problems[i]
-          switch (this.problem.type) {
-            case '1':
-              this.reveal=1
-              break;
-            case '2':
-              this.reveal=2
-              break;
-            case '3':
-              this.reveal=3
-              break;
-            case '4':
-              this.reveal=4
-              break;
-            default:
-              break;
-          }
+          this.alertId=i
+          this.problem=JSON.parse( JSON.stringify(this.problems[i]) )
+          this.reveal=this.problem.type
+      },
+      addProblem(i) {
+        this.problem.type=i
+        this.problem.no=this.problems.length+1
+        console.log(1)
+        this.$http({
+          method: "post",
+          url: "/addQuestion",
+          data: {
+            questionKind:this.problem.type,
+            questionNo:this.problem.no,
+            questionnaireID:this.qid
+          },
+        })
+          .then((res) => {
+            console.log("传问题")
+            console.log(res.data)
+            if (res.data.success) {
+              alert("保存成功")
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        this.$http({
+          method:"get",
+          url:"/showQuestionnaireInfo",
+          data:{
+            questionnaireID:this.qid
+          },
+        })
+          .then((res) => {
+            console.log(res.data)
+            if(res.data.success){
+              var li=res.data.questionList
+              this.problem.id=li[li.length-1].questionContentID;
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+        var p=JSON.parse( JSON.stringify(this.problem) )
+        this.problems.push(p)
+        
       },
       //开始拖拽事件
       onStart(){
@@ -526,65 +655,139 @@
       },
       cancel() {
         this.reveal=0;
-        this.id=this.id+1;
         this.problem={
-          id:this.id,
+          id:0,
+          no:0,
           name:"",
-          type:"",
+          type:0,
           options:[],
           must:false,
           multi:1,
           max:100,
+          desciption:"",
         };
-        this.option="";
+        this.option={
+          id:0,
+          content:""
+          }
       },
-      save() {
-        var i
-        for(i=0;i<this.problems.length;i++){
-          this.$http({
+      save0() {
+        this.$http({
           method: "post",
-          url: "/addQuestion",
+          url: "/createQuestionnaire",
           data: {
-            questionKind:this.problems[i].type,
-            questionNo:this.problems[i].id,
-            questionnaireID:this.qid
+            title:this.title1,
+            userID:this.userid,
+            questionnaireNote:this.questionnaireNote,
+            isPrivate:0,
+            kind:1,
+            questionPwd :0,
+            startTime:this.start | formatDate,
+            endTime:this.end | formatDate
           },
         })
           .then((res) => {
+            console.log("传基础信息")
             console.log(res.data)
             if (res.data.success) {
-              alter("保存成功")
+              alert("保存成功")
             }
           })
           .catch((err) => {
             console.log(err);
           });
-          if(this.problem[i].type==1||this.problem[i].type==4){
-            this.$http({
-              method: "post",
-              url: "/setOptions",
-              data: {
+        this.$http({
+          method:"get",
+          url:"/rubbish",
+          data:{
+          },
+        })
+          .then((res) => {
+            console.log(res.data)
+            if(res.data.success){
+              var li=res.data.questionnaireList
+              this.qid=li[0]
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+          this.title=this.title1
+          this.desciption=this.questionnaireNote
+          this.reveal=0
+      },
+      // save() {
+      //   var i
+      //   for(i=0;i<this.problems.length;i++){
+      //     this.$http({
+      //     method: "post",
+      //     url: "/addQuestion",
+      //     data: {
+      //       questionKind:this.problems[i].type,
+      //       questionNo:this.problems[i].no,
+      //       questionnaireID:this.qid
+      //     },
+      //   })
+      //     .then((res) => {
+      //       console.log("传问题")
+      //       console.log(res.data)
+      //       if (res.data.success) {
+      //         alert("保存成功")
+      //       }
+      //     })
+      //     .catch((err) => {
+      //       console.log(err);
+      //     });
+      //     if(this.problems[i].type==1||this.problems[i].type==4){
+      //       var j
+      //       for(j=0;j<this.problems[i].options.length;j++){
+      //         this.$http({
+      //         method: "post",
+      //         url: "/setOptions",
+      //         data: {
 
-                //传选择题
-                leftVolume:this.problems[i].multi,
-                questionKind:this.problems[i].type,
-                questionNo:this.problems[i].id,
-                questionnaireID:this.qid
-              },
-            })
-              .then((res) => {
-                console.log(res.data)
-                if (res.data.success) {
-                  alter("保存成功")
-                }
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          }
-        }
-        
-      }
+      //           //传选择题
+      //           leftVolume:this.problems[i].multi,
+      //           optionContent:this.problems[i].options[j],
+      //           questionNo:this.problems[i].no,
+      //           questionKind:this.problems[i].type,
+      //           questionnaireID:this.qid
+      //           },
+      //         })
+      //         .then((res) => {
+      //           console.log("传选项")
+      //           console.log(res.data)
+      //           if (res.data.success) {
+      //             alert("保存成功")
+      //           }
+      //         })
+      //         .catch((err) => {
+      //           console.log(err);
+      //         });
+      //       }
+      //     }
+      //     if(this.problems[i].type==3){
+      //       this.$http({
+      //         method: "post",
+      //         url: "/setScore",
+      //         data: {
+      //           maxScore:this.problems[i].max,
+      //           questionContentID:this.problems[i].no,
+      //         },
+      //       })
+      //         .then((res) => {
+      //           console.log("传评分")
+      //           console.log(res.data)
+      //           if (res.data.success) {
+      //             alert("保存成功")
+      //           }
+      //         })
+      //         .catch((err) => {
+      //           console.log(err);
+      //         });
+      //     }
+      //   }
+      // }
   }
 }
 </script>
@@ -655,6 +858,7 @@
     width: 100%;
     display: flex;
     height:100%;  
+    font-size: 20px;
 }
 .left-group,.right-group{
     display: flex;
