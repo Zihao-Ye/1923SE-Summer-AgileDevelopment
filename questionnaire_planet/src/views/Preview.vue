@@ -70,7 +70,7 @@
           {{question.questionNote}}
         </v-card-subtitle>
         <v-container>
-          <el-checkbox-group v-model="checkboxModel[question.questionNo]" :min="1" >
+          <el-checkbox-group v-model="checkboxModel[question.questionNo]"  >
             <el-checkbox
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
@@ -290,8 +290,7 @@ export default {
     radioAnswer:{},
     optionAnswer:{},
     checkboxModel:{
-      3:[],
-      4:[],
+
     },
     flag:false,
     text: {
@@ -332,7 +331,7 @@ export default {
                   this.score[question.questionNo]=0
                   this.getMaxScore(question)
                 }else if(question.questionKind===2){
-                  this.checkboxModel[question.questionNo]=[]
+                  this.$set(this.checkboxModel,question.questionNo,[])
                   this.getOptions(question)
                 }else if(question.questionKind===3){
                   this.text[question.questionNo]=""

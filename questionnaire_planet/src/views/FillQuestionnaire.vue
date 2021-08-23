@@ -68,7 +68,7 @@
           {{question.questionNote}}
         </v-card-subtitle>
         <v-container>
-          <el-checkbox-group v-model="checkboxModel[question.questionNo]" :min="1" >
+          <el-checkbox-group v-model="checkboxModel[question.questionNo]" >
             <el-checkbox
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
@@ -269,33 +269,18 @@ export default {
       3: [{optionContent: "选项1",questionOptionID:9}, {optionContent: "选项2",questionOptionID:10}, {optionContent: "选项3",questionOptionID:11}, {optionContent: "选项4",questionOptionID:12},],
       4: [{optionContent: "选项1",questionOptionID:13}, {optionContent: "选项2",questionOptionID:14}, {optionContent: "选项3",questionOptionID:15}, {optionContent: "选项4",questionOptionID:16},]
     },
-    radioModel:{
-      1:null,
-      2:null
-    },
+    radioModel:{},
     radioAnswer:{},
     optionAnswer:{},
-    checkboxModel:{
-      3:[],
-      4:[],
-    },
+    checkboxModel:{},
     flag:false,
-    text: {
-      5:"",
-      6:""
-    },
+    text: {},
     textRules:[val => (val || '').length > 0 || '必填题目'],
-    score:{
-      7:0,
-      8:0,
-    },
+    score:{},
     scoreRules:[v=> v >1||'必须选择评分'],
-    maxScores:{
-      7:{maxScore:100},
-      8:{maxScore: 50}
-    },
+    maxScores:{},
     require:{},
-    requireNum:4,
+    requireNum:0,
     user:{
       userID:"",
       userName:"",
@@ -317,10 +302,10 @@ export default {
             if (res.data.success) {
               this.questionnaire=res.data.questionnaire
               this.questions=res.data.questionList
-              this.require=0
+              this.requireNum=0
               for(const question of this.questions){
                 if(question.requireSig===1){
-                  this.requireNum++
+                  this.requireNum+=1
                 }
                 if(question.questionKind===1){
                   this.radioModel[question.questionNo]=null
@@ -329,7 +314,7 @@ export default {
                   this.score[question.questionNo]=0
                   this.getMaxScore(question)
                 }else if(question.questionKind===2){
-                  this.checkboxModel[question.questionNo]=[]
+                  this.$set(this.checkboxModel,question.questionNo,[])
                   this.getOptions(question)
                 }else if(question.questionKind===3){
                   this.text[question.questionNo]=""
