@@ -2,11 +2,14 @@ package com.example.SESummer.Service;
 
 public interface QuestionDataService {
     //提交后增加问卷回收数
-    public void addRecycleVolume(Integer questionnaireID);
+    void addRecycleVolume(Integer questionnaireID);
 
     //增加选项被选次数
-    public void addVoteVolume(Integer questionOptionID);
+    void addVoteVolume(Integer questionOptionID);
 
-    //减少选项的剩余次数
-    public void reduceLeftVolume(Integer questionOptionID);
+    //根据问题ID、用户ID和问卷ID，查询填过的选项，取消填选选项（选项总数-1）
+    void minusVoteVolume(Integer questionnaireID,Integer userID,Integer questionContentID);
+
+    //更新评分题平均分
+    void updateAverageScore(Integer questionContentID);
 }

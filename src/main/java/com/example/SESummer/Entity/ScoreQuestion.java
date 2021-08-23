@@ -17,4 +17,5 @@ public class ScoreQuestion {
     private Integer scoreQuestionID;
     private Integer questionContentID;
     private Integer maxScore;
+    private Double averageScore;
 }

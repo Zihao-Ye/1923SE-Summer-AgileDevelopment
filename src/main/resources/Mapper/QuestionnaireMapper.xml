@@ -58,9 +58,9 @@
         where questionnaireid=#{questionnaireID}
     </update>
     <!-- 关闭问卷-->
-    <update id="closeQuestionnaire" parameterType="Integer">
+    <update id="closeQuestionnaire" parameterType="Questionnaire">
         update questionnaire
-        set is_visitable=0
+        set is_visitable=0,end_time=#{endTime}
         where questionnaireid=#{questionnaireID}
     </update>
     <!-- 预览问卷-问卷信息-->
@@ -74,6 +74,7 @@
         select *
         from question_content
         where questionnaireid=#{questionnaireID}
+        order by question_no
     </select>
     <!-- 预览问卷-题目选项信息-->
     <select id="getAllQuestionOptionOfQuestionByQuestionContentID" resultType="QuestionOption">
@@ -99,4 +100,19 @@
         set question_content=#{questionContent},require_sig=#{requireSig},question_note=#{questionNote}
         where question_contentid=#{questionContentID}
     </update>
+    <!-- 编辑问卷-删除题目的选项-->
+    <delete id="delQuestionOptionRelatedToQuestion" parameterType="Integer">
+        delete from question_option
+        where question_contentid=#{questionContentID}
+    </delete>
+    <!-- 编辑问卷-删除题目-->
+    <delete id="delQuestion" parameterType="Integer">
+        delete from question_content
+        where question_contentid=#{questionContentID}
+    </delete>
+    <!-- 编辑问卷-删除选项-->
+    <delete id="delQuestionOption" parameterType="Integer">
+        delete from question_option
+        where question_optionid=#{questionOptionID}
+    </delete>
 </mapper>

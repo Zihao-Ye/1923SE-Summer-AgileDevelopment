@@ -79,8 +79,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
     @Override
     //关闭问卷
-    public void closeQuestionnaire(Integer questionnaireID){
-        questionnaireDao.closeQuestionnaire(questionnaireID);
+    public void closeQuestionnaire(Integer questionnaireID, Timestamp endTime){
+        questionnaireDao.closeQuestionnaire(questionnaireID,endTime);
     }
 
     @Override
@@ -117,5 +117,23 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     //编辑问卷-修改问题信息
     public void editQuestion(Integer questionContentID, Integer requireSig, String questionContent, String questionNote){
         questionnaireDao.editQuestion(questionContentID,requireSig,questionContent,questionNote);
+    }
+
+    @Override
+    //编辑问卷-删除题目的选项
+    public void delQuestionOptionRelatedToQuestion(Integer questionContentID){
+        questionnaireDao.delQuestionOptionRelatedToQuestion(questionContentID);
+    }
+
+    @Override
+    //编辑问卷-删除题目
+    public void delQuestion(Integer questionContentID){
+        questionnaireDao.delQuestion(questionContentID);
+    }
+
+    @Override
+    //编辑问卷-删除选项
+    public void delQuestionOption(Integer questionOptionID){
+        questionnaireDao.delQuestionOption(questionOptionID);
     }
 }

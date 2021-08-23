@@ -43,7 +43,7 @@ public interface QuestionnaireDao {
     void openQuestionnaire(Integer questionnaireID);
 
     //关闭问卷
-    void closeQuestionnaire(Integer questionnaireID);
+    void closeQuestionnaire(Integer questionnaireID, Timestamp endTime);
 
     //预览问卷-问卷信息
     Questionnaire getQuestionnaireByQuestionnaireID(Integer questionnaireID);
@@ -62,4 +62,13 @@ public interface QuestionnaireDao {
 
     //编辑问卷-修改问题信息
     void editQuestion(Integer questionContentID, Integer requireSig, String questionContent, String questionNote);
+
+    //编辑问卷-删除题目的选项
+    void delQuestionOptionRelatedToQuestion(Integer questionContentID);
+
+    //编辑问卷-删除题目
+    void delQuestion(Integer questionContentID);
+
+    //编辑问卷-删除选项
+    void delQuestionOption(Integer questionOptionID);
 }

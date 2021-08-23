@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace ="com.example.SESummer.Dao.QuestionDataDao" >
+    <!-- 提交后增加问卷回收数-->
     <update id="addRecycleVolume" parameterType="Integer">
         update questionnaire
         set recycle_volume=recycle_volume+1
         where questionnaireid = #{questionnaireID}
     </update>
+    <!-- 增加选项被选次数-->
     <update id="addVoteVolume" parameterType="Integer">
         update question_option
         set vote_volume = vote_volume +1
         where question_optionid = #{questionOptionID}
     </update>
-    <update id="reduceLeftVolume" parameterType="Integer">
-        update question_option
-        set left_volume = left_volume -1
-        where question_optionid = #{questionOptionID}
+    <!-- 根据问题ID、用户ID和问卷ID，查询填过的选项，取消填选选项（选项总数-1）-->
+    <update id="minusVoteVolume" parameterType="UserChooseQuestion">
+        update question_option set vote_volume=vote_volume-1 where question_optionid in(
+            select question_optionid from(
+                select question_optionid from user_choose_question where userid=#{userID} and questionnaireid=#{questionnaireID} and user_choose_question.question_contentid=#{questionContentID}
+                )as test
+            )
+    </update>
+    <!-- 更新评分题平均分-->
+    <update id="updateAverageScore" parameterType="Integer">
+        update score_question
+        set average_score=(select sum(score) from user_score_question where user_score_question.question_contentid=#{questionContentID})/(select count(*) from user_score_question where user_score_question.question_contentid=#{questionContentID})
+        where question_contentid=#{questionContentID}
     </update>
 </mapper>

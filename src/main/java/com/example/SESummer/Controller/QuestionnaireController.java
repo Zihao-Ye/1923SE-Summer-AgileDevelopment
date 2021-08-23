@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +31,8 @@ public class QuestionnaireController {
             @ApiImplicitParam(name = "title",value = "标题",required = true,dataType = "String"),
             @ApiImplicitParam(name = "questionPwd",value = "问卷密码",required = true,dataType = "String"),
             @ApiImplicitParam(name = "kind",value = "问卷类型",required = true,dataType = "int"),
-            @ApiImplicitParam(name = "userID",value = "创建者ID",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "isPrivate",value = "是否公开",required = true,dataType = "Integer"),
+            @ApiImplicitParam(name = "userID",value = "创建者ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "isPrivate",value = "是否公开",required = true,dataType = "int"),
             @ApiImplicitParam(name = "startTime",value = "问卷开始时间",required = true,dataType = "String"),
             @ApiImplicitParam(name = "endTime",value = "问卷结束时间",required = true,dataType = "String"),
             @ApiImplicitParam(name = "questionnaireNote",value = "问卷说明",required = true,dataType = "String")
@@ -78,9 +77,9 @@ public class QuestionnaireController {
     @PostMapping("/addQuestion")
     @ApiOperation("创建问卷-添加问题")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "questionKind",value = "问题类型",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "questionNo",value = "题号",required = true,dataType = "Integer")
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "questionKind",value = "问题类型",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "questionNo",value = "题号",required = true,dataType = "int")
     })
     public Map<String,Object> addQuestion(@RequestParam Integer questionnaireID,@RequestParam Integer questionKind,@RequestParam Integer questionNo){
         Map<String,Object> map = new HashMap<>();
@@ -102,10 +101,10 @@ public class QuestionnaireController {
     @PostMapping("/setOptions")
     @ApiOperation("添加问题-添加选择题选项")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "questionKind",value = "问题种类",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "Integer"),
+            @ApiImplicitParam(name = "questionKind",value = "问题种类",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "optionContent",value = "选项内容",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "leftVolume",value = "最大选择次数",required = true,dataType = "Integer")
+            @ApiImplicitParam(name = "leftVolume",value = "最大选择次数",required = true,dataType = "int")
     })
     public Map<String,Object> setOptions(@RequestParam Integer questionKind,@RequestParam Integer questionnaireContentID,@RequestParam String optionContent,@RequestParam Integer leftVolume){
         Map<String,Object> map = new HashMap<>();
@@ -128,8 +127,8 @@ public class QuestionnaireController {
     @PostMapping("/setScore")
     @ApiOperation("添加问题-添加评分题分数上限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "maxScore",value = "评分上限",required = true,dataType = "Integer")
+            @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "maxScore",value = "评分上限",required = true,dataType = "int")
     })
     public Map<String,Object> setScore(@RequestParam Integer questionContentID,@RequestParam Integer maxScore){
         Map<String,Object> map = new HashMap<>();
@@ -182,7 +181,7 @@ public class QuestionnaireController {
 
     @PostMapping("/setRubbish")
     @ApiOperation("问卷收入回收站")
-    @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "Integer")
+    @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int")
     public Map<String,Object> setRubbish(@RequestParam Integer questionnaireID) {
         Map<String,Object> map = new HashMap<>();
         try {
@@ -197,7 +196,7 @@ public class QuestionnaireController {
 
     @PostMapping("/recoverRubbish")
     @ApiOperation("问卷移出回收站")
-    @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "Integer")
+    @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int")
     public Map<String,Object> recoverRubbish(@RequestParam Integer questionnaireID){
         Map<String,Object> map = new HashMap<>();
         try {
@@ -212,7 +211,7 @@ public class QuestionnaireController {
 
     @PostMapping("/publishQuestionnaire")
     @ApiOperation("问卷操作-发布问卷")
-    @ApiImplicitParam(name = "questionnaireID",value = "问卷编号",required = true,dataType = "Integer")
+    @ApiImplicitParam(name = "questionnaireID",value = "问卷编号",required = true,dataType = "int")
     public Map<String,Object> publishQuestionnaire(@RequestParam Integer questionnaireID){
         Map<String,Object> map = new HashMap<>();
         try {
@@ -228,7 +227,7 @@ public class QuestionnaireController {
 
     @PostMapping("/openQuestionnaire")
     @ApiOperation("问卷操作-开启问卷")
-    @ApiImplicitParam(name = "questionnaireID",value = "问卷编号",required = true,dataType = "Integer")
+    @ApiImplicitParam(name = "questionnaireID",value = "问卷编号",required = true,dataType = "int")
     public Map<String,Object> openQuestionnaire(@RequestParam Integer questionnaireID){
         Map<String,Object> map = new HashMap<>();
         try {
@@ -243,12 +242,12 @@ public class QuestionnaireController {
 
     @PostMapping("/closeQuestionnaire")
     @ApiOperation("问卷操作-关闭问卷")
-    @ApiImplicitParam(name = "questionnaireID",value = "问卷编号",required = true,dataType = "Integer")
+    @ApiImplicitParam(name = "questionnaireID",value = "问卷编号",required = true,dataType = "int")
     public Map<String,Object> closeQuestionnaire(@RequestParam Integer questionnaireID){
         Map<String,Object> map = new HashMap<>();
         try {
             Timestamp endTime=new Timestamp(System.currentTimeMillis());
-            questionNaireService.closeQuestionnaire(questionnaireID);
+            questionNaireService.closeQuestionnaire(questionnaireID,endTime);
             map.put("success",true);
         }catch (Exception e){
             e.printStackTrace();
@@ -259,7 +258,7 @@ public class QuestionnaireController {
 
     @GetMapping("/showQuestionnaireInfo")
     @ApiOperation("预览问卷-问卷信息与问卷的题目信息")
-    @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "Integer")
+    @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int")
     public Map<String,Object> showQuestionnaireInfo(@RequestParam Integer questionnaireID){
         Map<String,Object> map = new HashMap<>();
         try {
@@ -277,7 +276,7 @@ public class QuestionnaireController {
 
     @GetMapping("/showQuestionOptions")
     @ApiOperation("预览问卷-选择题的选项")
-    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "Integer")
+    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int")
     public Map<String,Object> showQuestionOptions(@RequestParam Integer questionContentID){
         Map<String,Object> map = new HashMap<>();
         try {
@@ -293,7 +292,7 @@ public class QuestionnaireController {
 
     @GetMapping("/showScoreQuestion")
     @ApiOperation("预览问卷-评分题的分数上限")
-    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "Integer")
+    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int")
     public Map<String,Object> showScoreQuestion(@RequestParam Integer questionContentID){
         Map<String,Object> map = new HashMap<>();
         try {
@@ -310,10 +309,10 @@ public class QuestionnaireController {
     @PostMapping("/editQuestionnaire")
     @ApiOperation("编辑问卷-修改问卷信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "Integer"),
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "title",value = "标题",required = true,dataType = "String"),
             @ApiImplicitParam(name = "questionPwd",value = "问卷密码",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "isPrivate",value = "是否公开",required = true,dataType = "Integer"),
+            @ApiImplicitParam(name = "isPrivate",value = "是否公开",required = true,dataType = "int"),
             @ApiImplicitParam(name = "questionnaireNote",value = "问卷说明",required = true,dataType = "String")
     })
     public Map<String,Object> editQuestionnaire(@RequestParam Integer questionnaireID,@RequestParam String title,@RequestParam String questionPwd,@RequestParam Integer isPrivate,@RequestParam String questionnaireNote){
@@ -331,8 +330,8 @@ public class QuestionnaireController {
     @PostMapping("/editQuestion")
     @ApiOperation("编辑问卷-修改问题信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "Integer"),
-            @ApiImplicitParam(name = "requireSig",value = "是否必答",required = true,dataType = "Integer"),
+            @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "requireSig",value = "是否必答",required = true,dataType = "int"),
             @ApiImplicitParam(name = "questionContent",value = "问题题干",required = true,dataType = "String"),
             @ApiImplicitParam(name = "questionNote",value = "题目备注",required = true,dataType = "String")
     })
@@ -340,6 +339,37 @@ public class QuestionnaireController {
         Map<String,Object> map = new HashMap<>();
         try {
             questionNaireService.editQuestion(questionContentID,requireSig,questionContent,questionNote);
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @PostMapping("/delQuestion")
+    @ApiOperation("编辑问卷-删除题目")
+    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int")
+    public Map<String,Object> delQuestion(@RequestParam Integer questionContentID){
+        Map<String,Object> map = new HashMap<>();
+        try {
+            questionNaireService.delQuestionOptionRelatedToQuestion(questionContentID);
+            questionNaireService.delQuestion(questionContentID);
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @PostMapping("/delQuestionOption")
+    @ApiOperation("编辑问卷-删除题目选项")
+    @ApiImplicitParam(name = "questionOptionID",value = "问题ID",required = true,dataType = "int")
+    public Map<String,Object> delQuestionOption(@RequestParam Integer questionOptionID){
+        Map<String,Object> map = new HashMap<>();
+        try {
+            questionNaireService.delQuestionOption(questionOptionID);
             map.put("success",true);
         }catch (Exception e){
             e.printStackTrace();

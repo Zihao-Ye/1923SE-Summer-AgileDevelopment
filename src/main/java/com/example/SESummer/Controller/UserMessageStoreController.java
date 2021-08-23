@@ -4,10 +4,7 @@ import com.example.SESummer.Entity.QuestionnaireSubmit;
 import com.example.SESummer.Entity.UserChooseQuestion;
 import com.example.SESummer.Entity.UserCompletionQuestion;
 import com.example.SESummer.Entity.UserScoreQuestion;
-import com.example.SESummer.Service.QuestionSubmitService;
-import com.example.SESummer.Service.UserChooseQuestionService;
-import com.example.SESummer.Service.UserCompletionQuestionService;
-import com.example.SESummer.Service.UserScoreQuestionService;
+import com.example.SESummer.Service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -31,17 +28,20 @@ public class UserMessageStoreController {
     private QuestionSubmitService questionSubmitService;
     @Autowired
     private UserChooseQuestionService userChooseQuestionService;
+    @Autowired
+    private QuestionDataService questionDataService;
 
     @PostMapping("/resetChoose")
     @ApiOperation("在提交/保存每个选择题前，先执行删除操作，再执行存储")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "Integer",required = true)
+            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "int",required = true)
     })
     public Map<String,Object> resetUserChooseOption(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer questionContentID){
         Map<String,Object> map = new HashMap<>();
         try {
+            questionDataService.minusVoteVolume(questionnaireID,userID,questionContentID);
             userChooseQuestionService.delChooseRecord(userID,questionnaireID,questionContentID);
             map.put("success",true);
         }catch (Exception e){
@@ -54,10 +54,10 @@ public class UserMessageStoreController {
     @PostMapping("/choose")
     @ApiOperation("选择题填写情况")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionOptionID",value = "选项ID",dataType = "Integer",required = true)
+            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionOptionID",value = "选项ID",dataType = "int",required = true)
     })
     public Map<String,Object> storeUserChooseOption(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer questionContentID,@RequestParam Integer questionOptionID){
         Map<String,Object> map = new HashMap<>();
@@ -68,6 +68,7 @@ public class UserMessageStoreController {
             userChooseQuestion.setQuestionContentID(questionContentID);
             userChooseQuestion.setQuestionOptionID(questionOptionID);
             userChooseQuestionService.addChooseRecord(userChooseQuestion);
+            questionDataService.addVoteVolume(questionOptionID);
             map.put("success",true);
         }catch (Exception e){
             e.printStackTrace();
@@ -79,9 +80,9 @@ public class UserMessageStoreController {
     @PostMapping("/completion")
     @ApiOperation("填空题填写情况")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "Integer",required = true),
+            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "int",required = true),
             @ApiImplicitParam(name = "completionContent",value = "填空题内容",dataType = "String",required = true)
     })
     public Map<String,Object> storeUserCompletionQuestion(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer questionContentID,@RequestParam String completionContent){
@@ -111,10 +112,10 @@ public class UserMessageStoreController {
     @PostMapping("/score")
     @ApiOperation("评分题填写情况")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "score",value = "分数",dataType = "Integer",required = true)
+            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "score",value = "分数",dataType = "int",required = true)
     })
     public Map<String,Object> storeUserScoreQuestion(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer questionContentID,@RequestParam Integer score){
         Map<String,Object> map = new HashMap<>();
@@ -126,9 +127,11 @@ public class UserMessageStoreController {
                 userScoreQuestion.setQuestionContentID(questionContentID);
                 userScoreQuestion.setScore(score);
                 userScoreQuestionService.addScoreRecord(userScoreQuestion);
+                questionDataService.updateAverageScore(questionContentID);
             }
             else {
                 userScoreQuestionService.updateScoreRecord(userID,questionnaireID,questionContentID,score);
+                questionDataService.updateAverageScore(questionContentID);
             }
             map.put("success",true);
         }
@@ -142,9 +145,9 @@ public class UserMessageStoreController {
     @PostMapping("/submit")
     @ApiOperation("用户问卷提交情况")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "Integer",required = true),
-            @ApiImplicitParam(name = "isSubmit",value = "是否提交",dataType = "Integer",required = true)
+            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "isSubmit",value = "是否提交",dataType = "int",required = true)
     })
     public Map<String,Object> userSubmit(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer isSubmit){
         Map<String,Object> map = new HashMap<>();
@@ -154,6 +157,9 @@ public class UserMessageStoreController {
             questionnaireSubmit.setQuestionnaireID(questionnaireID);
             questionnaireSubmit.setIsSubmit(isSubmit);
             questionSubmitService.addQuestionSubmit(questionnaireSubmit);
+            if(isSubmit==1){
+                questionDataService.addRecycleVolume(questionnaireID);
+            }
             map.put("success",true);
         }
         catch (Exception e){
