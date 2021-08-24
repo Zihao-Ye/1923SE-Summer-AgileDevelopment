@@ -13,6 +13,9 @@
       <v-btn text color="#2196F3" @click="addProblem(4)">
           添加评分题
       </v-btn>
+      <v-btn text color="#2196F3" @click="save1">
+          保存
+      </v-btn>
   </div>
   <div class="whole">
     <div class="ques">
@@ -260,7 +263,7 @@
           label="问卷说明"
           v-model="questionnaireNote"
         ></v-textarea>
-        <v-text-field
+        <!-- <v-text-field
           v-model="start"
           label="开始时间"
           required
@@ -269,7 +272,7 @@
           v-model="end"
           label="结束时间"
           required
-        ></v-text-field>
+        ></v-text-field> -->
         <v-btn
           text
           color="#2196F3"
@@ -393,7 +396,7 @@
       questionnaireNote:"",
       start:"0000-00-00 00:00",
       end:"0000-00-00 00:00",
-      userid:"",
+      userID:this.$store.state.userID,
       qid:0,
       no:1,
       reveal:9,
@@ -415,6 +418,7 @@
         id:0,
         content:""
       },
+      // deloptions:[],
       problems:[],
       alter:0,
       alertId:0,
@@ -432,6 +436,9 @@
         deep:true
       }
     },
+    created() {
+      this.load()
+    },
     methods: {
       finishProblem() {
           if(this.problem.name.length==0) {
@@ -439,81 +446,200 @@
           }else if((this.problem.type==1 || this.problem.type==2) && this.problem.options.length==0){
               this.optionDialog3=true
           }else {
+              var m=0
+              if(this.must==false){
+                m=0
+              }else if(this.must==true){
+                m=1
+              }
               this.$http({
                   method: "post",
                   url: "/editQuestion",
-                  data: {
-
-                    //传选择题
+                  params: {
                     questionContent:this.problem.name,
                     questionContentID:this.problem.id,
                     questionNote:this.problem.desciption,
-                    requireSig:this.problem.must
+                    requireSig:m,
                     },
                   })
                   .then((res) => {
                     console.log("传问题信息")
                     console.log(res.data)
                     if (res.data.success) {
-                      alert("保存成功")
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
+                  //   }
+                  // })
+                  // .catch((err) => {
+                  //   console.log(err);
+                  // });
+                  console.log(this.problem.type)
               if(this.problem.type==1||this.problem.type==2){
-                var j
-                for(j=0;j<this.problem.options.length;j++){
-                  this.$http({
-                  method: "post",
-                  url: "/setOptions",
-                  data: {
 
-                    //传选择题
-                    leftVolume:this.problem.multi,
-                    optionContent:this.problem.options[j].content,
-                    questionContentID:this.problem.id,
-                    questionKind:this.problem.type,
-                    questionnaireID:this.qid
-                    },
-                  })
-                  .then((res) => {
-                    console.log("传选项")
-                    console.log(res.data)
-                    if (res.data.success) {
-                      alert("保存成功")
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-                this.$http({
-                  method:"get",
-                  url:"/showQuestionOptions",
-                  data:{
-                    questionContentID:this.problem.id
-                  },
-                })
-                  .then((res) => {
-                    console.log(res.data)
-                    if(res.data.success){
-                      var li=res.data.questionOptionList
-                      var j
-                      for(j=0;j<li.length;j++){
-                        this.question.options[j].id=li[j].questionOptionID
-                      }
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err)
-                  })
+                var j
+                for(j=0;j<this.problems.length;j++){
+                  if(this.problems[j].id==this.problem.id){
+                    break;
+                  }
                 }
+                var i=j
+                var k
+                for(j=0;j<this.problems[i].options.length;j++){
+                  for(k=0;k<this.problem.options.length;k++){
+                    if(this.problem.options[k].content==this.problems[i].options[j].content)
+                    break
+                  }
+                   
+                  if(k==this.problem.options.length){
+                    console.log(this.problems[i].options[j])
+                    this.$http({
+                    method: "post",
+                    url: "/delQuestionOption",
+                    params: {
+                      questionOptionID :this.problems[i].options[j].id
+                      },
+                    })
+                    .then((res) => {
+                      console.log("删除选项")
+                      console.log(res.data)
+                      if (res.data.success) {
+                      }
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                  }
+                  
+                }
+                for(j=0;j<this.problem.options.length;j++){
+                  for(k=0;k<this.problems[i].options.length;k++){
+                    if(this.problem.options[j].content==this.problems[i].options[k].content)
+                    break
+                  }
+                  if(k==this.problems[i].options.length){
+                    this.$http({
+                    method: "post",
+                    url: "/setOptions",
+                    params: {
+                      //传选择题
+                      leftVolume:this.problem.multi,
+                      optionContent:this.problem.options[j].content,
+                      questionContentID:this.problem.id,
+                      questionKind:this.problem.type,
+                      },
+                    })
+                    .then((res) => {
+                      console.log("传选项")
+                      console.log(res.data)
+                      if (res.data.success) {
+                        this.$http({
+                          method:"get",
+                          url:"/showQuestionOptions",
+                          params:{
+                            questionContentID:this.problem.id
+                          },
+                        })
+                          .then((res) => {
+                            console.log("问卷信息")
+                            console.log(res.data)
+                            if(res.data.success){
+                              var li=res.data.questionOptionList
+                              console.log(this.problem)
+                              var index
+                              for(index=0;index<this.problem.options.length;index++){
+                                this.problem.options[index].id=li[index].questionOptionID
+                              }
+                              
+                              }
+                            
+                          })
+                          .catch((err) => {
+                            console.log(err)
+                          })
+                      }
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                  }
+                }
+
+
+
+
+                // var j
+                // for(j=0;j<this.problem.options.length;j++){
+                //   if(this.problem.options[j].id==0 && this.deloptions.indexOf(this.problem.options[j])==-1){
+                //     this.$http({
+                //     method: "post",
+                //     url: "/setOptions",
+                //     params: {
+                //       //传选择题
+                //       leftVolume:this.problem.multi,
+                //       optionContent:this.problem.options[j].content,
+                //       questionContentID:this.problem.id,
+                //       questionKind:this.problem.type,
+                //       },
+                //     })
+                //     .then((res) => {
+                //       console.log("传选项")
+                //       console.log(res.data)
+                //       if (res.data.success) {
+                //         if(this.problem.options[j].id>0 && this.deloptions.indexOf(this.problem.options[j])>-1){
+                //     this.$http({
+                //     method: "post",
+                //     url: "/delQuestionOption",
+                //     params: {
+                //       questionOptionID :this.problem.options[i].id
+                //       },
+                //     })
+                //     .then((res) => {
+                //       console.log("删除选项")
+                //       console.log(res.data)
+                //       if (res.data.success) {
+                //         this.$http({
+                //   method:"get",
+                //   url:"/showQuestionOptions",
+                //   params:{
+                //     questionContentID:this.problem.id
+                //   },
+                // })
+                //   .then((res) => {
+                //     console.log(res.data)
+                //     if(res.data.success){
+                //       var li=res.data.questionOptionList
+                //       var j
+                //       for(j=0;j<li.length;j++){
+                //         if(this.problem.options[j].id==0)
+                //         this.question.options[j].id=li[li.length-1-j].questionOptionID
+                //       }
+                //     }
+                //   })
+                //   .catch((err) => {
+                //     console.log(err)
+                //   })
+                //   console.log('选项')
+                //   console.log(this.problem.options)
+                //       }
+                //     })
+                //     .catch((err) => {
+                //       console.log(err);
+                //     });
+                //   }
+                //       }
+                //     })
+                //     .catch((err) => {
+                //       console.log(err);
+                //     });
+                //   }
+                // }
+                
               }
+
+
               if(this.problem.type==4){
                 this.$http({
                   method: "post",
                   url: "/setScore",
-                  data: {
+                  params: {
                     maxScore:this.problem.max,
                     questionContentID:this.problem.id,
                   },
@@ -522,14 +648,22 @@
                     console.log("传评分")
                     console.log(res.data)
                     if (res.data.success) {
-                      alert("保存成功")
                     }
                   })
                   .catch((err) => {
                     console.log(err);
                   });
               }
-              if(this.alter==0){
+
+}
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              clearTimeout(this.timer);  //清除延迟执行 
+ 
+              this.timer = setTimeout(()=>{   //设置延迟执行
+                  if(this.alter==0){
                 this.problems.push(this.problem)
                 
             } else if(this.alter==1){
@@ -553,6 +687,8 @@
                   content:""
                 }
                 console.log(this.problems)
+              },2000);
+              
           }
         // console.log(this.problems)
       },
@@ -561,7 +697,7 @@
               this.optionDialog2=true
           }else {
                 // if(this.problem.options.indexOf(this.option)==-1){
-                this.problem.options.push(this.option)
+                this.$set(this.problem.options,this.problem.options.length,this.option)
                 this.option={
                 id:0,
                 content:""
@@ -573,42 +709,58 @@
           
       },
       deleteOption(i) {
+        // deloptions.push(this.problem.options[i].id)
+          // this.$http({
+          //   method: "post",
+          //   url: "/delQuestionOption",
+          //   params: {
+          //     questionOptionID :this.problem.options[i].id
+          //     },
+          //   })
+          //   .then((res) => {
+          //     console.log("删除选项")
+          //     console.log(res.data)
+          //     if (res.data.success) {
+          //     }
+          //   })
+          //   .catch((err) => {
+          //     console.log(err);
+          //   });
+          this.problem.options.splice(i,1)
+      },
+      deleteProblem(i) {
           this.$http({
             method: "post",
             url: "/delQuestion",
-            data: {
-              questionOptionID :this.problem.options[i].id
+            params: {
+              questionContentID :this.problems[i].id
               },
             })
             .then((res) => {
-              console.log("删除选项")
+              console.log("删除题目")
               console.log(res.data)
               if (res.data.success) {
-                alert("保存成功")
+          this.problems.splice(i,1)
               }
             })
             .catch((err) => {
               console.log(err);
             });
-          this.problem.options.splice(i,1)
-      },
-      deleteProblem(i) {
-          this.problems.splice(i,1)
       },
       alterProblem(i) {
           this.alter=1
           this.alertId=i
           this.problem=JSON.parse( JSON.stringify(this.problems[i]) )
           this.reveal=this.problem.type
+          
       },
       addProblem(i) {
         this.problem.type=i
         this.problem.no=this.problems.length+1
-        console.log(1)
         this.$http({
           method: "post",
           url: "/addQuestion",
-          data: {
+          params: {
             questionKind:this.problem.type,
             questionNo:this.problem.no,
             questionnaireID:this.qid
@@ -618,31 +770,34 @@
             console.log("传问题")
             console.log(res.data)
             if (res.data.success) {
-              alert("保存成功")
+              this.$http({
+                method:"get",
+                url:"/showQuestionnaireInfo",
+                params:{
+                  questionnaireID:this.qid
+                },
+              })
+                .then((res) => {
+                  console.log(res.data)
+                  if(res.data.success){
+                    var li=res.data.questionList
+                    this.problem.id=li[li.length-1].questionContentID;
+                    console.log(this.problem.id)
+                    var p=JSON.parse( JSON.stringify(this.problem) )
+                    this.problems.push(p)
+                    console.log(this.problems[0].id)
+                  }
+                })
+                .catch((err) => {
+                  console.log(err)
+                })
             }
           })
           .catch((err) => {
             console.log(err);
           });
-        this.$http({
-          method:"get",
-          url:"/showQuestionnaireInfo",
-          data:{
-            questionnaireID:this.qid
-          },
-        })
-          .then((res) => {
-            console.log(res.data)
-            if(res.data.success){
-              var li=res.data.questionList
-              this.problem.id=li[li.length-1].questionContentID;
-            }
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-        var p=JSON.parse( JSON.stringify(this.problem) )
-        this.problems.push(p)
+        
+        
         
       },
       //开始拖拽事件
@@ -672,50 +827,111 @@
           }
       },
       save0() {
+        console.log(this)
         this.$http({
           method: "post",
           url: "/createQuestionnaire",
-          data: {
+          params: {
             title:this.title1,
-            userID:this.userid,
+            userID:this.userID,
             questionnaireNote:this.questionnaireNote,
             isPrivate:0,
             kind:1,
             questionPwd :0,
-            startTime:this.start | formatDate,
-            endTime:this.end | formatDate
+            startTime:this.start,
+            endTime:this.end
           },
         })
           .then((res) => {
             console.log("传基础信息")
             console.log(res.data)
             if (res.data.success) {
-              alert("保存成功")
+              this.$http({
+                method:"get",
+                url:"/notRubbish",
+                params:{
+                },
+              })
+                .then((res) => {
+                  console.log(res.data)
+                  if(res.data.success){
+                    var li=res.data.questionnaireList
+                    this.qid=li[0].questionnaireID
+                  }
+                })
+                .catch((err) => {
+                  console.log(err)
+                })
+                this.title=this.title1
+                this.desciption=this.questionnaireNote
+                this.reveal=0
             }
           })
           .catch((err) => {
             console.log(err);
           });
-        this.$http({
+        
+      },
+      load() {
+        if(false){
+          this.$http({
           method:"get",
-          url:"/rubbish",
-          data:{
+          url:"/showQuestionnaireInfo",
+          params:{
+            questionnaireID:this.qid
           },
         })
           .then((res) => {
             console.log(res.data)
             if(res.data.success){
-              var li=res.data.questionnaireList
-              this.qid=li[0]
+              var qn=res.data.questionnaire
+              this.qid=qn.questionnaireID
+              this.title=qn.title
+              this.isPrivate=qn.isPrivate
+              this.desciption=qn.questionnaireNote
+              var li=res.data.questionList
+              var j
+              for(j=0;j<li.length;j++){
+                var p={
+                  id:questionContentID,
+                  no:j+1,
+                  name:questionContent,
+                  type:questionKind,
+                  multi:requireSig,
+                  desciption:questionNote,
+                }
+                this.problems.push(JSON.parse( JSON.stringify(p) ))
+              }
+
             }
           })
           .catch((err) => {
             console.log(err)
           })
-          this.title=this.title1
-          this.desciption=this.questionnaireNote
-          this.reveal=0
+        }
       },
+      save1() {
+        var i
+        for(i=0;i<this.problems.length;i++){
+          this.$http({
+          method: "post",
+          url: "/rankQuestion",
+          params: {
+            questionContentID:this.problems[i].id,
+            questionNo:i+1
+          },
+        })
+          .then((res) => {
+            
+            if (res.data.success) {
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        }
+        
+      }
       // save() {
       //   var i
       //   for(i=0;i<this.problems.length;i++){

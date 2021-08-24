@@ -20,7 +20,7 @@ Vue.prototype.$http = axios
 Vue.prototype.msgSuccess = function(msg) {
   this.$message({showClose: true, message: msg, type: 'success'})
 }
-
+Vue.config.devtools = true;
 new Vue({
   router,
   store,
