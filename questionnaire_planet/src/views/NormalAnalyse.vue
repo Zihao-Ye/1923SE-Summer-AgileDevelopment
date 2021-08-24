@@ -557,7 +557,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              let url="http://39.105.38.175/download/"+this.user.userID+"-"+this.$route.params.id+"-"+".xlsx"
+              let url="http://39.105.38.175/download/userid-"+this.user.userID+"-"+this.$route.params.id+".xlsx"
               window.open(url)
             }
           })
