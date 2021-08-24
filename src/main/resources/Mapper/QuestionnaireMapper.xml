@@ -55,7 +55,7 @@
     <!-- 发布问卷-->
     <update id="publishQuestionnaire" parameterType="Questionnaire">
         update questionnaire
-        set have_publish=1,start_time=#{startTime}
+        set have_publish=1,start_time=#{startTime},is_visitable=1
         where questionnaireid=#{questionnaireID}
     </update>
     <!-- 开启问卷-->
