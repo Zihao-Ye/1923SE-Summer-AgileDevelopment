@@ -40,17 +40,16 @@ public class QuestionnaireController {
     public Map<String, Object> createQuestionnaire(@RequestParam String title, @RequestParam String questionPwd, @RequestParam Integer kind, @RequestParam Integer userID, @RequestParam Integer isPrivate, @RequestParam String startTime, @RequestParam String endTime, @RequestParam String questionnaireNote) {
         Map<String, Object> map = new HashMap<>();
         Timestamp createTime = new Timestamp(System.currentTimeMillis());
-
         try {
             Timestamp StartTime = new Timestamp(System.currentTimeMillis());
             Timestamp EndTime = new Timestamp(System.currentTimeMillis());
-            try {
-                StartTime = Timestamp.valueOf(startTime);
-                EndTime = Timestamp.valueOf(endTime);
-            }catch (Exception e){
-                e.printStackTrace();
-                map.put("success",false);
-            }
+//            try {
+//                StartTime = Timestamp.valueOf(startTime);
+//                EndTime = Timestamp.valueOf(endTime);
+//            }catch (Exception e){
+//                e.printStackTrace();
+//                map.put("success",false);
+//            }
             Questionnaire questionnaire = new Questionnaire();
             questionnaire.setTitle(title);
             questionnaire.setKind(kind);
@@ -403,13 +402,13 @@ public class QuestionnaireController {
             Integer userID=questionnaire.getMasterID();
             Timestamp startTime=new Timestamp(System.currentTimeMillis());
             Timestamp endTime=new Timestamp(System.currentTimeMillis());
-            try{
-                startTime=Timestamp.valueOf("0000-00-00 00:00:00");
-                endTime=Timestamp.valueOf("0000-00-00 00:00:00");
-            }catch (Exception e){
-                e.printStackTrace();
-                map.put("success",false);
-            }
+//            try{
+//                startTime=Timestamp.valueOf("0000-00-00 00:00:00");
+//                endTime=Timestamp.valueOf("0000-00-00 00:00:00");
+//            }catch (Exception e){
+//                e.printStackTrace();
+//                map.put("success",false);
+//            }
             Timestamp createTime=new Timestamp(System.currentTimeMillis());
             questionnaire.setCreateTime(createTime);
             questionnaire.setStartTime(startTime);

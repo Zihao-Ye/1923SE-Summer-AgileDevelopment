@@ -125,7 +125,7 @@
     <!-- 复制问卷-复制问卷基本信息-->
     <insert id="copyQuestionnaire" parameterType="Questionnaire">
         insert into questionnaire(title, create_time, kind, question_pwd, is_private,start_time, end_time, masterid,questionnaire_note)
-        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionNote})
+        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionnaireNote})
     </insert>
     <!-- 获取最近创建的问卷-->
     <select id="getRecentQuestionnaireByUserID" resultType="Questionnaire">
