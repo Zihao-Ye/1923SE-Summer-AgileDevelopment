@@ -10,6 +10,7 @@ import Test from "../views/Test";
 import Preview from "../views/Preview";
 import FillQuestionnaire from "../views/FillQuestionnaire";
 import ThanksNormal from "../views/ThanksNormal";
+import NormalAnalyse from "../views/NormalAnalyse";
 Vue.use(VueRouter)
 
 const routes = [
@@ -70,6 +71,11 @@ const routes = [
     path: '/thanksNormal',
     name: 'ThanksNormal',
     component: ThanksNormal,
+  },
+  {
+    path: '/normalAnalyse/:id',
+    name: 'NormalAnalyse',
+    component: NormalAnalyse,
   },
 ]
 

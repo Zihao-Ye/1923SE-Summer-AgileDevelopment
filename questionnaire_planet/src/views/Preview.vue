@@ -171,7 +171,7 @@
               color="orange"
               label="分数"
               min="1"
-              :max="100"
+              :max="maxScores[question.questionNo].maxScore"
               thumb-label="always"
               @change="requirePlus(question)"
           ></v-slider>
@@ -313,7 +313,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              this.maxScore[question.questionNo]=res.data.scoreQuestion
+              this.$set(this.maxScores,question.questionNo,res.data.scoreQuestion)
             }
           })
           .catch((err) => {

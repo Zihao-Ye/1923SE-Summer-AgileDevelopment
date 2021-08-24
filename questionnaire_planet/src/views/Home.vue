@@ -77,4 +77,7 @@
   top:1%;
   right:1%
 }
+::-webkit-scrollbar{
+  display:none;
+}
 </style>
