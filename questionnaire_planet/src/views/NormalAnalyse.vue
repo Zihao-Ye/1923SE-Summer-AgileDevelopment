@@ -6,7 +6,7 @@
       <v-container>
         <v-row>
           <v-spacer></v-spacer>
-          <v-btn color="#546E7A" text >
+          <v-btn color="#546E7A" text @click="getDataUrl">
             导出数据
             <i class="el-icon-upload"></i>
           </v-btn>
@@ -39,6 +39,7 @@
                   :label="option.optionContent"
                   :value="n"
                   @change="radioAnswer[question.questionNo]=option;requirePlus(question)"
+                  disabled
               ></v-radio>
             </v-radio-group>
           </v-container>
@@ -78,6 +79,7 @@
                   :label="option.optionContent"
                   :value="n"
                   @change="radioAnswer[question.questionNo]=option"
+                  disabled
               ></v-radio>
             </v-radio-group>
           </v-container>
@@ -116,6 +118,7 @@
                   :label="option.optionContent"
                   border
                   @change="checkboxAnswer(option);requirePlus(question)"
+                  disabled
               ></el-checkbox>
             </el-checkbox-group>
           </v-container>
@@ -155,6 +158,7 @@
                   :label="option.optionContent"
                   border
                   @change="checkboxAnswer(option)"
+                  disabled
               ></el-checkbox>
             </el-checkbox-group>
           </v-container>
@@ -192,6 +196,7 @@
                 required
                 outlined
                 @change="requirePlus(question)"
+                disabled
             ></v-text-field>
           </v-container>
         </template>
@@ -211,6 +216,7 @@
                 v-model="text[question.questionNo]"
                 label="填空"
                 outlined
+                disabled
             ></v-text-field>
           </v-container>
         </template>
@@ -234,6 +240,7 @@
                 :max="maxScores[question.questionNo].maxScore"
                 thumb-label="always"
                 @change="requirePlus(question)"
+                disabled
             ></v-slider>
           </v-container>
           <v-container>
@@ -261,6 +268,7 @@
                 min="1"
                 :max="maxScores[question.questionNo].maxScore"
                 thumb-label="always"
+                disabled
             ></v-slider>
           </v-container>
           <v-container>
@@ -536,6 +544,26 @@ export default {
         this.submitScore(this.score[index],index-1)
       }
       this.$router.push(({name:'ThanksNormal'}))
+    },
+    getDataUrl(){
+      this.$http({
+        method: "get",
+        url: "/showScoreQuestion",
+        params: {
+          questionnaireID:this.$route.params.id,
+          userID:this.user.userID,
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              let url="http://39.105.38.175/download/"+this.user.userID+this.$route.params.id
+              window.open(url)
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
     },
   },
   computed:{
