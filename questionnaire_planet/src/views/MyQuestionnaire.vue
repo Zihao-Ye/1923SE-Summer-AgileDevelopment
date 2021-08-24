@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid id = 'pdfDom'>
     <v-data-iterator
       :items="items"
       :items-per-page.sync="itemsPerPage"
@@ -106,10 +106,14 @@
                     第一次发布时间:
                   </v-list-item-content>
                   <v-list-item-content
+                    v-if="item.havePublish"
                     class="align-end"
                     :class="{ 'blue--text': sortBy === 'startTime' }"
                   >
                     {{ item.startTime | formatDate }}
+                  </v-list-item-content>
+                  <v-list-item-content v-else class="align-end" :class="{ 'blue--text': sortBy === 'startTime' }">
+                    未发布
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -117,10 +121,14 @@
                     最后一次发布时间:
                   </v-list-item-content>
                   <v-list-item-content
+                     v-if="item.havePublish"
                     class="align-end"
                     :class="{ 'blue--text': sortBy === 'endTime' }"
                   >
                     {{ item.endTime | formatDate }}
+                  </v-list-item-content>
+                  <v-list-item-content v-else class="align-end" :class="{ 'blue--text': sortBy === 'endTime' }">
+                    未发布
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -161,7 +169,7 @@
                     <v-btn text color="#00796B">编辑问卷<i class="el-icon-edit"></i></v-btn>
                 </v-list-item>
                 <v-list-item>
-                    <v-btn color="#546E7A" text >
+                    <v-btn :to="'/preview/' + item.questionnaireID" color="#546E7A" text >
                            导出问卷                               
                            <i class="el-icon-upload"></i>
                     </v-btn>
@@ -328,6 +336,7 @@ import {formatDate} from '../common/date.js';
     },
     data () {
       return {
+        htmlTitle: '测试PDF文件名',
         qrCodeUrl: '',
         isOpening: false,
         itemsPerPageArray: [4, 8, 12],
@@ -438,6 +447,7 @@ import {formatDate} from '../common/date.js';
           } 
         })
         .catch((err) => {
+          this.msgSuccess('复制失败');
           console.log(err);
         });
       },
