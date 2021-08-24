@@ -1,9 +1,17 @@
 <template>
-
   <div>
   <v-card class="mx-auto" max-width="1000" elevation="10">
     <h1 class="text-center">{{questionnaire.title}}</h1>
     <h3 class="text-center">{{questionnaire.questionnaireNote}}</h3>
+    <v-container>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-btn color="#546E7A" text >
+        导出问卷
+        <i class="el-icon-upload"></i>
+      </v-btn>
+    </v-row>
+      </v-container>
     <!--单选必做题-->
     <v-card
         v-for="(question,i) in questions"
@@ -24,13 +32,13 @@
           {{question.questionNote}}
         </v-card-subtitle>
         <v-container>
-          <v-radio-group v-model="radioModel[question.questionNo]" >
+          <v-radio-group v-model="radioModel[question.questionNo]">
             <v-radio
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
                 :label="option.optionContent"
                 :value="n"
-                @change="radioAnswer[question.questionNo]=option"
+                @change="radioAnswer[question.questionNo]=option;requirePlus(question)"
             ></v-radio>
           </v-radio-group>
         </v-container>
@@ -70,13 +78,13 @@
           {{question.questionNote}}
         </v-card-subtitle>
         <v-container>
-          <el-checkbox-group v-model="checkboxModel[question.questionNo]"  >
+          <el-checkbox-group v-model="checkboxModel[question.questionNo]" >
             <el-checkbox
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
                 :label="option.optionContent"
                 border
-                @change="checkboxAnswer(option)"
+                @change="checkboxAnswer(option);requirePlus(question)"
             ></el-checkbox>
           </el-checkbox-group>
         </v-container>
@@ -122,6 +130,7 @@
               label="填空"
               required
               outlined
+              @change="requirePlus(question)"
           ></v-text-field>
         </v-container>
       </template>
@@ -162,8 +171,9 @@
               color="orange"
               label="分数"
               min="1"
-              :max="100"
+              :max="maxScores[question.questionNo].maxScore"
               thumb-label="always"
+              @change="requirePlus(question)"
           ></v-slider>
         </v-container>
       </template>
@@ -191,123 +201,51 @@
       </template>
     </v-card>
     <div class="text-center">
-      <v-btn class="ma-2" color="info" >
+      <v-btn class="ma-2" color="info">
         提交
       </v-btn>
     </div>
   </v-card>
-    <v-btn
-        absolute
-        class="goback"
-        fab
-        dark
-        small
-        color="primary"
-        :to="{path:'/QuestionnaireManage'}"
-    >
-      <v-icon dark>
-        mdi-close
-      </v-icon>
-    </v-btn>
+  <v-btn
+      absolute
+      class="goback"
+      fab
+      dark
+      small
+      color="primary"
+      :to="{path:'/QuestionnaireManage'}"
+  >
+    <v-icon dark>
+      mdi-close
+    </v-icon>
+  </v-btn>
   </div>
 </template>
 
 <script>
 export default {
   data: () => ({
-    questionnaire:{
-      title:"问卷",
-      questionnaireNote:"备注"
-    },
-    questions:[
-      {
-        questionContent:"问题一",
-        questionNote:"备注",
-        questionKind:1,
-        requireSig:1,
-        questionNo:1,
-      },
-      {
-        questionContent:"问题二",
-        questionNote:"备注",
-        questionKind:1,
-        requireSig:0,
-        questionNo:2,
-      },
-      {
-        questionContent:"问题三",
-        questionNote:"备注",
-        questionKind:2,
-        requireSig:1,
-        questionNo:3,
-      },
-      {
-        questionContent:"问题四",
-        questionNote:"备注",
-        questionKind:2,
-        requireSig:0,
-        questionNo:4,
-      },
-      {
-        questionContent:"问题五",
-        questionNote:"备注",
-        questionKind:3,
-        requireSig:1,
-        questionNo:5,
-      },
-      {
-        questionContent:"问题六",
-        questionNote:"备注",
-        questionKind:3,
-        requireSig:0,
-        questionNo:6,
-      },
-      {
-        questionContent:"问题七",
-        questionNote:"备注",
-        questionKind:4,
-        requireSig:1,
-        questionNo:7,
-      },
-      {
-        questionContent:"问题八",
-        questionNote:"备注",
-        questionKind:4,
-        requireSig:0,
-        questionNo:8,
-      },
-    ],
-    options: {
-      1: [{optionContent: "选项1",questionOptionID:1}, {optionContent: "选项2",questionOptionID:2}, {optionContent: "选项3",questionOptionID:3}, {optionContent: "选项4",questionOptionID:4},],
-      2: [{optionContent: "选项1",questionOptionID:5}, {optionContent: "选项2",questionOptionID:6}, {optionContent: "选项3",questionOptionID:7}, {optionContent: "选项4",questionOptionID:8},],
-      3: [{optionContent: "选项1",questionOptionID:9}, {optionContent: "选项2",questionOptionID:10}, {optionContent: "选项3",questionOptionID:11}, {optionContent: "选项4",questionOptionID:12},],
-      4: [{optionContent: "选项1",questionOptionID:13}, {optionContent: "选项2",questionOptionID:14}, {optionContent: "选项3",questionOptionID:15}, {optionContent: "选项4",questionOptionID:16},]
-    },
-    radioModel:{
-      1:null,
-      2:null
-    },
+    questionnaire:{},
+    questions:[],
+    options: {},
+    radioModel:{},
     radioAnswer:{},
     optionAnswer:{},
-    checkboxModel:{
-
-    },
+    checkboxModel:{},
     flag:false,
-    text: {
-      5:"",
-      6:""
-    },
+    text: {},
     textRules:[val => (val || '').length > 0 || '必填题目'],
-    score:{
-      7:0,
-      8:0,
-    },
+    score:{},
     scoreRules:[v=> v >1||'必须选择评分'],
-    maxScores:{
-      7:{maxScore:100},
-      8:{maxScore: 50}
+    maxScores:{},
+    require:{},
+    requireNum:0,
+    user:{
+      userID:"",
+      userName:"",
+      userPwd:"visitor"
     },
-
+    fillsuccess:false,
   }),
   methods:{
     getQuestionnaire() {
@@ -323,18 +261,22 @@ export default {
             if (res.data.success) {
               this.questionnaire=res.data.questionnaire
               this.questions=res.data.questionList
+              this.requireNum=0
               for(const question of this.questions){
+                if(question.requireSig===1){
+                  this.requireNum+=1
+                }
                 if(question.questionKind===1){
-                  this.radioModel[question.questionNo]=null
+                  this.$set(this.radioModel,question.questionNo,null)
                   this.getOptions(question)
                 }else if(question.questionKind===4){
-                  this.score[question.questionNo]=0
+                  this.$set(this.score,question.questionNo,0)
                   this.getMaxScore(question)
                 }else if(question.questionKind===2){
                   this.$set(this.checkboxModel,question.questionNo,[])
                   this.getOptions(question)
                 }else if(question.questionKind===3){
-                  this.text[question.questionNo]=""
+                  this.$set(this.text,question.questionNo,"")
                 }
               }
             }
@@ -353,7 +295,7 @@ export default {
       }).then((res) => {
         console.log(res.data)
         if (res.data.success) {
-          this.options[question.questionNo]=res.data.questionOptionList
+          this.$set(this.options,question.questionNo,res.data.questionOptionList)
         }
       })
           .catch((err) => {
@@ -371,7 +313,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              this.maxScore[question.questionNo]=res.data.scoreQuestion
+              this.$set(this.maxScores,question.questionNo,res.data.scoreQuestion)
             }
           })
           .catch((err) => {
@@ -384,10 +326,149 @@ export default {
       }else{
         this.optionAnswer[option.questionOptionID]=option
       }
+    },
+    requirePlus(question){
+      console.log("hahaha")
+      this.$set(this.require,question.questionNo,1)
+    },
+    getUser(){
+      this.user.userName=Math.random().toString(36).slice(-8)
+      this.$http({
+        method: "post",
+        url: "/fakeRegister",
+        params: {
+          userName:this.user.userName,
+          userPwd:this.user.userPwd
+        },
+      })
+          .then((res) => {
+            if (res.data.success) {
+              this.fakeLogin()
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    fakeLogin(){
+      this.$http({
+        method: "post",
+        url: "/login",
+        params: {
+          userName: this.user.userName,
+          userPwd: this.user.userPwd,
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if(res.data.success){
+              this.user.userID=res.data.user.userID
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submitChoose(option){
+      this.$http({
+        method: "post",
+        url: "/choose",
+        params: {
+          questionContentID:option.questionContentID,
+          questionOptionID:option.questionOptionID,
+          questionnaireID:this.$route.params.id,
+          userID:this.user.userID
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              this.fillsuccess=true
+            }else {
+              this.fillsuccess=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submitCompletion(content,index){
+      const question=this.questions[index]
+      console.log(question)
+      this.$http({
+        method: "post",
+        url: "/completion",
+        params: {
+          questionContentID:question.questionContentID,
+          questionnaireID:this.$route.params.id,
+          userID:this.user.userID,
+          completionContent:content
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              this.fillsuccess=true
+            }else {
+              this.fillsuccess=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submitScore(score,index){
+      const question=this.questions[index]
+      this.$http({
+        method: "post",
+        url: "/score",
+        params: {
+          questionContentID:question.questionContentID,
+          questionnaireID:this.$route.params.id,
+          userID:this.user.userID,
+          score:score
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              this.fillsuccess=true
+            }else {
+              this.fillsuccess=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submit(){
+      for(const index in this.radioAnswer){
+        console.log(this.radioAnswer[index])
+        this.submitChoose(this.radioAnswer[index])
+      }
+      for(const index in this.optionAnswer){
+        console.log(this.optionAnswer[index])
+        this.submitChoose(this.optionAnswer[index])
+      }
+      for(const index in this.text){
+        console.log(this.text[index])
+        this.submitCompletion(this.text[index],index-1)
+      }
+      for(const index in this.score){
+        console.log(this.score[index])
+        this.submitScore(this.score[index],index-1)
+      }
+      this.$router.push(({name:'ThanksNormal'}))
+    },
+  },
+  computed:{
+    submitValid() {
+      let l = Object.keys(this.require).length
+      return l === this.requireNum;
     }
   },
   created() {
-   this.getQuestionnaire()
+    this.getQuestionnaire()
   }
 }
 </script>
