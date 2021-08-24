@@ -6,8 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface QuestionnaireSubmitDao {
     //保存提交问卷记录
-    void addQuestionSubmit(QuestionnaireSubmit submit);
+    void addQuestionSubmit(Integer userID,Integer questionnaireID,Integer isSubmit);
 
-    //删除提交问卷记录
-    void deleteQuestionSubmit(QuestionnaireSubmit submit);
 }

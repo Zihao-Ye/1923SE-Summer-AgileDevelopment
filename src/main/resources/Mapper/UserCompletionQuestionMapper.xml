@@ -10,7 +10,7 @@
     <!-- 添加用户填空题答题记录 -->
     <insert id="addCompletionRecord" parameterType="UserCompletionQuestion">
         insert into user_completion_question(userid,questionnaireid,question_contentid,completion_content)
-        values(#{userID},#{questionnaireID},#{questionContentID},#{completionContent})
+        values (#{userID},#{questionnaireID},#{questionContentID},#{completionContent})
     </insert>
     <!-- 修改用户填空题答题记录 -->
     <update id="updateCompletionRecord" parameterType="UserCompletionQuestion">

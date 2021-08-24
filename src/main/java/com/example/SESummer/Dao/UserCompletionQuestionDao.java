@@ -9,8 +9,8 @@ public interface UserCompletionQuestionDao {
     UserCompletionQuestion getCompletionRecordByID(Integer userID, Integer questionnaireID, Integer questionContentID);
 
     //添加用户填空题答题记录
-    void addCompletionRecord(UserCompletionQuestion completion);
+    void addCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID, String completionContent);
 
     //修改用户填空题答题记录
-    void updateCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID,String questionContent);
+    void updateCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID, String questionContent);
 }

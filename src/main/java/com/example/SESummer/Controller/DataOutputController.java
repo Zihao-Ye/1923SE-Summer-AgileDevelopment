@@ -62,11 +62,23 @@ public class DataOutputController {
                 }
                 //对填空题进行处理
                 for(UserCompletionQuestion completion:completionList){
-                    map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(completion.getQuestionContentID()),completion.getCompletionContent());
+                    String value = completion.getCompletionContent();
+                    if (value == null){
+                        map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(completion.getQuestionContentID()),"NULL");
+                    }
+                    else {
+                        map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(completion.getQuestionContentID()),value);
+                    }
                 }
                 //对评分题进行处理
                 for(UserScoreQuestion score:scoreList){
-                    map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(score.getQuestionContentID()),score.getScore());
+                    String value = String.valueOf(score.getScore());
+                    if (value == null){
+                        map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(score.getQuestionContentID()),"NULL");
+                    }
+                    else {
+                        map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(score.getQuestionContentID()),value);
+                    }
                 }
                 mapList.add(map);
             }

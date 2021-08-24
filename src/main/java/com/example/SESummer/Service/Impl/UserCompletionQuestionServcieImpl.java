@@ -19,8 +19,8 @@ public class UserCompletionQuestionServcieImpl implements UserCompletionQuestion
 
     @Override
     //添加用户填空题答题记录
-    public void addCompletionRecord(UserCompletionQuestion completion){
-        userCompletionQuestionDao.addCompletionRecord(completion);
+    public void addCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID, String completionContent){
+        userCompletionQuestionDao.addCompletionRecord(userID,questionnaireID,questionContentID,completionContent);
     }
 
     @Override

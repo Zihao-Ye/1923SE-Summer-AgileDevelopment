@@ -4,9 +4,7 @@ import com.example.SESummer.Entity.QuestionnaireSubmit;
 
 public interface QuestionSubmitService {
     //提交信息保存
-    void addQuestionSubmit(QuestionnaireSubmit submit);
+    void addQuestionSubmit(Integer userID,Integer questionnaireID,Integer isSubmit);
 
-    //删除信息
-    void deleteQuestionSubmit(QuestionnaireSubmit submit);
 
 }

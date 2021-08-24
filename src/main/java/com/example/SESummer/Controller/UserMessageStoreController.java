@@ -94,7 +94,7 @@ public class UserMessageStoreController {
                 userCompletion.setCompletionContent(completionContent);
                 userCompletion.setQuestionnaireID(questionnaireID);
                 userCompletion.setQuestionContentID(questionContentID);
-                userCompletionQuestionService.addCompletionRecord(userCompletion);
+                userCompletionQuestionService.addCompletionRecord(userID,questionnaireID,questionContentID,completionContent);
             }
             else{
                 userCompletionQuestionService.updateCompletionRecord(userID,questionnaireID,questionContentID,completionContent);
@@ -151,11 +151,7 @@ public class UserMessageStoreController {
     public Map<String,Object> userSubmit(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer isSubmit){
         Map<String,Object> map = new HashMap<>();
         try {
-            QuestionnaireSubmit questionnaireSubmit = new QuestionnaireSubmit();
-            questionnaireSubmit.setUserID(userID);
-            questionnaireSubmit.setQuestionnaireID(questionnaireID);
-            questionnaireSubmit.setIsSubmit(isSubmit);
-            questionSubmitService.addQuestionSubmit(questionnaireSubmit);
+            questionSubmitService.addQuestionSubmit(userID,questionnaireID,isSubmit);
             if(isSubmit==1){
                 questionDataService.addRecycleVolume(questionnaireID);
             }
