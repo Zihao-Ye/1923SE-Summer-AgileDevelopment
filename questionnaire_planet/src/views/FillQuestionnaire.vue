@@ -454,8 +454,7 @@ export default {
         })
             .then((res) => {
               console.log(res.data)
-              if(res.data.success)
-                this.$router.push(({name:'ThanksNormal'}))
+              this.$router.push(({name:'ThanksNormal'}))
             })
             .catch((err) => {
               console.log(err);
