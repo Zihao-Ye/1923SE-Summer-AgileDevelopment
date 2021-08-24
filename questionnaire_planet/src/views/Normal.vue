@@ -908,21 +908,23 @@
               var li=res.data.questionList
               var j
               for(j=0;j<li.length;j++){
-                var p={
+                this.problem={
                   id:li[j].questionContentID,
                   no:j+1,
                   name:li[j].questionContent,
                   type:li[j].questionKind,
                   multi:li[j].requireSig,
                   desciption:li[j].questionNote,
+                  options:[],
                 }
-                this.problems.push(JSON.parse( JSON.stringify(p) ))
+                this.problems.push(JSON.parse( JSON.stringify(this.problem) ))
               }
               console.log(1)
-              console.log(this.problems[0])
-              for(j=0;j<=this.problems.length;j++){
-                console,log(j)
-                console.log(problems[j])
+              console.log(this.problems)
+              for(j=0;j<this.problems.length;j++){
+                console.log("j")
+                console.log(j)
+                console.log(this.problems[j])
                 if(this.problems[j].type==1 || this.problems[j].type==2){
                   console.log(2)
               console.log(this.problems)
@@ -941,11 +943,27 @@
                               console.log(this.problems[j])
                               var index
                               
-                              for(index=0;index<this.problems[j].options.length;index++){
-                                console.log(this.problems[j].options)
-                                this.problems[j].options[index].id=li[index].questionOptionID
-                                this.problems[j].options[index].content=li[index].optionContent
+                              for(index=0;index<li.length;index++){
+                                var op={
+                                  id:li[index].questionOptionID,
+                                  content:li[index].optionContent
+                                }
+                                console.log(index)
+                                console.log(j)
+                                // this.problems[index].options.push(JSON.parse( JSON.stringify(op) ))
+                                this.$set(this.problems[j-1].options,this.problems[j-1].options.length,op)
                               }
+                              this.problem={
+        id:0,
+        no:1,
+        name:"",
+        type:0,
+        options:[],
+        must:false,
+        multi:1,
+        max:100,
+        desciption:"",
+      }
                               
                               }
                             
