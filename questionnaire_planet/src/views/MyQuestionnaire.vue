@@ -157,7 +157,7 @@
                 <v-divider></v-divider>
 
                 <v-list-item>
-                    <v-btn text v-if='!item.isVisitable' @click="openQuestionnaire(item.questionnaireID)" color="primary">
+                    <v-btn text v-if='!item.isVisitable' @click="openQuestionnaire(item)" color="primary">
                         开启问卷
                         <i class="el-icon-video-play"></i>
                     </v-btn>
@@ -169,7 +169,7 @@
                     <v-btn text color="#00796B">编辑问卷<i class="el-icon-edit"></i></v-btn>
                 </v-list-item>
                 <v-list-item>
-                    <v-btn :to="'/preview/' + item.questionnaireID" color="#546E7A" text >
+                    <v-btn @click="printQuestionnaire(item.questionnaireID)" color="#546E7A" text >
                            导出问卷                               
                            <i class="el-icon-upload"></i>
                     </v-btn>
@@ -246,7 +246,7 @@
         </template>
       </v-dialog>
                     <v-spacer></v-spacer>
-                    <v-btn text color="#B388FF">
+                    <v-btn text color="#B388FF" :to="'/normalAnalyse/' + item.questionnaireID">
                         数据分析
                         <i class="el-icon-s-data"></i>
                         </v-btn>
@@ -377,6 +377,13 @@ import {formatDate} from '../common/date.js';
     },
 
     methods: {
+      printQuestionnaire (id) {
+        //直接调用$router.push 实现携带参数的跳转
+        this.$store.commit("setIsPrint");
+        this.$router.push({
+          path: `/preview/${id}`,
+        })
+      },
       qrCodeGenSuccess(dataUrl) {
             this.qrCodeUrl = dataUrl;
             console.log(dataUrl)
@@ -414,12 +421,13 @@ import {formatDate} from '../common/date.js';
       updateItemsPerPage (number) {
         this.itemsPerPage = number
       },
-      openQuestionnaire (questionnaireID) {
+      openQuestionnaire (item) {
+        if(item.havePublish == 1){
         this.$http({
         method: "post",
         url: "/openQuestionnaire",
         params: {
-          questionnaireID:questionnaireID
+          questionnaireID:item.questionnaireID
         },
       })
         .then((res) => {
@@ -431,6 +439,25 @@ import {formatDate} from '../common/date.js';
         .catch((err) => {
           console.log(err);
         });
+      }
+      else if(item.havePublish == 0){
+        this.$http({
+        method: "post",
+        url: "/publishQuestionnaire",
+        params: {
+          questionnaireID:item.questionnaireID
+        },
+      })
+        .then((res) => {
+          if (res.data.success) {
+            this.msgSuccess('发布成功');
+            this.showMyQuestionnaire();
+          } 
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      }
       },
       copyQuestionnaire (questionnaireID) {
         this.$http({

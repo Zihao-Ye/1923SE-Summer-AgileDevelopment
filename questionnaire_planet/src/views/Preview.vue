@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div id= 'pdfDom'>
   <v-card class="mx-auto" max-width="1000" elevation="10">
     <h1 class="text-center">{{questionnaire.title}}</h1>
     <h3 class="text-center">{{questionnaire.questionnaireNote}}</h3>
     <v-container>
     <v-row>
       <v-spacer></v-spacer>
-      <v-btn color="#546E7A" text >
+      <v-btn color="#546E7A" text v-on:click="getPdf()">
         导出问卷
         <i class="el-icon-upload"></i>
       </v-btn>
@@ -225,6 +225,7 @@
 <script>
 export default {
   data: () => ({
+    htmlTitle: '页面导出PDF文件名',
     questionnaire:{},
     questions:[],
     options: {},
@@ -259,6 +260,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
+              this.htmlTitle = res.data.questionnaire.title
               this.questionnaire=res.data.questionnaire
               this.questions=res.data.questionList
               this.requireNum=0
@@ -279,6 +281,11 @@ export default {
                   this.$set(this.text,question.questionNo,"")
                 }
               }
+              if(this.$store.state.isPrint) {
+                this.msgSuccess(this.$store.state.isPrint);
+                this.getPdf();
+                this.$store.commit("setNoPrint");
+                }
             }
           })
           .catch((err) => {
