@@ -414,14 +414,16 @@ public class QuestionnaireController {
             questionnaire.setStartTime(startTime);
             questionnaire.setEndTime(endTime);
             questionNaireService.copyQuestionnaire(questionnaire);
-            Integer newQuestionnaireID=questionNaireService.getRecentQuestionnaireByUserID(userID).getQuestionnaireID();
+            Questionnaire recentQuestionnaire=questionNaireService.getRecentQuestionnaireByUserID(userID);
+            Integer newQuestionnaireID=recentQuestionnaire.getQuestionnaireID();
             if(questionList.size()!=0){
                 for (QuestionContent question:questionList){
                     Integer kind=question.getQuestionKind();
                     Integer questionContentID=question.getQuestionContentID();
                     question.setQuestionnaireID(newQuestionnaireID);
                     questionNaireService.copyQuestion(question);
-                    Integer newQuestionContentID=questionNaireService.getRecentQuestionByQuestionnaireID(newQuestionnaireID).getQuestionContentID();
+                    QuestionContent recentQuestion=questionNaireService.getRecentQuestionByQuestionnaireID(newQuestionnaireID);
+                    Integer newQuestionContentID=recentQuestion.getQuestionContentID();
                     if(kind==4){//评分题
                         ScoreQuestion scoreQuestion=questionNaireService.getScoreQuestionByQuestionContentID(questionContentID);
                         scoreQuestion.setQuestionContentID(newQuestionContentID);

@@ -3,8 +3,8 @@
 <mapper namespace ="com.example.SESummer.Dao.QuestionnaireDao" >
     <!-- 创建问卷 -->
     <insert id="createQuestionnaire" parameterType="Questionnaire">
-        insert into questionnaire(title, create_time, kind, question_pwd, is_private, start_time, end_time, masterid,questionnaire_note)
-        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionnaireNote})
+        insert into questionnaire(title, create_time, kind, question_pwd, is_private, start_time, end_time, masterid,questionnaire_note,have_publish)
+        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionnaireNote},0)
     </insert>
     <!-- 添加问题 -->
     <insert id="addQuestion" parameterType="QuestionContent">
@@ -124,8 +124,8 @@
     </delete>
     <!-- 复制问卷-复制问卷基本信息-->
     <insert id="copyQuestionnaire" parameterType="Questionnaire">
-        insert into questionnaire(title, create_time, kind, question_pwd, is_private,start_time, end_time, masterid,questionnaire_note)
-        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionnaireNote})
+        insert into questionnaire(title, create_time, kind, question_pwd, is_private,start_time, end_time, masterid,questionnaire_note,have_publish)
+        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionnaireNote},0)
     </insert>
     <!-- 获取最近创建的问卷-->
     <select id="getRecentQuestionnaireByUserID" resultType="Questionnaire">
@@ -133,6 +133,7 @@
         from questionnaire
         where masterid=#{masterID}
         order by create_time desc
+        limit 0,1
     </select>
     <!-- 复制问卷-复制问题基本信息 -->
     <insert id="copyQuestion" parameterType="QuestionContent">
@@ -144,6 +145,7 @@
         select *
         from question_content
         where questionnaireid=#{questionnairedID}
-        order by question_contentid desc
+        order by question_contentid
+        desc limit 0,1
     </select>
 </mapper>
