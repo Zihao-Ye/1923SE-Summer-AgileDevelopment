@@ -274,7 +274,7 @@
           <v-container>
             <span
                 class="text-h2 font-weight-light"
-            >平均分：{{maxScores[question.questionNo].averages}}</span>
+            >平均分：{{maxScores[question.questionNo].averageScore}}</span>
           </v-container>
         </template>
       </v-card>
