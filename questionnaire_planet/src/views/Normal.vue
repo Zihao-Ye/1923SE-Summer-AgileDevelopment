@@ -460,9 +460,7 @@
               this.optionDialog3=true
           }else {
               var m=0
-              if(this.must===false){
-                m=0
-              }else if(this.must===true){
+              if(this.must){
                 m=1
               }
               console.log(m)
