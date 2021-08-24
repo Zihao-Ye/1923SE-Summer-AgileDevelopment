@@ -42,7 +42,7 @@
             min-width="180px"
             rounded
             outlined
-            :to="{path: '/normal'}"
+            :to="{path: '/normal/0'}"
         >
           创建问卷
         </v-btn>

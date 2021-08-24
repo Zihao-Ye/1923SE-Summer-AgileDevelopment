@@ -166,7 +166,7 @@
                         <i class="el-icon-video-pause"></i>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn text color="#00796B">编辑问卷<i class="el-icon-edit"></i></v-btn>
+                    <v-btn text color="#00796B" :to="{path:`/normal/${item.questionnaireID}`}">编辑问卷<i class="el-icon-edit"></i></v-btn>
                 </v-list-item>
                 <v-list-item>
                     <v-btn @click="printQuestionnaire(item.questionnaireID)" color="#546E7A" text >

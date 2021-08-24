@@ -48,7 +48,7 @@ const routes = [
   ]
   },
   {
-    path:'/normal',
+    path:'/normal/:id',
     name:'Normal',
     component: Normal
   },
