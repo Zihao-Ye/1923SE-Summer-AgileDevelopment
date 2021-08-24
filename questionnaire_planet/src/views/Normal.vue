@@ -16,6 +16,19 @@
       <v-btn text color="#2196F3" @click="save1">
           保存
       </v-btn>
+      <v-btn
+      absolute
+      class="goback"
+      fab
+      dark
+      small
+      color="primary"
+      :to="{path:'/QuestionnaireManage'}"
+  >
+    <v-icon dark>
+      mdi-close
+    </v-icon>
+  </v-btn>
   </div>
   <div class="whole">
     <div class="ques">
@@ -452,6 +465,8 @@
               }else if(this.must==true){
                 m=1
               }
+              console.log(m)
+              console.log("m")
               this.$http({
                   method: "post",
                   url: "/editQuestion",
@@ -697,7 +712,8 @@
               this.optionDialog2=true
           }else {
                 // if(this.problem.options.indexOf(this.option)==-1){
-                this.$set(this.problem.options,this.problem.options.length,this.option)
+                // this.$set(this.problem.options,this.problem.options.length,this.option)
+                this.problem.options.push(JSON.parse( JSON.stringify(this.option) ))
                 this.option={
                 id:0,
                 content:""
@@ -797,8 +813,6 @@
             console.log(err);
           });
         
-        
-        
       },
       //开始拖拽事件
       onStart(){
@@ -873,7 +887,9 @@
         
       },
       load() {
-        if(false){
+        if(this.$route.params.id!=0){
+          this.reveal=0
+          this.qid=this.$route.params.id
           this.$http({
           method:"get",
           url:"/showQuestionnaireInfo",
@@ -893,16 +909,53 @@
               var j
               for(j=0;j<li.length;j++){
                 var p={
-                  id:questionContentID,
+                  id:li[j].questionContentID,
                   no:j+1,
-                  name:questionContent,
-                  type:questionKind,
-                  multi:requireSig,
-                  desciption:questionNote,
+                  name:li[j].questionContent,
+                  type:li[j].questionKind,
+                  multi:li[j].requireSig,
+                  desciption:li[j].questionNote,
                 }
                 this.problems.push(JSON.parse( JSON.stringify(p) ))
               }
-
+              console.log(1)
+              console.log(this.problems[0])
+              for(j=0;j<=this.problems.length;j++){
+                console,log(j)
+                console.log(problems[j])
+                if(this.problems[j].type==1 || this.problems[j].type==2){
+                  console.log(2)
+              console.log(this.problems)
+                  this.$http({
+                          method:"get",
+                          url:"/showQuestionOptions",
+                          params:{
+                            questionContentID:this.problems[j].id
+                          },
+                        })
+                          .then((res) => {
+                            console.log("问卷信息")
+                            console.log(res.data)
+                            if(res.data.success){
+                              var li=res.data.questionOptionList
+                              console.log(this.problems[j])
+                              var index
+                              
+                              for(index=0;index<this.problems[j].options.length;index++){
+                                console.log(this.problems[j].options)
+                                this.problems[j].options[index].id=li[index].questionOptionID
+                                this.problems[j].options[index].content=li[index].optionContent
+                              }
+                              
+                              }
+                            
+                          })
+                          .catch((err) => {
+                            console.log(err)
+                          })
+                }
+              }
+              console.log(this.problems)
             }
           })
           .catch((err) => {
