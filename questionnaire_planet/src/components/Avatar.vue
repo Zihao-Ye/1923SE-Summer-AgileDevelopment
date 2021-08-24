@@ -3,7 +3,7 @@
     <template v-slot:activator="{ on }">
       <v-btn icon v-on="on">
         <v-avatar  size="40" color="#96CDCD">
-            <span>{{$store.state.userID.substr(0,1)}}</span>
+            <span>{{$store.state.userName.substr(0,1)}}</span>
         </v-avatar>
       </v-btn>
     </template>
@@ -11,7 +11,7 @@
       <v-list-item-content class="justify-center">
         <div class="mx-auto text-center">
           <v-avatar color="#96CDCD">
-              <span>{{$store.state.userID.substr(0,1)}}</span>
+              <span>{{$store.state.userName.substr(0,1)}}</span>
           </v-avatar>
           <v-btn depressed rounded text @click="logout"> 退出登录 </v-btn>
         </div>

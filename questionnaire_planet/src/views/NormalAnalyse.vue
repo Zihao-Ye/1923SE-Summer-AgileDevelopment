@@ -547,17 +547,17 @@ export default {
     },
     getDataUrl(){
       this.$http({
-        method: "get",
-        url: "/showScoreQuestion",
+        method: "post",
+        url: "/DataOutput",
         params: {
           questionnaireID:this.$route.params.id,
-          userID:this.user.userID,
+          userID:this.$store.state.userID,
         },
       })
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              let url="http://39.105.38.175/download/"+this.user.userID+this.$route.params.id
+              let url="http://39.105.38.175/download/"+this.user.userID+"-"+this.$route.params.id+"-"+".xlsx"
               window.open(url)
             }
           })
@@ -574,6 +574,7 @@ export default {
   },
   created() {
     this.getQuestionnaire()
+
   }
 }
 </script>
