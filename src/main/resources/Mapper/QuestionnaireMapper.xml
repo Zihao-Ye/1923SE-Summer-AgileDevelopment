@@ -18,8 +18,8 @@
     </insert>
     <!-- 添加评分题分数上限-->
     <insert id="setScore" parameterType="ScoreQuestion">
-        insert into score_question(question_contentid, max_score)
-        values(#{questionContentID},#{maxScore})
+        insert into score_question(question_contentid, max_score,average_score)
+        values(#{questionContentID},#{maxScore},0)
     </insert>
     <!-- 问题排序-->
     <update id="rankQuestion" parameterType="QuestionContent">
