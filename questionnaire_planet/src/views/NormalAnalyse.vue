@@ -368,7 +368,8 @@ export default {
           for(let option of res.data.questionOptionList){
             console.log(option)
             vote.push(option.voteVolume)
-            name.push(option.optionContent)
+            let content=option.optionContent+":"+option.voteVolume
+            name.push(content)
           }
           this.$set(this.optionVote,question.questionNo,vote)
           this.$set(this.optionName,question.questionNo,name)
