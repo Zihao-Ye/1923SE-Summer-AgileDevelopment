@@ -65,6 +65,7 @@ export default {
             this.defaultActiveMenu = menu.route
         },
         createBlankQuestionnaire() {
+          this.$router.push({path:'/normal/0'})
             console.log('新建成功')
         },
     }

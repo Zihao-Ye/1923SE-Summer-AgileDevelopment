@@ -1,11 +1,11 @@
 <template>
-  <v-container fluid>
+  <v-container fluid id = 'pdfDom'>
     <v-data-iterator
       :items="items"
       :items-per-page.sync="itemsPerPage"
       :page.sync="page"
       :search="search"
-      :sort-by="sortBy.toLowerCase()"
+      :sort-by="sortBy"
       :sort-desc="sortDesc"
       hide-default-footer
     >
@@ -106,10 +106,14 @@
                     第一次发布时间:
                   </v-list-item-content>
                   <v-list-item-content
+                    v-if="item.havePublish"
                     class="align-end"
                     :class="{ 'blue--text': sortBy === 'startTime' }"
                   >
                     {{ item.startTime | formatDate }}
+                  </v-list-item-content>
+                  <v-list-item-content v-else class="align-end" :class="{ 'blue--text': sortBy === 'startTime' }">
+                    未发布
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -117,10 +121,14 @@
                     最后一次发布时间:
                   </v-list-item-content>
                   <v-list-item-content
+                     v-if="item.havePublish"
                     class="align-end"
                     :class="{ 'blue--text': sortBy === 'endTime' }"
                   >
                     {{ item.endTime | formatDate }}
+                  </v-list-item-content>
+                  <v-list-item-content v-else class="align-end" :class="{ 'blue--text': sortBy === 'endTime' }">
+                    未发布
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -142,14 +150,14 @@
                     class="align-end"
                     :class="{ 'blue--text': sortBy === 'kind' }"
                   >
-                    {{ item.kind }}
+                    {{ questionnaireKind(item) }}
                   </v-list-item-content>
                 </v-list-item>
 
                 <v-divider></v-divider>
 
                 <v-list-item>
-                    <v-btn text v-if='!item.isVisitable' @click="openQuestionnaire(item.questionnaireID)" color="primary">
+                    <v-btn text v-if='!item.isVisitable' @click="openQuestionnaire(item)" color="primary">
                         开启问卷
                         <i class="el-icon-video-play"></i>
                     </v-btn>
@@ -158,15 +166,15 @@
                         <i class="el-icon-video-pause"></i>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn text color="#00796B">编辑问卷<i class="el-icon-edit"></i></v-btn>
+                    <v-btn text color="#00796B" :to="{path:`/normal/${item.questionnaireID}`}">编辑问卷<i class="el-icon-edit"></i></v-btn>
                 </v-list-item>
                 <v-list-item>
-                    <v-btn color="#546E7A" text >
+                    <v-btn @click="printQuestionnaire(item.questionnaireID)" color="#546E7A" text >
                            导出问卷                               
                            <i class="el-icon-upload"></i>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn text color="#000000">
+                    <v-btn text @click="copyQuestionnaire(item.questionnaireID)" color="#000000">
                         复制问卷
                         <i class="el-icon-document-copy"></i>
                         </v-btn>
@@ -177,18 +185,68 @@
                         <i class="el-icon-delete-solid"></i>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn text color="#FBC02D">
+                    <v-btn :to="'/preview/' + item.questionnaireID" text color="#FBC02D">
                             预览问卷
                             <i class="el-icon-view"></i>
                             </v-btn>
 
                 </v-list-item>
                 <v-list-item>
-                    <v-btn color="#546E7A" text >                              
-                      分享链接 <i class="el-icon-link"></i>
-                </v-btn>
+      <v-dialog
+        transition="dialog-bottom-transition"
+        max-width="600"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="#546E7A" text
+            v-bind="attrs"
+            v-on="on"
+          >分享链接<i class="el-icon-link"></i></v-btn>
+        </template>
+        <template v-slot:default="dialog">
+          <v-card>
+            <v-toolbar
+              color="primary"
+              dark
+            >{{item.title}}————问卷分享链接</v-toolbar>
+            <v-card-text>
+              <div  class="pa-5 justify-center">问卷填写链接：{{questionnaireURL(item)}}
+                <!-- <el-button v-clipboard:copy="questionnaireURL(item)"
+                                           v-clipboard:error="()=>{this.msgError('复制失败')}"
+                                           v-clipboard:success="()=>{this.msgSuccess('复制成功')}" type="primary"
+                                >
+                                    复制链接
+                                </el-button> -->
+              </div>
+              <div>
+                <vue-qr :text="questionnaireURL(item)" 
+                      :callback="qrCodeGenSuccess()"
+                      :margin="20" 
+                      colorDark="#000" 
+                      colorLight="#fff" 
+                      :size="200">
+                </vue-qr>
+                <!-- <div style="text-align: center;">
+                            <el-link type="primary" @click="()=>{
+                                this.downloadFile('qrcode.png',this.qrCodeUrl)
+                            }"
+                            >
+                                下载分享二维码
+                            </el-link>
+                        </div> -->
+              </div>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn
+                text
+                @click="dialog.value = false"
+              >返回</v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
                     <v-spacer></v-spacer>
-                    <v-btn text color="#B388FF">
+                    <v-btn text color="#B388FF" :to="'/normalAnalyse/' + item.questionnaireID">
                         数据分析
                         <i class="el-icon-s-data"></i>
                         </v-btn>
@@ -264,8 +322,10 @@
 </template>
 
 <script>
+import vueQr from 'vue-qr';
 import {formatDate} from '../common/date.js';
   export default {
+    components:{vueQr},
     filters: {
       formatDate(time) {
         // time = time * 1000
@@ -276,6 +336,8 @@ import {formatDate} from '../common/date.js';
     },
     data () {
       return {
+        htmlTitle: '测试PDF文件名',
+        qrCodeUrl: '',
         isOpening: false,
         itemsPerPageArray: [4, 8, 12],
         search: '',
@@ -298,74 +360,8 @@ import {formatDate} from '../common/date.js';
           'status',
           'kind'
         ],
-        items: [
-          {
-            title: 'Frozen Yogurt',
-            recycleVolume: 156,
-            startTime: '2021-08-03 18:00:11',
-            endTime: '2021-08-03 18:00:11',
-            createTime: '2021-08-03 18:00:11',
-            status:'收集中',
-            kind:'普通问卷'
-          },
-          {
-            title: 'Arozen Yogurt',
-            recycleVolume: 154,
-            startTime: '2021-08-02 18:00:11',
-            endTime: '2021-08-02 18:00:11',
-            createTime: '2021-08-02 18:00:11',
-            status:'收集中'
-          },
-          {
-            title: 'Brozen Yogurt',
-            recycleVolume: 159,
-            startTime: '2021-08-01 18:00:11',
-            endTime: '2021-08-01 18:00:11',
-            createTime: '2021-08-01 18:00:11',
-            status:'收集中'
-          },
-          {
-            title: 'Frozen Yogurt',
-            recycleVolume: 159,
-            startTime: '2021 08 03 18:00',
-            endTime: '2021-08-03 18:00',
-            createTime: '2021-08-03 18:00',
-            status:'收集中'
-          },
-          {
-            title: 'Frozen Yogurt',
-            recycleVolume: 159,
-            startTime: '2021 08 03 18:00',
-            endTime: '2021-08-03 18:00',
-            createTime: '2021-08-03 18:00',
-            status:'收集中'
-          },
-          {
-            title: 'Frozen Yogurt',
-            recycleVolume: 159,
-            startTime: '2021 08 03 17:00',
-            endTime: '2021-08-03 18:00',
-            createTime: '2021-08-03 18:00',
-            status:'收集中'
-          },
-          {
-            title: 'Frozen Yogurt',
-            recycleVolume: 159,
-            startTime: '2021 08 03 18:00',
-            endTime: '2021-08-03 18:00',
-            createTime: '2021-08-03 18:00',
-            status:'收集中'
-          },
-          {
-            title: 'Frozen Yogurt',
-            recycleVolume: 159,
-            startTime: '2021 08 03 18:00',
-            endTime: '2021-08-03 18:00',
-            createTime: '2021-08-03 18:00',
-            status:'收集中'
-          },
+        items: []
           
-        ],
       }
     },
     computed: {
@@ -381,10 +377,30 @@ import {formatDate} from '../common/date.js';
     },
 
     methods: {
+      printQuestionnaire (id) {
+        //直接调用$router.push 实现携带参数的跳转
+        this.$store.commit("setIsPrint");
+        this.$router.push({
+          path: `/preview/${id}`,
+        })
+      },
+      qrCodeGenSuccess(dataUrl) {
+            this.qrCodeUrl = dataUrl;
+            console.log(dataUrl)
+        },
+      questionnaireURL (item) {
+        return `http://39.105.38.175/fillQuestionnaire/${item.questionnaireID}`
+      },
       questionnaireStatus (item) {
         if(item.havePublish == 0) return '未发布';
         else if(item.havePublish == 1 && item.isVisitable == 0) return '已暂停收集'
         else return '收集中'
+      },
+      questionnaireKind (item) {
+        if(item.kind == 1 ) return '普通问卷';
+        else if(item.kind == 2) return '投票问卷';
+        else if(item.kind == 3) return '报名问卷';
+        else if(item.kind == 4) return '考试问卷';
       },
       showMyQuestionnaire() {
       this.$http({
@@ -405,12 +421,13 @@ import {formatDate} from '../common/date.js';
       updateItemsPerPage (number) {
         this.itemsPerPage = number
       },
-      openQuestionnaire (questionnaireID) {
+      openQuestionnaire (item) {
+        if(item.havePublish == 1){
         this.$http({
         method: "post",
         url: "/openQuestionnaire",
         params: {
-          questionnaireID:questionnaireID
+          questionnaireID:item.questionnaireID
         },
       })
         .then((res) => {
@@ -420,6 +437,44 @@ import {formatDate} from '../common/date.js';
           } 
         })
         .catch((err) => {
+          console.log(err);
+        });
+      }
+      else if(item.havePublish == 0){
+        this.$http({
+        method: "post",
+        url: "/publishQuestionnaire",
+        params: {
+          questionnaireID:item.questionnaireID
+        },
+      })
+        .then((res) => {
+          if (res.data.success) {
+            this.msgSuccess('发布成功');
+            this.showMyQuestionnaire();
+          } 
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      }
+      },
+      copyQuestionnaire (questionnaireID) {
+        this.$http({
+        method: "post",
+        url: "/copyQuestionnaire",
+        params: {
+          questionnaireID:questionnaireID
+        },
+      })
+        .then((res) => {
+          if (res.data.success) {
+            this.msgSuccess('复制成功');
+            this.showMyQuestionnaire();
+          } 
+        })
+        .catch((err) => {
+          this.msgSuccess('复制失败');
           console.log(err);
         });
       },
@@ -459,6 +514,28 @@ import {formatDate} from '../common/date.js';
           console.log(err);
         });
       },
+      downloadFile(fileName, content) {
+            let aLink = document.createElement('a')
+            let blob = this.base64ToBlob(content) // new Blob([content]);
+            let evt = document.createEvent('HTMLEvents')
+            evt.initEvent('click', true, true)// initEvent 不加后两个参数在FF下会报错  事件类型，是否冒泡，是否阻止浏览器的默认行为
+            aLink.download = fileName
+            aLink.href = URL.createObjectURL(blob)
+            // aLink.dispatchEvent(evt);
+            aLink.click()
+        },
+        // base64转blob
+        base64ToBlob(code) {
+            let parts = code.split(';base64,')
+            let contentType = parts[0].split(':')[1]
+            let raw = window.atob(parts[1])
+            let rawLength = raw.length
+            let uInt8Array = new Uint8Array(rawLength)
+            for (let i = 0; i < rawLength; ++i) {
+                uInt8Array[i] = raw.charCodeAt(i)
+            }
+            return new Blob([uInt8Array], {type: contentType})
+        },
     },
   }
 </script>

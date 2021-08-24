@@ -20,21 +20,21 @@
                 align="center"
                 label="已收集数"
             />
-            <el-table-column
-                align="center"
-                prop="createTime"
-                label="创建时间"
-            />
-            <el-table-column
-                align="center"
-                prop="startTime"
-                label="第一次发布时间"
-            />
-            <el-table-column
-                align="center"
-                prop="endTime"
-                label="最后一次发布时间"
-            />
+            <el-table-column align="center" label="创建时间">
+                <template slot-scope="scope">
+                    <div>{{scope.row.createTime | formatDate}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" label="第一次发布时间">
+                <template slot-scope="scope">
+                    <div>{{scope.row.startTime | formatDate}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" label="最后一次发布时间">
+                <template slot-scope="scope">
+                    <div>{{scope.row.endTime | formatDate}}</div>
+                </template>
+            </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <v-btn text color="primary" @click="recoverQuestionnaire(scope.row.questionnaireID)">恢复</v-btn>
@@ -68,8 +68,16 @@
     </div>
 </template>
 <script>
-
+import {formatDate} from '../common/date.js';
 export default {
+    filters: {
+      formatDate(time) {
+        // time = time * 1000
+        let date = new Date(time)
+        console.log(new Date(time))
+        return formatDate(date, 'yyyy-MM-dd hh:mm')
+      }
+    },
     name: 'RecycleBin',
     data() {
         return {
