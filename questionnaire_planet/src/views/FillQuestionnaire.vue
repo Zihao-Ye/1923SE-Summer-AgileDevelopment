@@ -200,6 +200,7 @@
 
 <script>
 export default {
+  inject: ["reload"],
   data: () => ({
     questionnaire:{},
     questions:[],
@@ -222,6 +223,7 @@ export default {
       userPwd:"visitor"
     },
     fillsuccess:false,
+    timer:null
   }),
   methods:{
     getQuestionnaire() {
@@ -439,23 +441,26 @@ export default {
         console.log(this.score[index])
         this.submitScore(this.score[index],index-1)
       }
-      this.$http({
-        method: "post",
-        url: "/submit",
-        params: {
-          isSubmit:1,
-          questionnaireID:this.$route.params.id,
-          userID:this.user.userID,
-        },
-      })
-          .then((res) => {
-            console.log(res.data)
-            if(res.data.success)
-            this.$router.push(({name:'ThanksNormal'}))
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+      this.timer = setTimeout(() => {
+        //设置延迟执行
+        this.$http({
+          method: "post",
+          url: "/submit",
+          params: {
+            isSubmit:1,
+            questionnaireID:this.$route.params.id,
+            userID:this.user.userID,
+          },
+        })
+            .then((res) => {
+              console.log(res.data)
+              if(res.data.success)
+                this.$router.push(({name:'ThanksNormal'}))
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+      }, 1000);
 
     },
   },
