@@ -6,10 +6,12 @@
       <v-container>
         <v-row>
           <v-spacer></v-spacer>
+          <!--
           <v-btn color="#546E7A" text @click="getDataUrl">
             导出数据
             <i class="el-icon-upload"></i>
           </v-btn>
+          -->
         </v-row>
       </v-container>
       <!--单选必做题-->
