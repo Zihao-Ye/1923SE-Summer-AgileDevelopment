@@ -460,12 +460,13 @@
               this.optionDialog3=true
           }else {
               let m=0
-              if(this.must){
+              if(this.problem.must){
                 console.log("tr")
                 m=1
               }
               console.log(m)
               console.log("m")
+              console.log(this.problem.must)
               this.$http({
                   method: "post",
                   url: "/editQuestion",
