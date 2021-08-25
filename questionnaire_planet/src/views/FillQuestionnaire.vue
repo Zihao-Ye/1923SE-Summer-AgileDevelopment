@@ -200,6 +200,7 @@
 
 <script>
 export default {
+  inject: ["reload"],
   data: () => ({
     questionnaire:{},
     questions:[],
@@ -222,6 +223,7 @@ export default {
       userPwd:"visitor"
     },
     fillsuccess:false,
+    timer:null
   }),
   methods:{
     getQuestionnaire() {
@@ -235,24 +237,28 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              this.questionnaire=res.data.questionnaire
-              this.questions=res.data.questionList
-              this.requireNum=0
-              for(const question of this.questions){
-                if(question.requireSig===1){
-                  this.requireNum+=1
-                }
-                if(question.questionKind===1){
-                  this.$set(this.radioModel,question.questionNo,null)
-                  this.getOptions(question)
-                }else if(question.questionKind===4){
-                  this.$set(this.score,question.questionNo,0)
-                  this.getMaxScore(question)
-                }else if(question.questionKind===2){
-                  this.$set(this.checkboxModel,question.questionNo,[])
-                  this.getOptions(question)
-                }else if(question.questionKind===3){
-                  this.$set(this.text,question.questionNo,"")
+              if(res.data.questionnaire.isVisitable===0){
+                this.$router.push({name:'TurnedOff'})
+              }else {
+                this.questionnaire = res.data.questionnaire
+                this.questions = res.data.questionList
+                this.requireNum = 0
+                for (const question of this.questions) {
+                  if (question.requireSig === 1) {
+                    this.requireNum += 1
+                  }
+                  if (question.questionKind === 1) {
+                    this.$set(this.radioModel, question.questionNo, null)
+                    this.getOptions(question)
+                  } else if (question.questionKind === 4) {
+                    this.$set(this.score, question.questionNo, 0)
+                    this.getMaxScore(question)
+                  } else if (question.questionKind === 2) {
+                    this.$set(this.checkboxModel, question.questionNo, [])
+                    this.getOptions(question)
+                  } else if (question.questionKind === 3) {
+                    this.$set(this.text, question.questionNo, "")
+                  }
                 }
               }
             }
@@ -382,6 +388,7 @@ export default {
         },
       })
           .then((res) => {
+            console.log("填空题")
             console.log(res.data)
             if (res.data.success) {
               this.fillsuccess=true
@@ -434,7 +441,26 @@ export default {
         console.log(this.score[index])
         this.submitScore(this.score[index],index-1)
       }
-      this.$router.push(({name:'ThanksNormal'}))
+      this.timer = setTimeout(() => {
+        //设置延迟执行
+        this.$http({
+          method: "post",
+          url: "/submit",
+          params: {
+            isSubmit:1,
+            questionnaireID:this.$route.params.id,
+            userID:this.user.userID,
+          },
+        })
+            .then((res) => {
+              console.log(res.data)
+              this.$router.push(({name:'ThanksNormal'}))
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+      }, 1000);
+
     },
   },
   computed:{

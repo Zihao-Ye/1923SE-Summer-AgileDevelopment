@@ -6,10 +6,12 @@
       <v-container>
         <v-row>
           <v-spacer></v-spacer>
+          <!--
           <v-btn color="#546E7A" text @click="getDataUrl">
             导出数据
             <i class="el-icon-upload"></i>
           </v-btn>
+          -->
         </v-row>
       </v-container>
       <!--单选必做题-->
@@ -274,7 +276,7 @@
           <v-container>
             <span
                 class="text-h2 font-weight-light"
-            >平均分：{{maxScores[question.questionNo].averages}}</span>
+            >平均分：{{maxScores[question.questionNo].averageScore}}</span>
           </v-container>
         </template>
       </v-card>
@@ -557,7 +559,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              let url="http://39.105.38.175/download/userid-"+this.user.userID+"-"+this.$route.params.id+".xlsx"
+              let url="http://39.105.38.175/download/userid-"+this.$store.state.userID+"-"+this.$route.params.id+".xlsx"
               window.open(url)
             }
           })

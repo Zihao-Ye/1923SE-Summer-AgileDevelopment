@@ -459,8 +459,9 @@
           }else if((this.problem.type==1 || this.problem.type==2) && this.problem.options.length==0){
               this.optionDialog3=true
           }else {
-              var m=0
+              let m=0
               if(this.must){
+                console.log("tr")
                 m=1
               }
               console.log(m)
@@ -487,14 +488,14 @@
                   console.log(this.problem.type)
               if(this.problem.type==1||this.problem.type==2){
 
-                var j
+                let j
                 for(j=0;j<this.problems.length;j++){
                   if(this.problems[j].id==this.problem.id){
                     break;
                   }
                 }
-                var i=j
-                var k
+                let i=j
+                let k
                 for(j=0;j<this.problems[i].options.length;j++){
                   for(k=0;k<this.problem.options.length;k++){
                     if(this.problem.options[k].content==this.problems[i].options[j].content)
@@ -554,9 +555,9 @@
                             console.log("问卷信息")
                             console.log(res.data)
                             if(res.data.success){
-                              var li=res.data.questionOptionList
+                              let li=res.data.questionOptionList
                               console.log(this.problem)
-                              var index
+                              let index
                               for(index=0;index<this.problem.options.length;index++){
                                 this.problem.options[index].id=li[index].questionOptionID
                               }
@@ -578,7 +579,7 @@
 
 
 
-                // var j
+                // let j
                 // for(j=0;j<this.problem.options.length;j++){
                 //   if(this.problem.options[j].id==0 && this.deloptions.indexOf(this.problem.options[j])==-1){
                 //     this.$http({
@@ -618,8 +619,8 @@
                 //   .then((res) => {
                 //     console.log(res.data)
                 //     if(res.data.success){
-                //       var li=res.data.questionOptionList
-                //       var j
+                //       let li=res.data.questionOptionList
+                //       let j
                 //       for(j=0;j<li.length;j++){
                 //         if(this.problem.options[j].id==0)
                 //         this.question.options[j].id=li[li.length-1-j].questionOptionID
@@ -794,10 +795,10 @@
                 .then((res) => {
                   console.log(res.data)
                   if(res.data.success){
-                    var li=res.data.questionList
+                    let li=res.data.questionList
                     this.problem.id=li[li.length-1].questionContentID;
                     console.log(this.problem.id)
-                    var p=JSON.parse( JSON.stringify(this.problem) )
+                    let p=JSON.parse( JSON.stringify(this.problem) )
                     this.problems.push(p)
                     console.log(this.problems[0].id)
                   }
@@ -867,7 +868,7 @@
                 .then((res) => {
                   console.log(res.data)
                   if(res.data.success){
-                    var li=res.data.questionnaireList
+                    let li=res.data.questionnaireList
                     this.qid=li[0].questionnaireID
                   }
                 })
@@ -898,13 +899,13 @@
           .then((res) => {
             console.log(res.data)
             if(res.data.success){
-              var qn=res.data.questionnaire
+              let qn=res.data.questionnaire
               this.qid=qn.questionnaireID
               this.title=qn.title
               this.isPrivate=qn.isPrivate
               this.desciption=qn.questionnaireNote
-              var li=res.data.questionList
-              var j
+              let li=res.data.questionList
+              let j
               for(j=0;j<li.length;j++){
                 this.problem={
                   id:li[j].questionContentID,
@@ -937,12 +938,12 @@
                             console.log("问卷信息")
                             console.log(res.data)
                             if(res.data.success){
-                              var li=res.data.questionOptionList
+                              let li=res.data.questionOptionList
                               console.log(this.problems[j])
-                              var index
+                              let index
                               
                               for(index=0;index<li.length;index++){
-                                var op={
+                                let op={
                                   id:li[index].questionOptionID,
                                   content:li[index].optionContent
                                 }
@@ -980,7 +981,7 @@
         }
       },
       save1() {
-        var i
+        let i
         for(i=0;i<this.problems.length;i++){
           this.$http({
           method: "post",
@@ -1002,7 +1003,7 @@
         
       }
       // save() {
-      //   var i
+      //   let i
       //   for(i=0;i<this.problems.length;i++){
       //     this.$http({
       //     method: "post",
@@ -1024,7 +1025,7 @@
       //       console.log(err);
       //     });
       //     if(this.problems[i].type==1||this.problems[i].type==4){
-      //       var j
+      //       let j
       //       for(j=0;j<this.problems[i].options.length;j++){
       //         this.$http({
       //         method: "post",
