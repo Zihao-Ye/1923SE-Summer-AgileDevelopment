@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <v-main>
-      <earth></earth>
       <div class="text-center">
         <v-btn
             class="btn1"
@@ -53,11 +52,9 @@
 </template>
 
 <script>
-  import earth from '../components/Earth.vue'
   import avatar from '../components/Avatar.vue'
   export default {
     components: {
-      earth,
       avatar
     },
   }
