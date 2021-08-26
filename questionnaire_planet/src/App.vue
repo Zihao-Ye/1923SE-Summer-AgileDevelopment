@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="height: 100%">
     <v-main>
       <router-view v-if="isRouterAlive"></router-view>
     </v-main>
