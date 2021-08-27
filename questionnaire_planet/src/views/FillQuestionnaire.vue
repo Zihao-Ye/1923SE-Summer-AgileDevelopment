@@ -9,7 +9,7 @@
         class="mx-auto"
         max-width="800"
         min-height=auto
-        flat
+
     >
       <template v-if="question.questionKind===1 && question.requireSig===1">
         <v-card-title>

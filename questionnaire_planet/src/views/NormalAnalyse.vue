@@ -15,13 +15,14 @@
         </v-row>
       </v-container>
       <!--单选必做题-->
+      <v-container>
       <v-card
           v-for="(question,i) in questions"
           :key="i"
           class="mx-auto"
           max-width="800"
           min-height=auto
-          flat
+
       >
         <template v-if="question.questionKind===1 && question.requireSig===1">
           <v-card-title>
@@ -280,7 +281,9 @@
           </v-container>
         </template>
       </v-card>
+      </v-container>
     </v-card>
+
     <v-btn
         absolute
         class="goback"

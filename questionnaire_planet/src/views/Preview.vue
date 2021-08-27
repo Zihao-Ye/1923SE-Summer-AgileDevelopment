@@ -3,15 +3,7 @@
   <v-card class="mx-auto" max-width="1000" elevation="10">
     <h1 class="text-center">{{questionnaire.title}}</h1>
     <h3 class="text-center">{{questionnaire.questionnaireNote}}</h3>
-    <v-container>
-    <v-row>
-      <v-spacer></v-spacer>
-      <v-btn color="#546E7A" text v-on:click="getPdf()">
-        导出问卷
-        <i class="el-icon-upload"></i>
-      </v-btn>
-    </v-row>
-      </v-container>
+
     <!--单选必做题-->
     <v-card
         v-for="(question,i) in questions"
@@ -199,6 +191,7 @@
           ></v-slider>
         </v-container>
       </template>
+      <v-divider></v-divider>
     </v-card>
     <div class="text-center">
       <v-btn class="ma-2" color="info">
@@ -281,11 +274,7 @@ export default {
                   this.$set(this.text,question.questionNo,"")
                 }
               }
-              if(this.$store.state.isPrint) {
-                this.msgSuccess(this.$store.state.isPrint);
-                this.getPdf();
-                this.$store.commit("setNoPrint");
-                }
+
             }
           })
           .catch((err) => {
@@ -476,6 +465,13 @@ export default {
   },
   created() {
     this.getQuestionnaire()
+  },
+  mounted() {
+    if(this.$store.state.isPrint) {
+      this.msgSuccess(this.$store.state.isPrint);
+      this.getPdf();
+      this.$store.commit("setNoPrint");
+    }
   }
 }
 </script>

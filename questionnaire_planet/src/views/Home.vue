@@ -98,14 +98,14 @@
         if(this.$store.state.login){
           this.$router.push({path:'/QuestionnaireManage'})
         }else{
-          window.alert("请先登陆")
+          this.$router.push({name:'Login'})
         }
       },
       create(){
         if(this.$store.state.login){
           this.$router.push({path: '/normal/0'})
         }else{
-          window.alert("请先登陆")
+          this.$router.push({name:'Login'})
         }
       },
       down(){
