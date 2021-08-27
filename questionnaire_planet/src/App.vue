@@ -2,6 +2,7 @@
   <v-app style="height: 100%">
     <v-main>
       <router-view v-if="isRouterAlive"></router-view>
+
     </v-main>
   </v-app>
 </template>

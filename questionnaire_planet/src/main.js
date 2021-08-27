@@ -8,6 +8,7 @@ import vuetify from './plugins/vuetify'
 import 'element-ui/lib/theme-chalk/index.css';
 import htmlToPdf from './print/htmlToPdf'
 
+
 Vue.use(ElementUI);
 Vue.use(htmlToPdf)
 var Cesium = require('cesium/Cesium');
