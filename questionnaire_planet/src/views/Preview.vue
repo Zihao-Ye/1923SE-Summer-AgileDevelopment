@@ -74,8 +74,8 @@
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
                 :label="option.optionContent"
-                border
                 @change="checkboxAnswer(option);requirePlus(question)"
+                style="display:block;zoom:120%"
             ></el-checkbox>
           </el-checkbox-group>
         </v-container>
@@ -97,8 +97,8 @@
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
                 :label="option.optionContent"
-                border
                 @change="checkboxAnswer(option)"
+                style="display:block;zoom:120%"
             ></el-checkbox>
           </el-checkbox-group>
         </v-container>
@@ -162,6 +162,7 @@
                   :max="maxScores[question.questionNo].maxScore"
                   :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                   @change="requirePlus(question)"
+                  style="zoom:120%"
               ></el-rate>
               <h4 >很满意</h4>
             </v-row>
@@ -184,6 +185,7 @@
                   v-model="score[question.questionNo]"
                   :max="maxScores[question.questionNo].maxScore"
                   :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                  style="zoom:120%"
               ></el-rate>
               <h4 >很满意</h4>
             </v-row>

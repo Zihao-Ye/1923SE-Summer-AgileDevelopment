@@ -89,6 +89,7 @@
                     border
                     @change="checkboxAnswer(option);requirePlus(question)"
                     disabled
+                    style="display:block;zoom:120%"
                 ></el-checkbox>
               </el-checkbox-group>
             </v-container>
@@ -113,6 +114,7 @@
                     border
                     @change="checkboxAnswer(option)"
                     disabled
+                    style="display:block;zoom:120%"
                 ></el-checkbox>
               </el-checkbox-group>
             </v-container>
@@ -179,6 +181,7 @@
                       :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                       @change="requirePlus(question)"
                       disabled
+                      style="zoom:120%"
                   ></el-rate>
                   <h4 >很满意</h4>
                 </v-row>
@@ -202,6 +205,7 @@
                       :max="maxScores[question.questionNo].maxScore"
                       :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                       disabled
+                      style="zoom:120%"
                   ></el-rate>
                   <h4 >很满意</h4>
                 </v-row>
