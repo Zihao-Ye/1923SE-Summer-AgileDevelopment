@@ -1,6 +1,7 @@
 <template>
   <div>
-    经纬度：{{latitude}}{{longitude}}
+    经纬度：{{latitude}},{{longitude}}
+    {{address}}
   </div>
 </template>
 
@@ -10,7 +11,6 @@ export default {
     return{
       latitude:"",
       longitude:"",
-      centerPointer:"",
       address:""
     }
   },
@@ -20,12 +20,12 @@ export default {
         radius: 1000
       })
       geocoder.getAddress(points, (status, result) => {
-        if (status === 'complete' && result.regeocode) {
+        if (status === 'complete') {
+          console.log(result)
           this.address = result.regeocode.formattedAddress
           // console.log('当前经纬度：' + points)
           // console.log('当前详细地址：' + this.address)
           // 在这里请求周边数据点
-          this.getOrundPosition(points[0], points[1])
         }
       })
     },
@@ -45,12 +45,14 @@ export default {
         AMap.event.addListener(geolocation, 'error', onError);
 
         function onComplete(data) {
+          console.log(data)
           // data是具体的定位信息
-          var gpsPoint = GPS.gcj_encrypt(data.position.getLat(), data.position.getLng());
-
-          self.centerPointer = gpsPoint;
-
-          self.getAddress(gpsPoint);
+          self.latitude=data.position.lat
+          self.longitude=data.position.lng
+          self.address=data.formattedAddress
+          //point.push(gpsPoint.lon)
+          //self.centerPointer = point;
+          //self.getAddress(point);
 
         }
 
@@ -96,52 +98,33 @@ export default {
           };
 
         },
-
         outOfChina: function (lat, lon) {
-
           if (lon < 72.004 || lon > 137.8347)
-
             return true;
-
           if (lat < 0.8293 || lat > 55.8271)
-
             return true;
-
           return false;
-
         },
 
         transformLat: function (x, y) {
-
           var ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
-
           ret += (20.0 * Math.sin(6.0 * x * this.PI) + 20.0 * Math.sin(2.0 * x * this.PI)) * 2.0 / 3.0;
-
           ret += (20.0 * Math.sin(y * this.PI) + 40.0 * Math.sin(y / 3.0 * this.PI)) * 2.0 / 3.0;
-
           ret += (160.0 * Math.sin(y / 12.0 * this.PI) + 320 * Math.sin(y * this.PI / 30.0)) * 2.0 / 3.0;
-
           return ret;
-
         },
 
         transformLon: function (x, y) {
-
           var ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
-
           ret += (20.0 * Math.sin(6.0 * x * this.PI) + 20.0 * Math.sin(2.0 * x * this.PI)) * 2.0 / 3.0;
-
           ret += (20.0 * Math.sin(x * this.PI) + 40.0 * Math.sin(x / 3.0 * this.PI)) * 2.0 / 3.0;
-
           ret += (150.0 * Math.sin(x / 12.0 * this.PI) + 300.0 * Math.sin(x / 30.0 * this.PI)) * 2.0 / 3.0;
-
           return ret;
-
         }
-
       };
     },
     getLngLatLocation() {
+      const self=this
       const AMap=window.AMap
       AMap.plugin('AMap.CitySearch', function () {
         var citySearch = new AMap.CitySearch();
@@ -157,6 +140,7 @@ export default {
               })
 
               var lnglat = result.rectangle.split(';')[0].split(',');
+              self.centerPointer=lnglat
               geocoder.getAddress(lnglat, function (status, data) {
                 if (status === 'complete' && data.info === 'OK') {
                   // result为对应的地理位置详细信息
