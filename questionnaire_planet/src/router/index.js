@@ -12,6 +12,7 @@ import FillQuestionnaire from "../views/FillQuestionnaire";
 import ThanksNormal from "../views/ThanksNormal";
 import NormalAnalyse from "../views/NormalAnalyse";
 import TurnedOff from "../views/TurnedOff";
+import star from "../views/Star";
 Vue.use(VueRouter)
 
 const routes = [
@@ -82,6 +83,16 @@ const routes = [
     path: '/turnedOff',
     name: 'TurnedOff',
     component: TurnedOff,
+  },
+  {
+    path:'/normal/',
+    name:'Normal',
+    component: Normal
+  },
+  {
+    path: '/star',
+    name: 'star',
+    component: star,
   },
 ]
 
