@@ -71,7 +71,6 @@
 </template>
 
 <script>
-  import earth from '../components/Earth.vue'
   import avatar from '../components/Avatar.vue'
   export default {
     data(){
@@ -90,7 +89,6 @@
       }
     },
     components: {
-      earth,
       avatar
     },
     methods:{

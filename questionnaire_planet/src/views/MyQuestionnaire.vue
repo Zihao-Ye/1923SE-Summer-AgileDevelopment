@@ -22,7 +22,7 @@
             solo-inverted
             hide-details
             prepend-inner-icon="mdi-magnify"
-            label="Search"
+            label="搜索"
           ></v-text-field>
           <template v-if="$vuetify.breakpoint.mdAndUp">
             <v-spacer></v-spacer>
@@ -32,8 +32,7 @@
               solo-inverted
               hide-details
               :items="sortkeys"
-              prepend-inner-icon="mdi-magnify"
-              label="Sort by"
+              label="排序"
             ></v-select>
             <v-spacer></v-spacer>
             <v-btn-toggle
@@ -80,23 +79,23 @@
 
               <v-list dense>
                 <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'recycleVolume' }">
+                  <v-list-item-content :class="{ 'blue--text': sortBy === '已回收数量' }">
                     已回收数量:
                   </v-list-item-content>
                   <v-list-item-content
                     class="align-end"
-                    :class="{ 'blue--text': sortBy === 'recycleVolume' }"
+                    :class="{ 'blue--text': sortBy === '已回收数量' }"
                   >
                     {{ item.recycleVolume }}
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'createTime' }">
+                  <v-list-item-content :class="{ 'blue--text': sortBy === '创建时间' }">
                     创建时间:
                   </v-list-item-content>
                   <v-list-item-content
                     class="align-end"
-                    :class="{ 'blue--text': sortBy === 'createTime' }"
+                    :class="{ 'blue--text': sortBy === '创建时间' }"
                   >
                     {{ item.createTime | formatDate }}
                   </v-list-item-content>
@@ -189,7 +188,6 @@
                             预览问卷
                             <i class="el-icon-view"></i>
                             </v-btn>
-
                 </v-list-item>
                 <v-list-item>
       <v-dialog
@@ -211,12 +209,6 @@
             >{{item.title}}————问卷分享链接</v-toolbar>
             <v-card-text>
               <div  class="pa-5 justify-center">问卷填写链接：{{questionnaireURL(item)}}
-                <!-- <el-button v-clipboard:copy="questionnaireURL(item)"
-                                           v-clipboard:error="()=>{this.msgError('复制失败')}"
-                                           v-clipboard:success="()=>{this.msgSuccess('复制成功')}" type="primary"
-                                >
-                                    复制链接
-                                </el-button> -->
               </div>
               <div>
                 <vue-qr :text="questionnaireURL(item)" 
@@ -226,14 +218,6 @@
                       colorLight="#fff" 
                       :size="200">
                 </vue-qr>
-                <!-- <div style="text-align: center;">
-                            <el-link type="primary" @click="()=>{
-                                this.downloadFile('qrcode.png',this.qrCodeUrl)
-                            }"
-                            >
-                                下载分享二维码
-                            </el-link>
-                        </div> -->
               </div>
             </v-card-text>
             <v-card-actions class="justify-end">
@@ -347,9 +331,9 @@ import {formatDate} from '../common/date.js';
         itemsPerPage: 4,
         sortBy: '',
         sortkeys: [
-          'title',
-          'recycleVolume',
-          'createTime',
+          '标题',
+          '创建时间',
+          '已回收数量',
         ],
         keys: [
           'title',
