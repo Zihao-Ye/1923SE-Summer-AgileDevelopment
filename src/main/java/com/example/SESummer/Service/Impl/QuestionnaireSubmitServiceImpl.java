@@ -2,19 +2,19 @@ package com.example.SESummer.Service.Impl;
 
 import com.example.SESummer.Dao.QuestionnaireSubmitDao;
 import com.example.SESummer.Entity.QuestionnaireSubmit;
-import com.example.SESummer.Service.QuestionSubmitService;
+import com.example.SESummer.Service.QuestionnaireSubmitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class QuestionnaireSubmitServiceImpl implements QuestionSubmitService {
+public class QuestionnaireSubmitServiceImpl implements QuestionnaireSubmitService {
     @Autowired
     private QuestionnaireSubmitDao questionnaireSubmitDao;
 
     @Override
     //保存提交问卷记录
-    public void addQuestionSubmit(Integer userID,Integer questionnaireID,Integer isSubmit){
-        questionnaireSubmitDao.addQuestionSubmit(userID,questionnaireID,isSubmit);
+    public void addQuestionnaireSubmit(QuestionnaireSubmit questionnaireSubmit){
+        questionnaireSubmitDao.addQuestionnaireSubmit(questionnaireSubmit);
     }
 
 }

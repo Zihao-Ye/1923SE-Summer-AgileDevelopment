@@ -25,7 +25,7 @@ public class UserMessageStoreController {
     @Autowired
     private UserScoreQuestionService userScoreQuestionService;
     @Autowired
-    private QuestionSubmitService questionSubmitService;
+    private QuestionnaireSubmitService questionnaireSubmitService;
     @Autowired
     private UserChooseQuestionService userChooseQuestionService;
     @Autowired
@@ -151,7 +151,11 @@ public class UserMessageStoreController {
     public Map<String,Object> userSubmit(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer isSubmit){
         Map<String,Object> map = new HashMap<>();
         try {
-            questionSubmitService.addQuestionSubmit(userID,questionnaireID,isSubmit);
+            QuestionnaireSubmit questionnaireSubmit=new QuestionnaireSubmit();
+            questionnaireSubmit.setUserID(userID);
+            questionnaireSubmit.setQuestionnaireID(questionnaireID);
+            questionnaireSubmit.setIsSubmit(isSubmit);
+            questionnaireSubmitService.addQuestionnaireSubmit(questionnaireSubmit);
             if(isSubmit==1){
                 questionDataService.addRecycleVolume(questionnaireID);
             }

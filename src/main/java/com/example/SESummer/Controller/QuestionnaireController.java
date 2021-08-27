@@ -1,72 +1,57 @@
 package com.example.SESummer.Controller;
 
-import com.example.SESummer.Entity.QuestionContent;
-import com.example.SESummer.Entity.QuestionOption;
-import com.example.SESummer.Entity.Questionnaire;
-import com.example.SESummer.Entity.ScoreQuestion;
+import com.example.SESummer.Entity.*;
 import com.example.SESummer.Service.QuestionnaireService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @Api(tags = "问卷相关接口")
 public class QuestionnaireController {
     @Autowired
-    private QuestionnaireService questionNaireService;
+    private QuestionnaireService questionnaireService;
 
     @PostMapping("/createQuestionnaire")
     @ApiOperation("问卷操作-创建问卷")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "title", value = "标题", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "questionPwd", value = "问卷密码", required = true, dataType = "String"),
             @ApiImplicitParam(name = "kind", value = "问卷类型", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "userID", value = "创建者ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "isPrivate", value = "是否公开", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "startTime", value = "问卷开始时间", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "endTime", value = "问卷结束时间", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "questionnaireNote", value = "问卷说明", required = true, dataType = "String")
+            @ApiImplicitParam(name = "userID", value = "创建者ID", required = true, dataType = "int")
     })
-    public Map<String, Object> createQuestionnaire(@RequestParam String title, @RequestParam String questionPwd, @RequestParam Integer kind, @RequestParam Integer userID, @RequestParam Integer isPrivate, @RequestParam String startTime, @RequestParam String endTime, @RequestParam String questionnaireNote) {
+    public Map<String, Object> createQuestionnaire(@RequestParam Integer kind, @RequestParam Integer userID) {
         Map<String, Object> map = new HashMap<>();
         Timestamp createTime = new Timestamp(System.currentTimeMillis());
         try {
-            Timestamp StartTime = new Timestamp(System.currentTimeMillis());
-            Timestamp EndTime = new Timestamp(System.currentTimeMillis());
-//            try {
-//                StartTime = Timestamp.valueOf(startTime);
-//                EndTime = Timestamp.valueOf(endTime);
-//            }catch (Exception e){
-//                e.printStackTrace();
-//                map.put("success",false);
-//            }
             Questionnaire questionnaire = new Questionnaire();
-            questionnaire.setTitle(title);
+            questionnaire.setTitle("标题");
+            questionnaire.setQuestionnaireNote("为了给您提供更好的服务，希望您能抽出几分钟时间，将您的感受和建议告诉我们，我们非常重视每位用户的宝贵意见，期待您的参与！现在我们就马上开始吧！");
             questionnaire.setKind(kind);
             questionnaire.setCreateTime(createTime);
-            questionnaire.setQuestionPwd(questionPwd);
             questionnaire.setMasterID(userID);
-            questionnaire.setStartTime(StartTime);
-            questionnaire.setEndTime(EndTime);
-            questionnaire.setIsPrivate(isPrivate);
-            questionnaire.setQuestionnaireNote(questionnaireNote);
-            questionNaireService.createQuestionnaire(questionnaire);
+            questionnaire.setEndMessage("问卷到此结束，感谢您的参与！");
+            questionnaireService.createQuestionnaire(questionnaire);
+            Questionnaire recentQuestionnaire=questionnaireService.getRecentQuestionnaireCreateByUserID(userID);
+            String encryptQuestionnaireID= UUID.randomUUID()+ DigestUtils.md5DigestAsHex(String.valueOf(recentQuestionnaire.getQuestionnaireID()).getBytes(StandardCharsets.UTF_8));
+            recentQuestionnaire.setEncryptQuestionnaireID(encryptQuestionnaireID);
+            questionnaireService.editEncryptQuestionnaireID(recentQuestionnaire.getQuestionnaireID(),encryptQuestionnaireID);
             map.put("success", true);
-            map.put("message", "创建问卷成功");
+            map.put("recentQuestionnaire",recentQuestionnaire);
         } catch (Exception e) {
             e.printStackTrace();
             map.put("success", false);
-            map.put("message", "创建问卷失败");
         }
         return map;
     }
@@ -85,8 +70,10 @@ public class QuestionnaireController {
             questionInfo.setQuestionnaireID(questionnaireID);
             questionInfo.setQuestionKind(questionKind);
             questionInfo.setQuestionNo(questionNo);
-            questionNaireService.addQuestion(questionInfo);
+            questionnaireService.addQuestion(questionInfo);
+            QuestionContent recentQuestion=questionnaireService.getRecentQuestionByQuestionnaireID(questionnaireID);
             map.put("success", true);
+            map.put("recentQuestion",recentQuestion);
         } catch (Exception e) {
             e.printStackTrace();
             map.put("success", false);
@@ -97,20 +84,24 @@ public class QuestionnaireController {
     @PostMapping("/setOptions")
     @ApiOperation("添加问题-添加选择题选项")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "questionKind", value = "问题种类", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "optionKind", value = "选项种类", required = true, dataType = "int"),
             @ApiImplicitParam(name = "questionContentID", value = "问题ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "optionContent", value = "选项内容", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "leftVolume", value = "最大选择次数", required = true, dataType = "int")
+            @ApiImplicitParam(name = "leftVolume", value = "最大选择次数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "isAnswer",value = "是否是答案",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "optionNo",value = "选项序号",required = true,dataType = "int")
     })
-    public Map<String, Object> setOptions(@RequestParam Integer questionKind, @RequestParam Integer questionContentID, @RequestParam String optionContent, @RequestParam Integer leftVolume) {
+    public Map<String, Object> setOptions(@RequestParam Integer optionKind, @RequestParam Integer questionContentID, @RequestParam String optionContent, @RequestParam Integer leftVolume,@RequestParam Integer isAnswer,@RequestParam Integer optionNo) {
         Map<String, Object> map = new HashMap<>();
         try {
             QuestionOption questionOption = new QuestionOption();
             questionOption.setQuestionContentID(questionContentID);
             questionOption.setOptionContent(optionContent);
             questionOption.setLeftVolume(leftVolume);
-            questionOption.setQuestionKind(questionKind);
-            questionNaireService.setOptions(questionOption);
+            questionOption.setOptionKind(optionKind);
+            questionOption.setOptionNo(optionNo);
+            questionOption.setIsAnswer(isAnswer);
+            questionnaireService.setOptions(questionOption);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,19 +114,44 @@ public class QuestionnaireController {
     @ApiOperation("添加问题-添加评分题分数上限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "questionContentID", value = "问题ID", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "maxScore", value = "评分上限", required = true, dataType = "int")
+            @ApiImplicitParam(name = "maxScore", value = "评分上限", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "startWord",value = "评分最低项",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "endWord",value = "评分最高项",required = true,dataType = "String")
     })
-    public Map<String, Object> setScore(@RequestParam Integer questionContentID, @RequestParam Integer maxScore) {
+    public Map<String, Object> setScore(@RequestParam Integer questionContentID, @RequestParam Integer maxScore,@RequestParam String startWord,@RequestParam String endWord) {
         Map<String, Object> map = new HashMap<>();
         try {
             ScoreQuestion scoreQuestion = new ScoreQuestion();
             scoreQuestion.setQuestionContentID(questionContentID);
             scoreQuestion.setMaxScore(maxScore);
-            questionNaireService.setScore(scoreQuestion);
+            scoreQuestion.setStartWord(startWord);
+            scoreQuestion.setEndWord(endWord);
+            questionnaireService.setScore(scoreQuestion);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
             map.put("success", false);
+        }
+        return map;
+    }
+
+    @PostMapping("/setCompletionAnswer")
+    @ApiOperation("添加问题-设置考试填空题答案")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "questionContentID",value = "题目ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "answer",value = "填空题答案",required = true,dataType = "String")
+    })
+    public Map<String,Object> setCompletionAnswer(@RequestParam Integer questionContentID,@RequestParam String answer){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            CompletionQuestion completionQuestion=new CompletionQuestion();
+            completionQuestion.setQuestionContentID(questionContentID);
+            completionQuestion.setAnswer(answer);
+            questionnaireService.setCompletionAnswer(completionQuestion);
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
         }
         return map;
     }
@@ -149,7 +165,7 @@ public class QuestionnaireController {
     public Map<String, Object> rankQuestion(@RequestParam Integer questionContentID, @RequestParam Integer questionNo) {
         Map<String, Object> map = new HashMap<>();
         try {
-            questionNaireService.rankQuestion(questionContentID, questionNo);
+            questionnaireService.rankQuestion(questionContentID, questionNo);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,7 +181,7 @@ public class QuestionnaireController {
         HttpSession session = request.getSession();
         Integer userID = (Integer) session.getAttribute("userID");
         try {
-            List<Questionnaire> questionnaireList = questionNaireService.getQuestionnaireListNotRubbishByUserID(userID);
+            List<Questionnaire> questionnaireList = questionnaireService.getQuestionnaireListNotRubbishByUserID(userID);
             map.put("success", true);
             map.put("questionnaireList", questionnaireList);
         } catch (Exception e) {
@@ -182,7 +198,7 @@ public class QuestionnaireController {
         HttpSession session = request.getSession();
         Integer userID = (Integer) session.getAttribute("userID");
         try {
-            List<Questionnaire> rubbishList = questionNaireService.getQuestionnaireListIsRubbishByUserID(userID);
+            List<Questionnaire> rubbishList = questionnaireService.getQuestionnaireListIsRubbishByUserID(userID);
             map.put("success", true);
             map.put("rubbishList", rubbishList);
         } catch (Exception e) {
@@ -198,7 +214,7 @@ public class QuestionnaireController {
     public Map<String, Object> setRubbish(@RequestParam Integer questionnaireID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            questionNaireService.setRubbish(questionnaireID);
+            questionnaireService.setRubbish(questionnaireID);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -213,7 +229,22 @@ public class QuestionnaireController {
     public Map<String, Object> recoverRubbish(@RequestParam Integer questionnaireID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            questionNaireService.recoverRubbish(questionnaireID);
+            questionnaireService.recoverRubbish(questionnaireID);
+            map.put("success", true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("success", false);
+        }
+        return map;
+    }
+
+    @PostMapping("/delRubbish")
+    @ApiOperation("彻底删除问卷")
+    @ApiImplicitParam(name = "questionnaireID", value = "问卷ID", required = true, dataType = "int")
+    public Map<String,Object> delRubbish(@RequestParam Integer questionnaireID){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            questionnaireService.delRubbish(questionnaireID);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -228,8 +259,7 @@ public class QuestionnaireController {
     public Map<String, Object> publishQuestionnaire(@RequestParam Integer questionnaireID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            Timestamp startTime = new Timestamp(System.currentTimeMillis());
-            questionNaireService.publishQuestionnaire(questionnaireID, startTime);
+            questionnaireService.publishQuestionnaire(questionnaireID);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -244,7 +274,7 @@ public class QuestionnaireController {
     public Map<String, Object> openQuestionnaire(@RequestParam Integer questionnaireID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            questionNaireService.openQuestionnaire(questionnaireID);
+            questionnaireService.openQuestionnaire(questionnaireID);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -260,7 +290,7 @@ public class QuestionnaireController {
         Map<String, Object> map = new HashMap<>();
         try {
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
-            questionNaireService.closeQuestionnaire(questionnaireID, endTime);
+            questionnaireService.closeQuestionnaire(questionnaireID, endTime);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -275,8 +305,8 @@ public class QuestionnaireController {
     public Map<String, Object> showQuestionnaireInfo(@RequestParam Integer questionnaireID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            Questionnaire questionnaire = questionNaireService.getQuestionnaireByQuestionnaireID(questionnaireID);
-            List<QuestionContent> questionList = questionNaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
+            Questionnaire questionnaire = questionnaireService.getQuestionnaireByQuestionnaireID(questionnaireID);
+            List<QuestionContent> questionList = questionnaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
             map.put("success", true);
             map.put("questionnaire", questionnaire);
             map.put("questionList", questionList);
@@ -293,7 +323,7 @@ public class QuestionnaireController {
     public Map<String, Object> showQuestionOptions(@RequestParam Integer questionContentID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            List<QuestionOption> questionOptionList = questionNaireService.getAllQuestionOptionOfQuestionByQuestionContentID(questionContentID);
+            List<QuestionOption> questionOptionList = questionnaireService.getAllQuestionOptionOfQuestionByQuestionContentID(questionContentID);
             map.put("success", true);
             map.put("questionOptionList", questionOptionList);
         } catch (Exception e) {
@@ -306,10 +336,10 @@ public class QuestionnaireController {
     @GetMapping("/showScoreQuestion")
     @ApiOperation("预览问卷-评分题的分数上限")
     @ApiImplicitParam(name = "questionContentID", value = "问题ID", required = true, dataType = "int")
-    public Map<String, Object> showScoreQuestion(@RequestParam Integer questionContentID) {
+    public Map<String, Object> showScoreQuestion(@RequestParam Integer questionContentID){
         Map<String, Object> map = new HashMap<>();
         try {
-            ScoreQuestion scoreQuestion = questionNaireService.getScoreQuestionByQuestionContentID(questionContentID);
+            ScoreQuestion scoreQuestion = questionnaireService.getScoreQuestionByQuestionContentID(questionContentID);
             map.put("success", true);
             map.put("scoreQuestion", scoreQuestion);
         } catch (Exception e) {
@@ -324,14 +354,15 @@ public class QuestionnaireController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "questionnaireID", value = "问卷ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "title", value = "标题", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "questionPwd", value = "问卷密码", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "isPrivate", value = "是否公开", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "questionnaireNote", value = "问卷说明", required = true, dataType = "String")
+            @ApiImplicitParam(name = "endTime",value = "截止时间",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "questionnaireNote", value = "问卷说明", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "endMessage",value = "结束页信息",required = true,dataType = "String")
     })
-    public Map<String, Object> editQuestionnaire(@RequestParam Integer questionnaireID, @RequestParam String title, @RequestParam String questionPwd, @RequestParam Integer isPrivate, @RequestParam String questionnaireNote) {
+    public Map<String, Object> editQuestionnaire(@RequestParam Integer questionnaireID, @RequestParam String title,@RequestParam String endTime, @RequestParam String questionnaireNote,@RequestParam String endMessage) {
         Map<String, Object> map = new HashMap<>();
         try {
-            questionNaireService.editQuestionnaire(questionnaireID, title, questionPwd, isPrivate, questionnaireNote);
+            Timestamp EndTime=Timestamp.valueOf(endTime);
+            questionnaireService.editQuestionnaire(questionnaireID, title, EndTime, questionnaireNote,endMessage);
             map.put("success", false);
         } catch (Exception e) {
             e.printStackTrace();
@@ -346,16 +377,77 @@ public class QuestionnaireController {
             @ApiImplicitParam(name = "questionContentID", value = "问题ID", required = true, dataType = "int"),
             @ApiImplicitParam(name = "requireSig", value = "是否必答", required = true, dataType = "int"),
             @ApiImplicitParam(name = "questionContent", value = "问题题干", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "questionNote", value = "题目备注", required = true, dataType = "String")
+            @ApiImplicitParam(name = "questionNote", value = "题目备注", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "questionScore",value = "题目分数",required = true,dataType = "int")
     })
-    public Map<String, Object> editQuestion(@RequestParam Integer questionContentID, @RequestParam Integer requireSig, @RequestParam String questionContent, @RequestParam String questionNote) {
+    public Map<String, Object> editQuestion(@RequestParam Integer questionContentID, @RequestParam Integer requireSig, @RequestParam String questionContent, @RequestParam String questionNote,@RequestParam Integer questionScore) {
         Map<String, Object> map = new HashMap<>();
         try {
-            questionNaireService.editQuestion(questionContentID, requireSig, questionContent, questionNote);
+            questionnaireService.editQuestion(questionContentID, requireSig, questionContent, questionNote,questionScore);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
             map.put("success", false);
+        }
+        return map;
+    }
+
+    @PostMapping("/editOption")
+    @ApiOperation("编辑问卷-修改选项信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "questionOptionID",value = "选项ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "optionKind",value = "选项类型",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "optionContent",value = "选项内容",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "leftVolume",value = "最大选择数",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "isAnswer",value = "是否设置为答案",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "optionNo",value = "选项序号",required = true,dataType = "int")
+    })
+    public Map<String ,Object> editOption(@RequestParam Integer questionOptionID,@RequestParam Integer optionKind, @RequestParam String optionContent, @RequestParam Integer leftVolume,@RequestParam Integer isAnswer,@RequestParam Integer optionNo){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            questionnaireService.editOption(questionOptionID,optionKind,optionContent,leftVolume,isAnswer,optionNo);
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @PostMapping("/editScore")
+    @ApiOperation("编辑问卷-修改评分题信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "scoreQuestionID", value = "评分信息ID", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "maxScore", value = "评分上限", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "startWord",value = "评分最低项",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "endWord",value = "评分最高项",required = true,dataType = "String")
+    })
+    public Map<String,Object> editScore(@RequestParam Integer scoreQuestionID, @RequestParam Integer maxScore,@RequestParam String startWord,@RequestParam String endWord){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            questionnaireService.editScore(scoreQuestionID,maxScore,startWord,endWord);
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @PostMapping("/editCompletion")
+    @ApiOperation("编辑问卷-修改考试填空题答案")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "completionQuestionID",value = "填空题答案ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "answer",value = "答案",required = true,dataType = "String")
+    })
+    public Map<String,Object> editCompletion(@RequestParam Integer completionQuestionID,@RequestParam String answer){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            questionnaireService.editCompletion(completionQuestionID,answer);
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
         }
         return map;
     }
@@ -366,8 +458,10 @@ public class QuestionnaireController {
     public Map<String, Object> delQuestion(@RequestParam Integer questionContentID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            questionNaireService.delQuestionOptionRelatedToQuestion(questionContentID);
-            questionNaireService.delQuestion(questionContentID);
+            questionnaireService.delQuestionOptionRelatedToQuestion(questionContentID);
+            questionnaireService.delScoreQuestionRelatedToQuestion(questionContentID);
+            questionnaireService.delCompletionQuestionRelatedToQuestion(questionContentID);
+            questionnaireService.delQuestion(questionContentID);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -382,7 +476,7 @@ public class QuestionnaireController {
     public Map<String, Object> delQuestionOption(@RequestParam Integer questionOptionID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            questionNaireService.delQuestionOption(questionOptionID);
+            questionnaireService.delQuestionOption(questionOptionID);
             map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -397,49 +491,69 @@ public class QuestionnaireController {
     public Map<String, Object> copyQuestionnaire(@RequestParam Integer questionnaireID) {
         Map<String, Object> map = new HashMap<>();
         try {
-            Questionnaire questionnaire = questionNaireService.getQuestionnaireByQuestionnaireID(questionnaireID);
-            List<QuestionContent> questionList = questionNaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
+            Questionnaire questionnaire = questionnaireService.getQuestionnaireByQuestionnaireID(questionnaireID);
+            List<QuestionContent> questionList = questionnaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
             Integer userID=questionnaire.getMasterID();
-            Timestamp startTime=new Timestamp(System.currentTimeMillis());
-            Timestamp endTime=new Timestamp(System.currentTimeMillis());
-//            try{
-//                startTime=Timestamp.valueOf("0000-00-00 00:00:00");
-//                endTime=Timestamp.valueOf("0000-00-00 00:00:00");
-//            }catch (Exception e){
-//                e.printStackTrace();
-//                map.put("success",false);
-//            }
+            String title=questionnaire.getTitle();
+            Timestamp endTime=questionnaire.getEndTime();
             Timestamp createTime=new Timestamp(System.currentTimeMillis());
             questionnaire.setCreateTime(createTime);
-            questionnaire.setStartTime(startTime);
             questionnaire.setEndTime(endTime);
-            questionNaireService.copyQuestionnaire(questionnaire);
-            Questionnaire recentQuestionnaire=questionNaireService.getRecentQuestionnaireByUserID(userID);
+            questionnaire.setTitle(title+"-副本");
+            questionnaireService.copyQuestionnaire(questionnaire);
+            Questionnaire recentQuestionnaire=questionnaireService.getRecentQuestionnaireByUserID(userID);
+            String encryptQuestionnaireID= UUID.randomUUID()+ DigestUtils.md5DigestAsHex(String.valueOf(recentQuestionnaire.getQuestionnaireID()).getBytes(StandardCharsets.UTF_8));
             Integer newQuestionnaireID=recentQuestionnaire.getQuestionnaireID();
+            questionnaireService.editEncryptQuestionnaireID(newQuestionnaireID,encryptQuestionnaireID);
             if(questionList.size()!=0){
                 for (QuestionContent question:questionList){
                     Integer kind=question.getQuestionKind();
                     Integer questionContentID=question.getQuestionContentID();
                     question.setQuestionnaireID(newQuestionnaireID);
-                    questionNaireService.copyQuestion(question);
-                    QuestionContent recentQuestion=questionNaireService.getRecentQuestionByQuestionnaireID(newQuestionnaireID);
+                    questionnaireService.copyQuestion(question);
+                    QuestionContent recentQuestion=questionnaireService.getRecentQuestionByQuestionnaireID(newQuestionnaireID);
                     Integer newQuestionContentID=recentQuestion.getQuestionContentID();
                     if(kind==4){//评分题
-                        ScoreQuestion scoreQuestion=questionNaireService.getScoreQuestionByQuestionContentID(questionContentID);
+                        ScoreQuestion scoreQuestion=questionnaireService.getScoreQuestionByQuestionContentID(questionContentID);
                         scoreQuestion.setQuestionContentID(newQuestionContentID);
-                        questionNaireService.setScore(scoreQuestion);
+                        questionnaireService.setScore(scoreQuestion);
                     }
                     else if(kind==1 || kind==2){//选择题
-                        List<QuestionOption> questionOptionList=questionNaireService.getAllQuestionOptionOfQuestionByQuestionContentID(questionContentID);
+                        List<QuestionOption> questionOptionList=questionnaireService.getAllQuestionOptionOfQuestionByQuestionContentID(questionContentID);
                         if(questionOptionList.size()!=0){
                             for(QuestionOption questionOption:questionOptionList){
                                 questionOption.setQuestionContentID(newQuestionContentID);
-                                questionNaireService.setOptions(questionOption);
+                                questionnaireService.setOptions(questionOption);
                             }
+                        }
+                    }
+                    else if(kind==3) {//填空题
+                        CompletionQuestion completionQuestion=questionnaireService.getCompletionQuestionByQuestionContentID(questionContentID);
+                        if(completionQuestion!=null){
+                            completionQuestion.setQuestionContentID(newQuestionContentID);
+                            questionnaireService.setCompletionAnswer(completionQuestion);
                         }
                     }
                 }
             }
+            map.put("success",true);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @PostMapping("/resetEncryptQuestionnaireID")
+    @ApiOperation("重设链接")
+    @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int")
+    public Map<String ,Object> resetEncryptQuestionnaireID(@RequestParam Integer questionnaireID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            Questionnaire questionnaire=questionnaireService.getQuestionnaireByQuestionnaireID(questionnaireID);
+            String encryptQuestionnaireID= UUID.randomUUID()+ DigestUtils.md5DigestAsHex(String.valueOf(questionnaire.getQuestionnaireID()).getBytes(StandardCharsets.UTF_8));
+            questionnaireService.editEncryptQuestionnaireID(questionnaireID,encryptQuestionnaireID);
+            map.put("encryptQuestionnaireID",encryptQuestionnaireID);
             map.put("success",true);
         }catch (Exception e){
             e.printStackTrace();

@@ -14,9 +14,9 @@ import javax.persistence.*;
 public class UserScoreQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userScoreQuestionID;
-    private Integer userID;
-    private Integer questionnaireID;
-    private Integer questionContentID;
-    private Integer score;
+    private Integer userScoreQuestionID;//评分题提交记录
+    private Integer userID;//用户ID
+    private Integer questionnaireID;//问卷ID
+    private Integer questionContentID;//问题ID
+    private Integer score;//评分题选择的分数
 }

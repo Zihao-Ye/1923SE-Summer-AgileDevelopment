@@ -1,10 +1,7 @@
 package com.example.SESummer.Service.Impl;
 
 import com.example.SESummer.Dao.QuestionnaireDao;
-import com.example.SESummer.Entity.QuestionContent;
-import com.example.SESummer.Entity.QuestionOption;
-import com.example.SESummer.Entity.Questionnaire;
-import com.example.SESummer.Entity.ScoreQuestion;
+import com.example.SESummer.Entity.*;
 import com.example.SESummer.Service.QuestionnaireService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +21,27 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     }
 
     @Override
+    //修改问卷加密ID
+    public void editEncryptQuestionnaireID(Integer questionnaireID,String encryptQuestionnaireID){
+        questionnaireDao.editEncryptQuestionnaireID(questionnaireID,encryptQuestionnaireID);
+    }
+
+    @Override
+    //获取用户最新创建的问卷
+    public Questionnaire getRecentQuestionnaireCreateByUserID(Integer userID){
+        return questionnaireDao.getRecentQuestionnaireCreateByUserID(userID);
+    }
+
+    @Override
     //添加问题
     public void addQuestion(QuestionContent questionContent){
         questionnaireDao.addQuestion(questionContent);
+    }
+
+    @Override
+    //获取问卷下最新创建的问题
+    public QuestionContent getRecentQuestionByQuestionnaireID(Integer questionnaireID){
+        return questionnaireDao.getRecentQuestionByQuestionnaireID(questionnaireID);
     }
 
     @Override
@@ -39,6 +54,12 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     //添加评分题分数上限
     public void setScore(ScoreQuestion scoreQuestion){
         questionnaireDao.setScore(scoreQuestion);
+    }
+
+    @Override
+    //设置考试填空题答案
+    public void setCompletionAnswer(CompletionQuestion completionQuestion){
+        questionnaireDao.setCompletionAnswer(completionQuestion);
     }
 
     @Override
@@ -60,6 +81,12 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     }
 
     @Override
+    //将回收站中的问卷删除
+    public void delRubbish(Integer questionnaireID){
+        questionnaireDao.delRubbish(questionnaireID);
+    }
+
+    @Override
     //根据用户ID获取所有不在回收站里的问卷
     public List<Questionnaire> getQuestionnaireListNotRubbishByUserID(Integer userID){
         return questionnaireDao.getQuestionnaireListNotRubbishByUserID(userID);
@@ -73,8 +100,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
     @Override
     //发布问卷
-    public void publishQuestionnaire(Integer questionnaireID, Timestamp startTime){
-        questionnaireDao.publishQuestionnaire(questionnaireID,startTime);
+    public void publishQuestionnaire(Integer questionnaireID){
+        questionnaireDao.publishQuestionnaire(questionnaireID);
     }
 
     @Override
@@ -114,21 +141,57 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     }
 
     @Override
+    //预览问卷-考试填空题答案
+    public CompletionQuestion getCompletionQuestionByQuestionContentID(Integer questionContentID){
+        return questionnaireDao.getCompletionQuestionByQuestionContentID(questionContentID);
+    }
+
+    @Override
     //编辑问卷-修改问卷信息
-    public void editQuestionnaire(Integer questionnaireID, String title, String questionPwd, Integer isPrivate, String questionnaireNote){
-        questionnaireDao.editQuestionnaire(questionnaireID,title,questionPwd,isPrivate,questionnaireNote);
+    public void editQuestionnaire(Integer questionnaireID,String title,Timestamp endTime,String questionnaireNote,String endMessage){
+        questionnaireDao.editQuestionnaire(questionnaireID,title,endTime,questionnaireNote,endMessage);
     }
 
     @Override
     //编辑问卷-修改问题信息
-    public void editQuestion(Integer questionContentID, Integer requireSig, String questionContent, String questionNote){
-        questionnaireDao.editQuestion(questionContentID,requireSig,questionContent,questionNote);
+    public void editQuestion(Integer questionContentID, Integer requireSig, String questionContent, String questionNote,Integer questionScore){
+        questionnaireDao.editQuestion(questionContentID,requireSig,questionContent,questionNote,questionScore);
+    }
+
+    @Override
+    //编辑问卷-修改选项信息
+    public void editOption(Integer questionOptionID,Integer optionKind,String optionContent,Integer leftVolume,Integer isAnswer,Integer optionNo){
+        questionnaireDao.editOption(questionOptionID,optionKind,optionContent,leftVolume,isAnswer,optionNo);
+    }
+
+    @Override
+    //编辑问卷-修改评分题信息
+    public void editScore(Integer scoreQuestionID, Integer maxScore,String startWord,String endWord){
+        questionnaireDao.editScore(scoreQuestionID,maxScore,startWord,endWord);
+    }
+
+    @Override
+    //编辑问卷-修改考试填空题答案
+    public void editCompletion(Integer completionQuestionID,String answer){
+        questionnaireDao.editCompletion(completionQuestionID,answer);
     }
 
     @Override
     //编辑问卷-删除题目的选项
     public void delQuestionOptionRelatedToQuestion(Integer questionContentID){
         questionnaireDao.delQuestionOptionRelatedToQuestion(questionContentID);
+    }
+
+    @Override
+    //编辑问卷-删除评分题的评分上限
+    public void delScoreQuestionRelatedToQuestion(Integer questionContentID){
+        questionnaireDao.delScoreQuestionRelatedToQuestion(questionContentID);
+    }
+
+    @Override
+    //编辑问卷-删除填空题的答案
+    public void delCompletionQuestionRelatedToQuestion(Integer questionContentID){
+        questionnaireDao.delCompletionQuestionRelatedToQuestion(questionContentID);
     }
 
     @Override
@@ -159,11 +222,5 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     //复制问卷-复制问题基本信息
     public void copyQuestion(QuestionContent questionContent){
         questionnaireDao.copyQuestion(questionContent);
-    }
-
-    @Override
-    //获取最近创建的问题
-    public QuestionContent getRecentQuestionByQuestionnaireID(Integer questionnaireID){
-        return questionnaireDao.getRecentQuestionByQuestionnaireID(questionnaireID);
     }
 }

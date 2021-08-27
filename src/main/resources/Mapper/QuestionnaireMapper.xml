@@ -3,23 +3,50 @@
 <mapper namespace ="com.example.SESummer.Dao.QuestionnaireDao" >
     <!-- 创建问卷 -->
     <insert id="createQuestionnaire" parameterType="Questionnaire">
-        insert into questionnaire(title, create_time, kind, question_pwd, is_private, start_time, end_time, masterid,questionnaire_note,have_publish)
-        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionnaireNote},0)
+        insert into questionnaire(title, create_time, kind, masterid,questionnaire_note,end_message)
+        values(#{title},#{createTime},#{kind},#{masterID},#{questionnaireNote},#{endMessage})
     </insert>
+    <!-- 修改问卷加密ID-->
+    <update id="editEncryptQuestionnaireID" parameterType="Questionnaire">
+        update questionnaire
+        set encrypt_questionnaireid=#{encrptQuestionnaireID}
+        where questionnaireid=#{questionnaireID}
+    </update>
+    <!-- 获取用户最新创建的问卷-->
+    <select id="getRecentQuestionnaireCreateByUserID" resultType="Questionnaire">
+        select *
+        from questionnaire
+        where masterid=#{userID}
+        order by create_time desc
+        limit 0,1
+    </select>
     <!-- 添加问题 -->
     <insert id="addQuestion" parameterType="QuestionContent">
         insert into question_content(questionnaireid,question_kind,question_no,question_note)
         values(#{questionnaireID},#{questionKind},#{questionNo},#{questionNote})
     </insert>
+    <!-- 获取最近创建的问题-->
+    <select id="getRecentQuestionByQuestionnaireID" resultType="QuestionContent">
+        select *
+        from question_content
+        where questionnaireid=#{questionnairedID}
+        order by question_contentid desc
+        limit 0,1
+    </select>
     <!-- 添加选择题选项 -->
     <insert id="setOptions" parameterType="QuestionOption">
-        insert into question_option(question_kind, question_contentid, option_content, left_volume)
-        values(#{questionKind},#{questionContentID},#{optionContent},#{leftVolume})
+        insert into question_option(option_kind, question_contentid, option_content, left_volume,is_answer,option_no)
+        values(#{optionKind},#{questionContentID},#{optionContent},#{leftVolume},#{isAnswer},#{optionNo})
     </insert>
     <!-- 添加评分题分数上限-->
     <insert id="setScore" parameterType="ScoreQuestion">
-        insert into score_question(question_contentid, max_score,average_score)
-        values(#{questionContentID},#{maxScore},0)
+        insert into score_question(question_contentid, max_score,start_word,end_word)
+        values(#{questionContentID},#{maxScore},#{startWord},#{endWord})
+    </insert>
+    <!-- 设置考试填空题答案-->
+    <insert id="setCompletionAnswer" parameterType="CompletionQuestion">
+        insert into completion_question(question_contentid, answer)
+        values(#{questionContentID},#{answer})
     </insert>
     <!-- 问题排序-->
     <update id="rankQuestion" parameterType="QuestionContent">
@@ -39,6 +66,12 @@
         set is_rubbish=0
         where questionnaireid=#{questionnaireID}
     </update>
+    <!-- 将回收站中的问卷删除-->
+    <update id="delRubbish" parameterType="Integer">
+        update questionnaire
+        set is_rubbish=2
+        where questionnaireid=#{questionnaireID}
+    </update>
     <!-- 根据用户ID获取所有不在回收站里的问卷-->
     <select id="getQuestionnaireListNotRubbishByUserID" resultType="Questionnaire">
         select *
@@ -55,7 +88,7 @@
     <!-- 发布问卷-->
     <update id="publishQuestionnaire" parameterType="Questionnaire">
         update questionnaire
-        set have_publish=1,start_time=#{startTime},is_visitable=1
+        set have_publish=1,is_visitable=1
         where questionnaireid=#{questionnaireID}
     </update>
     <!-- 开启问卷-->
@@ -67,7 +100,7 @@
     <!-- 关闭问卷-->
     <update id="closeQuestionnaire" parameterType="Questionnaire">
         update questionnaire
-        set is_visitable=0,end_time=#{endTime}
+        set is_visitable=0
         where questionnaireid=#{questionnaireID}
     </update>
     <!-- 预览问卷-问卷信息-->
@@ -88,6 +121,7 @@
         select *
         from question_option
         where question_contentid=#{questionContentID}
+        order by option_no
     </select>
     <!-- 预览问卷-评分题分数上限-->
     <select id="getScoreQuestionByQuestionContentID" resultType="ScoreQuestion">
@@ -95,21 +129,55 @@
         from score_question
         where question_contentid=#{questionContentID}
     </select>
+    <!-- 预览问卷-考试填空题答案-->
+    <select id="getCompletionQuestionByQuestionContentID" resultType="CompletionQuestion">
+        select *
+        from completion_question
+        where question_contentid=#{questionContentID}
+    </select>
     <!-- 编辑问卷-修改问卷信息-->
     <update id="editQuestionnaire" parameterType="Questionnaire">
         update questionnaire
-        set title=#{title},question_pwd=#{questionPwd},is_private=#{isPrivate},questionnaire_note=#{questionnaireNote}
+        set title=#{title},end_time=#{endTime},questionnaire_note=#{questionnaireNote},end_message=#{endMessage}
         where questionnaireid=#{questionnaireID}
     </update>
     <!-- 编辑问卷-修改问题信息-->
     <update id="editQuestion" parameterType="QuestionContent">
         update question_content
-        set question_content=#{questionContent},require_sig=#{requireSig},question_note=#{questionNote}
+        set question_content=#{questionContent},require_sig=#{requireSig},question_note=#{questionNote},question_score=#{questionScore}
         where question_contentid=#{questionContentID}
+    </update>
+    <!-- 编辑问卷-修改选项信息-->
+    <update id="editOption" parameterType="QuestionOption">
+        update question_option
+        set option_kind=#{optionKind},option_content=#{optionContent},left_volume=#{leftVolume},is_answer=#{isAnswer},option_no=#{optionNo}
+        where question_optionid=#{questionOptionID}
+    </update>
+    <!-- 编辑问卷-修改评分题信息-->
+    <update id="editScore" parameterType="ScoreQuestion">
+        update score_question
+        set max_score=#{maxScore},start_word=#{startWord},end_word=#{endWord}
+        where score_questionid=#{scoreQuestionID}
+    </update>
+    <!-- 编辑问卷-修改考试填空题答案-->
+    <update id="editCompletion" parameterType="CompletionQuestion">
+        update completion_question
+        set answer=#{answer}
+        where completion_questionid=#{completionQuestionID}
     </update>
     <!-- 编辑问卷-删除题目的选项-->
     <delete id="delQuestionOptionRelatedToQuestion" parameterType="Integer">
         delete from question_option
+        where question_contentid=#{questionContentID}
+    </delete>
+    <!-- 编辑问卷-删除评分题的评分上限-->
+    <delete id="delScoreQuestionRelatedToQuestion" parameterType="Integer">
+        delete from score_question
+        where question_contentid=#{questionContentID}
+    </delete>
+    <!-- 编辑问卷-删除填空题的答案-->
+    <delete id="delCompletionQuestionRelatedToQuestion" parameterType="Integer">
+        delete from completion_question
         where question_contentid=#{questionContentID}
     </delete>
     <!-- 编辑问卷-删除题目-->
@@ -124,8 +192,8 @@
     </delete>
     <!-- 复制问卷-复制问卷基本信息-->
     <insert id="copyQuestionnaire" parameterType="Questionnaire">
-        insert into questionnaire(title, create_time, kind, question_pwd, is_private,start_time, end_time, masterid,questionnaire_note,have_publish)
-        values(#{title},#{createTime},#{kind},#{questionPwd},#{isPrivate},#{startTime},#{endTime},#{masterID},#{questionnaireNote},0)
+        insert into questionnaire(title, create_time, kind, end_time, masterid,questionnaire_note,end_message)
+        values(#{title},#{createTime},#{kind},#{endTime},#{masterID},#{questionnaireNote},#{endMessage})
     </insert>
     <!-- 获取最近创建的问卷-->
     <select id="getRecentQuestionnaireByUserID" resultType="Questionnaire">
@@ -137,15 +205,8 @@
     </select>
     <!-- 复制问卷-复制问题基本信息 -->
     <insert id="copyQuestion" parameterType="QuestionContent">
-        insert into question_content(questionnaireid, question_kind, require_sig, question_content, question_no, question_note)
-        values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent},#{questionNo},#{questionNote})
+        insert into question_content(questionnaireid, question_kind, require_sig, question_content, question_no, question_note,question_score)
+        values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent},#{questionNo},#{questionNote},#{questionScore})
     </insert>
-    <!-- 获取最近创建的问题-->
-    <select id="getRecentQuestionByQuestionnaireID" resultType="QuestionContent">
-        select *
-        from question_content
-        where questionnaireid=#{questionnairedID}
-        order by question_contentid
-        desc limit 0,1
-    </select>
+
 </mapper>

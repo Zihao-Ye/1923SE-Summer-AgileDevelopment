@@ -10,12 +10,11 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_info")
-public class User {
+@Table(name = "test_score_record")
+public class TestScoreRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userID;//用户ID
-    private String userPwd;//用户密码
-    private String userName;//用户名
-    private Integer isVisitor;//用户身份：0-注册用户，1-游客用户
+    private Integer testScoreRecordID;//考试分数记录ID
+    private Integer questionContentID;//记录对应的问题ID
+    private Integer Score;//该问题得分
 }

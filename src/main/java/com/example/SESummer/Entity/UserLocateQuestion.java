@@ -1,5 +1,6 @@
 package com.example.SESummer.Entity;
 
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +11,12 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_completion_question")
-public class UserCompletionQuestion {
+@Table(name = "user_locate_question")
+public class UserLocateQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userCompletionQuestionID;//填空题提交记录ID
-    private Integer userID;//用户ID
+    private Integer userLocateQuestionID;//定位题答题记录
     private Integer questionnaireID;//问卷ID
     private Integer questionContentID;//问题ID
-    private String completionContent;//填空内容
+    private String locate;//填写的位置信息
 }

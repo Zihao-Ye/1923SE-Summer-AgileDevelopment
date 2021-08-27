@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 @Data
@@ -14,8 +15,9 @@ import javax.persistence.*;
 public class QuestionnaireSubmit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer submitID;
-    private Integer userID;
-    private Integer questionnaireID;
-    private Integer isSubmit;
+    private Integer submitID;//提交记录ID
+    private Integer userID;//用户ID
+    private Integer questionnaireID;//问卷ID
+    private Integer isSubmit;//是否已提交
+    private Timestamp submitTime;//提交时间
 }
