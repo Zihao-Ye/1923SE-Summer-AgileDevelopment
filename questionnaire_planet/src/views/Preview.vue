@@ -1,8 +1,9 @@
 <template>
   <div id= 'pdfDom'>
-  <v-card class="mx-auto" max-width="1000" elevation="10">
-    <h1 class="text-center">{{questionnaire.title}}</h1>
-    <h3 class="text-center">{{questionnaire.questionnaireNote}}</h3>
+    <div>
+  <v-card class="mx-auto" width="1000" elevation="10">
+    <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
+    <p class="text-center">{{questionnaire.questionnaireNote}}</p>
 
     <!--单选必做题-->
     <v-card
@@ -15,11 +16,11 @@
     >
       <template v-if="question.questionKind===1 && question.requireSig===1">
         <v-card-title>
-          {{question.questionNo}}.{{question.questionContent}}
+          <v-row>
+            <p class="red--text"> * </p>
+             {{question.questionNo}}. {{question.questionContent}}
+          </v-row>
         </v-card-title>
-        <v-card-subtitle class="orange--text">
-          单选 * 必做
-        </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
         </v-card-subtitle>
@@ -38,11 +39,8 @@
       <!--单选非必做题-->
       <template v-else-if="question.questionKind===1 && question.requireSig===0">
         <v-card-title>
-          {{question.questionNo}}.{{question.questionContent}}
+          {{question.questionNo}}. {{question.questionContent}}
         </v-card-title>
-        <v-card-subtitle class="blue-grey--text">
-          单选 * 非必做
-        </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
         </v-card-subtitle>
@@ -61,11 +59,12 @@
       <!--多选必做题-->
       <template v-else-if="question.questionKind===2 && question.requireSig===1">
         <v-card-title>
-          {{question.questionNo}}.{{question.questionContent}}
+          <v-row>
+            <p class="red--text"> * </p>
+            {{question.questionNo}}. {{question.questionContent}}
+            <p class="grey--text">[多选题]</p>
+          </v-row>
         </v-card-title>
-        <v-card-subtitle class="orange--text">
-          多选 * 必做
-        </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
         </v-card-subtitle>
@@ -84,11 +83,11 @@
       <!--多选非必做题-->
       <template v-else-if="question.questionKind===2 && question.requireSig===0">
         <v-card-title>
-          {{question.questionNo}}.{{question.questionContent}}
+          <v-row>
+            {{question.questionNo}}. {{question.questionContent}}
+            <p class="grey--text">[多选题]</p>
+          </v-row>
         </v-card-title>
-        <v-card-subtitle class="blue-grey--text">
-          多选 * 非必做
-        </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
         </v-card-subtitle>
@@ -107,11 +106,11 @@
       <!--填空必做题-->
       <template v-else-if="question.questionKind===3 && question.requireSig===1">
         <v-card-title>
-          {{question.questionNo}}.{{question.questionContent}}
+          <v-row>
+            <p class="red--text"> * </p>
+            {{question.questionNo}}. {{question.questionContent}}
+          </v-row>
         </v-card-title>
-        <v-card-subtitle class="orange--text">
-          填空 * 必做
-        </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
         </v-card-subtitle>
@@ -129,11 +128,8 @@
       <!--填空非必做题-->
       <template v-else-if="question.questionKind===3 && question.requireSig===0">
         <v-card-title>
-          {{question.questionNo}}.{{question.questionContent}}
+          {{question.questionNo}}. {{question.questionContent}}
         </v-card-title>
-        <v-card-subtitle class="blue-grey--text">
-          填空 * 非必做
-        </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
         </v-card-subtitle>
@@ -148,52 +144,55 @@
       <!--评分必做题-->
       <template v-else-if="question.questionKind===4 && question.requireSig===1">
         <v-card-title>
-          {{question.questionNo}}.{{question.questionContent}}
+          <v-row>
+            <p class="red--text"> * </p>
+            {{question.questionNo}}. {{question.questionContent}}
+          </v-row>
         </v-card-title>
-        <v-card-subtitle class="orange--text">
-          评分 * 必做
-        </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
         </v-card-subtitle>
-        <v-container>
-          <v-slider
-              v-model="score[question.questionNo]"
-              :rules="scoreRules"
-              color="orange"
-              label="分数"
-              min="1"
-              :max="maxScores[question.questionNo].maxScore"
-              thumb-label="always"
-              @change="requirePlus(question)"
-          ></v-slider>
-        </v-container>
+        <v-card-actions class="pa-4">
+          <v-container>
+            <v-row>
+              <h4>很不满意</h4>
+              <el-rate
+                  v-model="score[question.questionNo]"
+                  :rules="scoreRules"
+                  :max="maxScores[question.questionNo].maxScore"
+                  :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                  @change="requirePlus(question)"
+              ></el-rate>
+              <h4 >很满意</h4>
+            </v-row>
+          </v-container>
+        </v-card-actions>
       </template>
       <!--评分非必做题-->
       <template v-else-if="question.questionKind===4 && question.requireSig===0">
         <v-card-title>
-          {{question.questionNo}}.{{question.questionContent}}
+          {{question.questionNo}}. {{question.questionContent}}
         </v-card-title>
-        <v-card-subtitle class="blue-grey--text">
-          评分 * 非必做
-        </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
         </v-card-subtitle>
-        <v-container>
-          <v-slider
-              v-model="score[question.questionNo]"
-              color="green"
-              label="分数"
-              min="1"
-              :max="maxScores[question.questionNo].maxScore"
-              thumb-label="always"
-          ></v-slider>
-        </v-container>
+        <v-card-actions class="pa-4">
+          <v-container>
+            <v-row>
+              <h4>很不满意</h4>
+              <el-rate
+                  v-model="score[question.questionNo]"
+                  :max="maxScores[question.questionNo].maxScore"
+                  :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+              ></el-rate>
+              <h4 >很满意</h4>
+            </v-row>
+          </v-container>
+        </v-card-actions>
       </template>
       <v-divider></v-divider>
     </v-card>
-    <div class="text-center">
+    <div class="text-center" style="padding-top: 30px">
       <v-btn class="ma-2" color="info">
         提交
       </v-btn>
@@ -212,6 +211,7 @@
       mdi-close
     </v-icon>
   </v-btn>
+    </div>
   </div>
 </template>
 
@@ -480,5 +480,12 @@ export default {
 .goback{
   top:2%;
   right:2%;
+}
+#pdfDom{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color:#e6f0f9;
+  height: 100%;
 }
 </style>
