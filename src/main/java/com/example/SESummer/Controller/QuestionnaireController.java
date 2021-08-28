@@ -370,7 +370,7 @@ public class QuestionnaireController {
             questionOption1.setOptionNo(1);
             questionOption1.setQuestionContentID(questionContentID1);
             questionOption1.setOptionKind(1);
-            questionOption1.setOptionContent("");
+            questionOption1.setOptionContent("35.5℃以下");
             questionOption1.setIsAnswer(0);
             questionOption1.setLeftVolume(0);
             questionnaireService.addDefaultOption(questionOption1);
@@ -378,20 +378,108 @@ public class QuestionnaireController {
             QuestionOption questionOption2=new QuestionOption();
             questionOption2.setOptionNo(2);
             questionOption2.setQuestionContentID(questionContentID1);
-            questionOption2.setOptionKind(2);
-            questionOption2.setOptionContent("参观北航附中");
+            questionOption2.setOptionKind(1);
+            questionOption2.setOptionContent("35.5-36.0℃");
             questionOption2.setIsAnswer(0);
-            questionOption2.setLeftVolume(10);
+            questionOption2.setLeftVolume(0);
             questionnaireService.addDefaultOption(questionOption2);
             //选项3
             QuestionOption questionOption3=new QuestionOption();
             questionOption3.setOptionNo(3);
             questionOption3.setQuestionContentID(questionContentID1);
-            questionOption3.setOptionKind(2);
-            questionOption3.setOptionContent("参观北航附小");
+            questionOption3.setOptionKind(1);
+            questionOption3.setOptionContent("36.0-36.5℃");
             questionOption3.setIsAnswer(0);
-            questionOption3.setLeftVolume(10);
+            questionOption3.setLeftVolume(0);
             questionnaireService.addDefaultOption(questionOption3);
+            //选项4
+            QuestionOption questionOption4=new QuestionOption();
+            questionOption4.setOptionNo(4);
+            questionOption4.setQuestionContentID(questionContentID1);
+            questionOption4.setOptionKind(1);
+            questionOption4.setOptionContent("36.5-37.0℃");
+            questionOption4.setIsAnswer(0);
+            questionOption4.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption4);
+            //选项5
+            QuestionOption questionOption5=new QuestionOption();
+            questionOption5.setOptionNo(5);
+            questionOption5.setQuestionContentID(questionContentID1);
+            questionOption5.setOptionKind(1);
+            questionOption5.setOptionContent("37.0℃以上");
+            questionOption5.setIsAnswer(0);
+            questionOption5.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption5);
+            //有无去过高风险地区单选
+            QuestionContent questionContent4=new QuestionContent();
+            questionContent4.setQuestionnaireID(QuestionnaireID);
+            questionContent4.setQuestionNo(4);
+            questionContent4.setQuestionKind(1);
+            questionContent4.setQuestionContent("有无去过高风险地区");
+            questionContent4.setRequireSig(1);
+            questionContent4.setQuestionNote("请您如实填写途径是否途径高风险地区");
+            questionContent4.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent3);
+            QuestionContent recentQuestionContent2=questionnaireService.getRecentQuestionByQuestionnaireID(QuestionnaireID);
+            Integer questionContentID2=recentQuestionContent2.getQuestionContentID();
+            //选项1
+            QuestionOption questionOption6=new QuestionOption();
+            questionOption6.setOptionNo(1);
+            questionOption6.setQuestionContentID(questionContentID2);
+            questionOption6.setOptionKind(1);
+            questionOption6.setOptionContent("是");
+            questionOption6.setIsAnswer(0);
+            questionOption6.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption6);
+            //选项2
+            QuestionOption questionOption7=new QuestionOption();
+            questionOption7.setOptionNo(2);
+            questionOption7.setQuestionContentID(questionContentID2);
+            questionOption7.setOptionKind(1);
+            questionOption7.setOptionContent("否");
+            questionOption7.setIsAnswer(0);
+            questionOption7.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption7);
+            //有无新冠症状单选
+            QuestionContent questionContent5=new QuestionContent();
+            questionContent5.setQuestionnaireID(QuestionnaireID);
+            questionContent5.setQuestionNo(5);
+            questionContent5.setQuestionKind(1);
+            questionContent5.setQuestionContent("有无新冠症状");
+            questionContent5.setRequireSig(1);
+            questionContent5.setQuestionNote("是否有发热、咳嗽、呕吐、乏力等症状，请如实填写");
+            questionContent5.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent3);
+            QuestionContent recentQuestionContent3=questionnaireService.getRecentQuestionByQuestionnaireID(QuestionnaireID);
+            Integer questionContentID3=recentQuestionContent3.getQuestionContentID();
+            //选项1
+            QuestionOption questionOption8=new QuestionOption();
+            questionOption8.setOptionNo(1);
+            questionOption8.setQuestionContentID(questionContentID3);
+            questionOption8.setOptionKind(1);
+            questionOption8.setOptionContent("是");
+            questionOption8.setIsAnswer(0);
+            questionOption8.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption6);
+            //选项2
+            QuestionOption questionOption9=new QuestionOption();
+            questionOption9.setOptionNo(2);
+            questionOption9.setQuestionContentID(questionContentID3);
+            questionOption9.setOptionKind(1);
+            questionOption9.setOptionContent("否");
+            questionOption9.setIsAnswer(0);
+            questionOption9.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption9);
+            //定位题
+            QuestionContent questionContent6=new QuestionContent();
+            questionContent6.setQuestionnaireID(QuestionnaireID);
+            questionContent6.setQuestionNo(6);
+            questionContent6.setQuestionKind(5);
+            questionContent6.setQuestionContent("所在地点");
+            questionContent6.setRequireSig(1);
+            questionContent6.setQuestionNote("请打开定位功能，并允许问卷访问位置信息");
+            questionContent6.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent6);
             map.put("success", true);
             map.put("recentQuestionnaire",recentQuestionnaire);
         } catch (Exception e) {
