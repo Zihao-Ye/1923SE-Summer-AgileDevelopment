@@ -1,7 +1,17 @@
 <template>
   <div id= 'pdfDom'>
-    <v-system-bar></v-system-bar>
     <div>
+      <template v-if="this.questionnaire.kind===4">
+      <v-card class="timeHint text-center"
+              elevation="12"
+              rounded
+              color="#607D8B"
+              dark
+      >
+        <h2 style="color: #EFEBE9">倒计时</h2>
+        <h2 style="color: #FF9100">{{countDown(end)}}</h2>
+      </v-card>
+    </template>
   <v-card class="mx-auto" width="1000" elevation="10">
     <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
     <p class="text-center">{{questionnaire.questionnaireNote}}</p>
@@ -267,6 +277,7 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
   data: () => ({
     htmlTitle: '页面导出PDF文件名',
@@ -291,15 +302,17 @@ export default {
       userPwd:"visitor"
     },
     fillsuccess:false,
-    location:{}
+    location:{},
+    now:moment(),
+    end:"2021-08-28T12:21:40.000+00:00",
   }),
   methods:{
-    getQuestionnaire() {
+    getQuestionnaire(questionnaireID) {
       this.$http({
         method: "get",
         url: "/showQuestionnaireInfo",
         params: {
-          questionnaireID:this.$route.params.id
+          questionnaireID:questionnaireID
         },
       })
           .then((res) => {
@@ -426,7 +439,7 @@ export default {
         params: {
           questionContentID:option.questionContentID,
           questionOptionID:option.questionOptionID,
-          questionnaireID:this.$route.params.id,
+          questionnaireID:this.questionnaire.questionnaire,
           userID:this.user.userID
         },
       })
@@ -450,7 +463,7 @@ export default {
         url: "/completion",
         params: {
           questionContentID:question.questionContentID,
-          questionnaireID:this.$route.params.id,
+          questionnaireID:this.questionnaire.questionnaire,
           userID:this.user.userID,
           completionContent:content
         },
@@ -474,7 +487,7 @@ export default {
         url: "/score",
         params: {
           questionContentID:question.questionContentID,
-          questionnaireID:this.$route.params.id,
+          questionnaireID:this.questionnaire.questionnaire,
           userID:this.user.userID,
           score:score
         },
@@ -638,23 +651,61 @@ export default {
       }else{
         return option.optionContent
       }
+    },
+    toPdf(){
+      if(this.$store.state.isPrint) {
+        this.msgSuccess(this.$store.state.isPrint);
+        this.getPdf();
+        this.$store.commit("setNoPrint");
+      }
+    },
+    PrefixInteger(num, n) {
+      return (Array(n).join(0) + num).slice(-n);
+    },
+    getQuestionnaireID(){
+      this.$http({
+        method:'get',
+        url:'/getOriginQuestionnaireID',
+        params:{
+          encryptQuestionnaireID:this.$route.params.id
+        }
+      }).then(res=>{
+        console.log(res.data)
+        if(res.data.success){
+          this.getQuestionnaire(res.data.originQuestionnaireID)
+        }
+      })
     }
   },
   computed:{
     submitValid() {
       let l = Object.keys(this.require).length
       return l === this.requireNum;
+    },
+    countDown(){
+      return function(endDate) {
+        let m1 = this.now
+        let m2 = moment(endDate)
+        var du = moment.duration(m2 - m1, 'ms'),
+            hours = du.get('hours'),
+            mins = du.get('minutes'),
+            ss = du.get('seconds');
+        if(hours<=0 && mins<=0 && ss<=0) {
+          return "已超时"
+        }else {
+          return this.PrefixInteger(hours,2) + ':' + this.PrefixInteger(mins,2) + ':' + this.PrefixInteger(ss,2)
+        }
+      }
     }
   },
   created() {
-    this.getQuestionnaire()
+    this.getQuestionnaireID()
   },
   mounted() {
-    if(this.$store.state.isPrint) {
-      this.msgSuccess(this.$store.state.isPrint);
-      this.getPdf();
-      this.$store.commit("setNoPrint");
-    }
+    this.toPdf()
+    setInterval(()=>{
+      this.now = moment()
+    },1000)
   }
 }
 </script>
@@ -670,5 +721,14 @@ export default {
   align-items: center;
   background-color:#e6f0f9;
   height: 100%;
+}
+.timeHint{
+  position: fixed;
+  right:1%;
+  top:50%;
+  width: 100px;
+  height: 70px;
+  margin-top: -40px;
+
 }
 </style>
