@@ -192,6 +192,7 @@
           </v-container>
         </v-card-actions>
       </template>
+
       <v-divider></v-divider>
     </v-card>
       <div class="text-center" style="padding-top: 30px">

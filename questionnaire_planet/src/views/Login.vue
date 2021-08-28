@@ -164,7 +164,7 @@ export default {
             this.$store.commit("setLogin");
             this.$store.commit("setUserName",this.id);
             this.$store.commit("setUserID",res.data.user.userID)
-            this.$router.push(({path:'/QuestionnaireManage'}))
+            this.$router.go(-1)
           }
         })
         .catch((err) => {

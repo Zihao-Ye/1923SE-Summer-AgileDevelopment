@@ -139,7 +139,7 @@
 .home{
   width: 100%;
   height: 100vh;
-  background: url(../assets/earth1.jpg) rgba(0, 0, 0, .5) no-repeat center center;
+  background: url(https://pic.imgdb.cn/item/6129a36744eaada73917f468.jpg) rgba(0, 0, 0, .5) no-repeat center center;
   background-blend-mode: multiply;
 }
 .use{
