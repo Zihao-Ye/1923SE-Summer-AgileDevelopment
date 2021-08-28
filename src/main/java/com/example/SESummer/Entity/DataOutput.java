@@ -1,7 +1,5 @@
 package com.example.SESummer.Entity;
 
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,7 +50,7 @@ public class DataOutput {
             rows = sheet.createRow(i + 1);
             //给该行数据赋值
             for (int j = 0; j < headList.size(); j++) {
-                String value = mapList.get(i).get(headList.get(j)).toString();
+                String value = String.valueOf(mapList.get(i).get(headList.get(j)));
                 cells = rows.createCell(j);
                 cells.setCellValue(value);
             }

@@ -27,4 +27,11 @@
         set average_score=(select sum(score) from user_score_question where user_score_question.question_contentid=#{questionContentID})/(select count(*) from user_score_question where user_score_question.question_contentid=#{questionContentID})
         where question_contentid=#{questionContentID}
     </update>
+
+    <select id="getQuestionContent" resultType="QuestionContent">
+        select *
+        from question_content
+        where question_contentid = {questionContentID}
+    </select>
+
 </mapper>

@@ -1,5 +1,6 @@
 package com.example.SESummer.Dao;
 
+import com.example.SESummer.Entity.QuestionContent;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -15,4 +16,6 @@ public interface QuestionDataDao {
 
     //更新评分题平均分
     void updateAverageScore(Integer questionContentID);
+
+    QuestionContent getQuestionContent(Integer questionContentID);
 }

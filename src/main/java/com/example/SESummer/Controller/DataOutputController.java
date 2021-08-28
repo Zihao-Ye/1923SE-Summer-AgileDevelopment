@@ -29,60 +29,60 @@ public class DataOutputController {
         Map<String,Object> returnMap = new HashMap<>();
         try {
             List<Map<String,Object>> mapList = new ArrayList<>();
+            //根据问卷号获取填写者的数据
             List<QuestionnaireSubmit> submitList = dataOutputService.getUserIDByQuestionnaireID(questionnaireID);
-            String filename = "";
-            String title = "";
+            List<QuestionContent> questions = dataOutputService.getQuestionsByQuestionnaireID(questionnaireID);
+            String filename;
+            String title;
             for(QuestionnaireSubmit submit:submitList){
                 Map<String,Object> map = new LinkedHashMap<>();
-                int m = 1;
                 Integer userid = submit.getUserID();
-                Integer questionnaireid = submit.getQuestionnaireID();
-                //将用户信息添加到map
-                map.put((m++)+":"+"用户名",dataOutputService.getUserNameByUserID(submit.getUserID()));
-                //将问卷的信息添加到map
-                map.put((m++)+":"+"问卷标题",dataOutputService.getTitleByQuestionnaireID(submit.getQuestionnaireID()));
-                //获取该用户对该问卷的信息
+                map.put("用户名",dataOutputService.getUserNameByUserID(userid));
                 int i = 1;
-                List<UserChooseQuestion> chooseList = dataOutputService.getChooseByID(userid,questionnaireid);
-                List<UserCompletionQuestion> completionList = dataOutputService.getCompletionByID(userid,questionnaireid);
-                List<UserScoreQuestion> scoreList = dataOutputService.getScoreByID(userid,questionnaireid);
-                //对选择题进行处理
-                for(UserChooseQuestion choose:chooseList){
-                    map.put((m++)+":"+"问题"+(i++),dataOutputService.getContentByQuestionID(choose.getQuestionContentID()));
-                    List<QuestionOption> options = dataOutputService.getAllOptionsByQuestionID(choose.getQuestionContentID());
-                    int j = 1;
-                    for (QuestionOption option:options){
-                        if(dataOutputService.getOptionByOptionID(userid,option.getQuestionOptionID()).isEmpty()){
-                            map.put((m++)+":"+"选项"+(j++)+":"+option.getOptionContent(),0);
+                for (QuestionContent question:questions){
+                    switch (question.getQuestionKind()) {
+                        case 1:{
                         }
-                        else {
-                            map.put((m++)+":"+"选项"+(j++)+":"+option.getOptionContent(),1);
+                        case 2:{
+                            String content = dataOutputService.getContentByQuestionID(question.getQuestionContentID());
+                            map.put("问题"+(i++)+":"+content,"");
+                            List<QuestionOption> options = dataOutputService.getAllOptionsByQuestionID(question.getQuestionContentID());
+                            int j = 1;
+                            for(QuestionOption option:options){
+                                if(dataOutputService.getOptionByOptionID(userid,question.getQuestionContentID(),option.getQuestionOptionID()) == null){
+                                    map.put("选项"+(j++)+":"+option.getOptionContent(),"0");
+                                }
+                                else {
+                                    map.put("选项"+(j++)+":"+option.getOptionContent(),"1");
+                                }
+                            }
+                            break;
                         }
-                    }
-                }
-                //对填空题进行处理
-                for(UserCompletionQuestion completion:completionList){
-                    String value = completion.getCompletionContent();
-                    if (value == null){
-                        map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(completion.getQuestionContentID()),"NULL");
-                    }
-                    else {
-                        map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(completion.getQuestionContentID()),value);
-                    }
-                }
-                //对评分题进行处理
-                for(UserScoreQuestion score:scoreList){
-                    String value = String.valueOf(score.getScore());
-                    if (value == null){
-                        map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(score.getQuestionContentID()),"NULL");
-                    }
-                    else {
-                        map.put((m++)+":"+"问题"+(i++)+":"+dataOutputService.getContentByQuestionID(score.getQuestionContentID()),value);
+                        case 3:{
+                            String content = dataOutputService.getContentByQuestionID(question.getQuestionContentID());
+                            if (dataOutputService.getCompletionByID(userid,question.getQuestionContentID()) == null){
+                                map.put("问题"+(i++)+":"+content,"NA");
+                            }
+                            else {
+                                map.put("问题"+(i++)+":"+content,dataOutputService.getCompletionByID(userid,question.getQuestionContentID()).getCompletionContent());
+                            }
+                            break;
+                        }
+                        case 4:{
+                            String content = dataOutputService.getContentByQuestionID(question.getQuestionContentID());
+                            if (dataOutputService.getScoreByID(userid,question.getQuestionContentID()) == null){
+                                map.put("问题"+(i++)+":"+content,"NA");
+                            }
+                            else {
+                                map.put("问题"+(i++)+":"+content,dataOutputService.getScoreByID(userid,question.getQuestionContentID()).getScore());
+                            }
+                            break;
+                        }
                     }
                 }
                 mapList.add(map);
             }
-            filename = "userid-"+userID +"-"+String.valueOf(questionnaireID);
+            filename = "user-"+userID +"-questionnaire-"+ questionnaireID;
             title = String.valueOf(questionnaireID);
             DataOutput dataOutput = DataOutput.getInstance();
             dataOutput.createExcel(mapList,filename,title);
@@ -93,5 +93,76 @@ public class DataOutputController {
             returnMap.put("success",false);
         }
         return returnMap;
+    }
+
+    @PostMapping("/SingleData")
+    @ApiOperation("导出单题数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionContentID",value = "题号",dataType = "int",required = true)
+    })
+    public Map<String,Object> singleData(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer questionContentID){
+        Map<String,Object> retMap = new HashMap<>();
+        try {
+            List<Map<String,Object>> mapList = new ArrayList<>();
+            List<QuestionnaireSubmit> submitList = dataOutputService.getUserIDByQuestionnaireID(questionnaireID);
+            QuestionContent question = dataOutputService.getQuestionContentByID(questionContentID);
+            for (QuestionnaireSubmit submit:submitList){
+                Map<String,Object> map = new LinkedHashMap<>();
+                Integer userid = submit.getUserID();
+                map.put("用户名",dataOutputService.getUserNameByUserID(userid));
+                switch (question.getQuestionKind()){
+                    case 1:{
+                    }
+                    case 2:{
+                        String content = dataOutputService.getContentByQuestionID(question.getQuestionContentID());
+                        map.put("问题"+":"+content,"");
+                        List<QuestionOption> options = dataOutputService.getAllOptionsByQuestionID(question.getQuestionContentID());
+                        int j = 1;
+                        for(QuestionOption option:options){
+                            if(dataOutputService.getOptionByOptionID(userid,question.getQuestionContentID(),option.getQuestionOptionID()) == null){
+                                map.put("选项"+(j++)+":"+option.getOptionContent(),"0");
+                            }
+                            else {
+                                map.put("选项"+(j++)+":"+option.getOptionContent(),"1");
+                            }
+                        }
+                        break;
+                    }
+                    case 3:{
+                        String content = dataOutputService.getContentByQuestionID(question.getQuestionContentID());
+                        if (dataOutputService.getCompletionByID(userid,question.getQuestionContentID()) == null){
+                            map.put("问题"+":"+content,"NA");
+                        }
+                        else {
+                            map.put("问题"+":"+content,dataOutputService.getCompletionByID(userid,question.getQuestionContentID()).getCompletionContent());
+                        }
+                        break;
+                    }
+                    case 4:{
+                        String content = dataOutputService.getContentByQuestionID(question.getQuestionContentID());
+                        if (dataOutputService.getScoreByID(userid,question.getQuestionContentID()) == null){
+                            map.put("问题"+":"+content,"NA");
+                        }
+                        else {
+                            map.put("问题"+":"+content,dataOutputService.getScoreByID(userid,question.getQuestionContentID()).getScore());
+                        }
+                        break;
+                    }
+                }
+                mapList.add(map);
+            }
+            String filename = "questionnaire-"+ questionnaireID+"-question-"+questionContentID;
+            String title = String.valueOf(questionnaireID);
+            DataOutput dataOutput = DataOutput.getInstance();
+            dataOutput.createExcel(mapList,filename,title);
+            retMap.put("success",true);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            retMap.put("success",false);
+        }
+        return retMap;
     }
 }

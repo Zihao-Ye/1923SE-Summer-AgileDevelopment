@@ -4,20 +4,21 @@
     <select id="getQuestionsByQuestionnaireID" resultType="QuestionContent">
         select *
         from question_content
-        where userid = #{userID} and questionnaireid = #{questionnaireID}
+        where questionnaireid = #{questionnaireID}
+        order by question_no
     </select>
     <select id="getCompletionByID" resultType="UserCompletionQuestion">
         select *
         from user_completion_question
-        where questionnaireid = #{questionnaireID} and userid = #{userID}
+        where question_contentid = #{questionContentID} and userid = #{userID}
     </select>
     <select id="getScoreByID" resultType="UserScoreQuestion">
         select * from user_score_question
-        where questionnaireid = #{questionnaireID} and userid = #{userID}
+        where question_contentid = #{questionContentID} and userid = #{userID}
     </select>
     <select id="getChooseByID" resultType="UserChooseQuestion">
         select * from user_choose_question
-        where questionnaireid = #{questionnaireID} and userid = #{userID}
+        where question_contentid = #{questionContentID} and userid = #{userID}
     </select>
     <select id="getUserNameByUserID" resultType="String">
         select user_name from user_info
@@ -47,6 +48,34 @@
     <select id="getOptionByOptionID" resultType="UserChooseQuestion">
         select *
         from user_choose_question
-        where question_optionid = #{questionOptionID} and userid = #{userid}
+        where question_optionid = #{questionOptionID} and userid = #{userid} and question_contentid = #{questionContentID}
+    </select>
+
+    <select id="getChooseContentByID" resultType="QuestionContent">
+        select *
+        from question_content
+        where questionnaireid = #{questionnaireID} and questionKind = 1
+    </select>
+
+    <select id="getQuestionContentByID" resultType="QuestionContent">
+        select *
+        from question_content
+        where question_contentid = #{questionContentID}
+    </select>
+
+    <select id="getChooseList" resultType="UserChooseQuestion">
+        select *
+        from user_choose_question
+        where questionnaireid =#{questionnaireID}
+    </select>
+    <select id="getCompletionList" resultType="UserCompletionQuestion">
+        select *
+        from user_completion_question
+        where questionnaireid =#{questionnaireID}
+    </select>
+    <select id="getScoreList" resultType="UserScoreQuestion">
+        select *
+        from user_score_question
+        where questionnaireid =#{questionnaireID}
     </select>
 </mapper>
