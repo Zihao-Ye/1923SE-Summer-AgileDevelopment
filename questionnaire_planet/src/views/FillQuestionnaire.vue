@@ -12,7 +12,7 @@
       </v-card>
     </template>
   <v-card class="mx-auto" width="1000" elevation="10">
-    <h1 class="text-center">{{questionnaire.title}}</h1>
+    <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
     <p class="text-center">{{questionnaire.questionnaireNote}}</p>
     <!--单选必做题-->
     <v-card
@@ -258,6 +258,19 @@
       </v-btn>
       </div>
   </v-card>
+    <v-dialog
+        v-model="dialog"
+        persistent
+        max-width="200"
+
+    >
+      <v-card class="text-center">
+      <h2>请先登录</h2>
+      <v-btn text color="primary" :to="{name:'Login'}">
+        登录
+      </v-btn>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -292,6 +305,7 @@ export default {
     location:{},
     now:moment(),
     end:"2021-08-28T12:21:40.000+00:00",
+    dialog:false,
   }),
   methods:{
     getQuestionnaire(questionnaireID) {
@@ -681,6 +695,17 @@ export default {
           this.getQuestionnaire(res.data.originQuestionnaireID)
         }
       })
+    },
+    tologin(){
+      this.timer = setTimeout(() => {
+        //设置延迟执行
+        if((this.questionnaire.kind===2||this.questionnaire.kind===3||this.questionnaire.kind===4)&&this.$store.state.login===false){
+          this.dialog=true
+        }else{
+          this.getUser()
+          this.dialog=false
+        }
+      }, 1000);
     }
   },
   computed:{
@@ -706,12 +731,13 @@ export default {
   },
   created() {
     this.getQuestionnaireID()
-    this.getUser()
+
   },
   mounted() {
     setInterval(()=>{
       this.now = moment()
-    },1000)
+    },1000);
+    this.tologin()
   }
 }
 </script>

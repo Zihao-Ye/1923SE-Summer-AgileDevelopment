@@ -7,6 +7,11 @@
 </template>
 <script>
 export default {
+  data(){
+    return{
+      message:""
+    }
+  },
   created() { // 页面创建生命周期函数
     this.initWebSocket()
   },
@@ -29,7 +34,7 @@ export default {
       console.log("WebSocket连接发生错误");
     },
     websocketonmessage: function (e) {
-      console.log(e.data);                // console.log(e);
+      console.log(e)
     },
     websocketclose: function (e) {
       console.log("connection closed (" + e.code + ")");
@@ -41,7 +46,7 @@ export default {
         url:'/decreaseVolume',
         params:{
           questionContentID:2,
-          questionOptionID:2,
+          questionOptionID:1,
           userID:2,
         }
       }).then(res=>{
