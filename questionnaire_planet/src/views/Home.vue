@@ -26,7 +26,7 @@
           </template>
           <template v-else>
             <v-btn
-                color="indigo"
+                color="primary"
                 dark
                 :to="{name:'Login'}"
                 outlined

@@ -1,21 +1,19 @@
 <template>
-  <div  class="analyse" >
-    <v-card class="mx-auto" width="1000" elevation="10">
-      <h1 class="text-center">{{questionnaire.title}}</h1>
-      <p class="text-center">{{questionnaire.questionnaireNote}}</p>
-      <v-container>
-        <v-row>
-          <v-spacer></v-spacer>
-
-          <v-btn color="#546E7A" text @click="getDataUrl">
-            导出数据
-            <i class="el-icon-upload"></i>
-          </v-btn>
-
-        </v-row>
-      </v-container>
-      <!--单选必做题-->
-      <v-container>
+  <div id= 'pdfDom'>
+    <div>
+      <v-card class="mx-auto" width="1000" elevation="10">
+        <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
+        <p class="text-center">{{questionnaire.questionnaireNote}}</p>
+        <v-container>
+          <v-row>
+            <v-spacer></v-spacer>
+            <v-btn color="#546E7A" text @click="getDataUrl">
+              导出数据
+              <i class="el-icon-upload"></i>
+            </v-btn>
+          </v-row>
+        </v-container>
+        <!--单选必做题-->
         <v-card
             v-for="(question,i) in questions"
             :key="i"
@@ -39,10 +37,9 @@
                 <v-radio
                     v-for="(option,n) in options[question.questionNo]"
                     :key="n"
-                    :label="option.optionContent"
+                    :label="leftPerson(option)"
                     :value="n"
                     @change="radioAnswer[question.questionNo]=option;requirePlus(question)"
-                    disabled
                 ></v-radio>
               </v-radio-group>
             </v-container>
@@ -63,7 +60,6 @@
                     :label="option.optionContent"
                     :value="n"
                     @change="radioAnswer[question.questionNo]=option"
-                    disabled
                 ></v-radio>
               </v-radio-group>
             </v-container>
@@ -86,9 +82,7 @@
                     v-for="(option,n) in options[question.questionNo]"
                     :key="n"
                     :label="option.optionContent"
-                    border
                     @change="checkboxAnswer(option);requirePlus(question)"
-                    disabled
                     style="display:block;zoom:120%"
                 ></el-checkbox>
               </el-checkbox-group>
@@ -111,9 +105,7 @@
                     v-for="(option,n) in options[question.questionNo]"
                     :key="n"
                     :label="option.optionContent"
-                    border
                     @change="checkboxAnswer(option)"
-                    disabled
                     style="display:block;zoom:120%"
                 ></el-checkbox>
               </el-checkbox-group>
@@ -138,7 +130,6 @@
                   required
                   outlined
                   @change="requirePlus(question)"
-                  disabled
               ></v-text-field>
             </v-container>
           </template>
@@ -155,7 +146,6 @@
                   v-model="text[question.questionNo]"
                   label="填空"
                   outlined
-                  disabled
               ></v-text-field>
             </v-container>
           </template>
@@ -180,7 +170,6 @@
                       :max="maxScores[question.questionNo].maxScore"
                       :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                       @change="requirePlus(question)"
-                      disabled
                       style="zoom:120%"
                   ></el-rate>
                   <h4 >很满意</h4>
@@ -204,7 +193,6 @@
                       v-model="score[question.questionNo]"
                       :max="maxScores[question.questionNo].maxScore"
                       :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                      disabled
                       style="zoom:120%"
                   ></el-rate>
                   <h4 >很满意</h4>
@@ -212,30 +200,85 @@
               </v-container>
             </v-card-actions>
           </template>
+          <!--定位必做题-->
+          <template v-else-if="question.questionKind===5 && question.requireSig===1">
+            <v-card-title>
+              <v-row>
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              由于测试机型有限，暂只有Windows平台Edge/火狐浏览器可获取定位（为获取准确定位，请给与浏览器定位权限）
+            </v-card-subtitle>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-text-field
+                  v-model="location[question.questionNo]"
+                  :rules="textRules"
+                  label="点击获取定位"
+                  required
+                  solo
+                  @change="requirePlus(question)"
+                  readonly
+                  @click="getLocation(question.questionNo)"
+              ></v-text-field>
+            </v-container>
+          </template>
+          <!--定位非必做题-->
+          <template v-else-if="question.questionKind===5 && question.requireSig===0">
+            <v-card-title>
+              {{question.questionNo}}. {{question.questionContent}}
+            </v-card-title>
+            <v-card-subtitle>
+              由于测试机型有限，暂只有Windows平台Edge/火狐浏览器可获取定位（为获取准确定位，请给与浏览器定位权限）
+            </v-card-subtitle>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-text-field
+                  v-model="location[question.questionNo]"
+                  label="获取定位"
+                  outlined
+                  solo
+                  readonly
+                  @click="getLocation(question.questionNo)"
+              ></v-text-field>
+            </v-container>
+          </template>
           <v-divider></v-divider>
         </v-card>
-      </v-container>
-    </v-card>
-
-    <v-btn
-        absolute
-        class="goback"
-        fab
-        dark
-        small
-        color="primary"
-        :to="{path:'/QuestionnaireManage'}"
-    >
-      <v-icon dark>
-        mdi-close
-      </v-icon>
-    </v-btn>
+        <div class="text-center" style="padding-top: 30px">
+          <v-btn class="ma-2" color="info">
+            提交
+          </v-btn>
+        </div>
+      </v-card>
+      <v-btn
+          absolute
+          class="goback"
+          fab
+          dark
+          small
+          color="primary"
+          :to="{path:'/QuestionnaireManage'}"
+      >
+        <v-icon dark>
+          mdi-close
+        </v-icon>
+      </v-btn>
+    </div>
   </div>
 </template>
 
 <script>
+import moment from "moment";
 export default {
   data: () => ({
+    htmlTitle: '页面导出PDF文件名',
     questionnaire:{},
     questions:[],
     options: {},
@@ -257,21 +300,23 @@ export default {
       userPwd:"visitor"
     },
     fillsuccess:false,
-    optionVote:{},
-    optionName:{}
+    location:{},
+    now:moment(),
+    end:"2021-08-28T12:21:40.000+00:00",
   }),
   methods:{
-    getQuestionnaire() {
+    getQuestionnaire(questionnaireID) {
       this.$http({
         method: "get",
         url: "/showQuestionnaireInfo",
         params: {
-          questionnaireID:this.$route.params.id
+          questionnaireID:questionnaireID
         },
       })
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
+              this.htmlTitle = res.data.questionnaire.title
               this.questionnaire=res.data.questionnaire
               this.questions=res.data.questionList
               this.requireNum=0
@@ -290,8 +335,11 @@ export default {
                   this.getOptions(question)
                 }else if(question.questionKind===3){
                   this.$set(this.text,question.questionNo,"")
+                }else if(question.questionKind===5){
+                  this.$set(this.location,question.questionNo,"")
                 }
               }
+
             }
           })
           .catch((err) => {
@@ -309,16 +357,6 @@ export default {
         console.log(res.data)
         if (res.data.success) {
           this.$set(this.options,question.questionNo,res.data.questionOptionList)
-          let vote=[]
-          let name=[]
-          for(let option of res.data.questionOptionList){
-            console.log(option)
-            vote.push(option.voteVolume)
-            let content=option.optionContent+":"+option.voteVolume
-            name.push(content)
-          }
-          this.$set(this.optionVote,question.questionNo,vote)
-          this.$set(this.optionName,question.questionNo,name)
         }
       })
           .catch((err) => {
@@ -399,7 +437,7 @@ export default {
         params: {
           questionContentID:option.questionContentID,
           questionOptionID:option.questionOptionID,
-          questionnaireID:this.$route.params.id,
+          questionnaireID:this.questionnaire.questionnaire,
           userID:this.user.userID
         },
       })
@@ -423,7 +461,7 @@ export default {
         url: "/completion",
         params: {
           questionContentID:question.questionContentID,
-          questionnaireID:this.$route.params.id,
+          questionnaireID:this.questionnaire.questionnaire,
           userID:this.user.userID,
           completionContent:content
         },
@@ -447,7 +485,7 @@ export default {
         url: "/score",
         params: {
           questionContentID:question.questionContentID,
-          questionnaireID:this.$route.params.id,
+          questionnaireID:this.questionnaire.questionnaire,
           userID:this.user.userID,
           score:score
         },
@@ -483,6 +521,159 @@ export default {
       }
       this.$router.push(({name:'ThanksNormal'}))
     },
+    getLocation(id) {
+      const self = this
+      const AMap=window.AMap
+      AMap.plugin('AMap.Geolocation', function () {
+        var geolocation = new AMap.Geolocation({
+          // 是否使用高精度定位，默认：true
+          enableHighAccuracy: true,
+          // 设置定位超时时间，默认：无穷大
+          timeout: 10000,
+        })
+
+        geolocation.getCurrentPosition()
+        AMap.event.addListener(geolocation, 'complete', onComplete);
+        AMap.event.addListener(geolocation, 'error', onError);
+
+        function onComplete(data) {
+          console.log(data)
+          // data是具体的定位信息
+          self.$set(self.location,id,data.formattedAddress)
+          //point.push(gpsPoint.lon)
+          //self.centerPointer = point;
+          //self.getAddress(point);
+
+        }
+
+        function onError(data) {
+          // 定位出错
+          console.log('定位失败错误：', data);
+          // 调用ip定位
+          self.getLngLatLocation();
+        }
+      })
+      var GPS = {
+
+        PI: 3.14159265358979324,
+        x_pi: 3.14159265358979324 * 3000.0 / 180.0,
+        delta: function (lat, lon) {
+          var a = 6378245.0; //  a: 卫星椭球坐标投影到平面地图坐标系的投影因子。
+          var ee = 0.00669342162296594323; //  ee: 椭球的偏心率。
+          var dLat = this.transformLat(lon - 105.0, lat - 35.0);
+          var dLon = this.transformLon(lon - 105.0, lat - 35.0);
+          var radLat = lat / 180.0 * this.PI;
+          var magic = Math.sin(radLat);
+          magic = 1 - ee * magic * magic;
+          var sqrtMagic = Math.sqrt(magic);
+          dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * this.PI);
+          dLon = (dLon * 180.0) / (a / sqrtMagic * Math.cos(radLat) * this.PI);
+          return {
+            'lat': dLat,
+            'lon': dLon
+          };
+        },
+        //WGS-84 to GCJ-02
+        gcj_encrypt: function (wgsLat, wgsLon) {
+          if (this.outOfChina(wgsLat, wgsLon))
+            return {
+              'lat': wgsLat,
+              'lon': wgsLon
+            };
+
+          var d = this.delta(wgsLat, wgsLon);
+          return {
+            'lat': wgsLat + d.lat,
+            'lon': wgsLon + d.lon
+          };
+
+        },
+        outOfChina: function (lat, lon) {
+          if (lon < 72.004 || lon > 137.8347)
+            return true;
+          if (lat < 0.8293 || lat > 55.8271)
+            return true;
+          return false;
+        },
+
+        transformLat: function (x, y) {
+          var ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+          ret += (20.0 * Math.sin(6.0 * x * this.PI) + 20.0 * Math.sin(2.0 * x * this.PI)) * 2.0 / 3.0;
+          ret += (20.0 * Math.sin(y * this.PI) + 40.0 * Math.sin(y / 3.0 * this.PI)) * 2.0 / 3.0;
+          ret += (160.0 * Math.sin(y / 12.0 * this.PI) + 320 * Math.sin(y * this.PI / 30.0)) * 2.0 / 3.0;
+          return ret;
+        },
+
+        transformLon: function (x, y) {
+          var ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+          ret += (20.0 * Math.sin(6.0 * x * this.PI) + 20.0 * Math.sin(2.0 * x * this.PI)) * 2.0 / 3.0;
+          ret += (20.0 * Math.sin(x * this.PI) + 40.0 * Math.sin(x / 3.0 * this.PI)) * 2.0 / 3.0;
+          ret += (150.0 * Math.sin(x / 12.0 * this.PI) + 300.0 * Math.sin(x / 30.0 * this.PI)) * 2.0 / 3.0;
+          return ret;
+        }
+      };
+    },
+    getLngLatLocation() {
+      const self=this
+      const AMap=window.AMap
+      AMap.plugin('AMap.CitySearch', function () {
+        var citySearch = new AMap.CitySearch();
+        citySearch.getLocalCity(function (status, result) {
+          if (status === 'complete' && result.info === 'OK') {
+            // 查询成功，result即为当前所在城市信息
+            console.log('通过ip获取当前城市：', result)
+            //逆向地理编码
+            AMap.plugin('AMap.Geocoder', function () {
+              var geocoder = new AMap.Geocoder({
+                // city 指定进行编码查询的城市，支持传入城市名、adcode 和 citycode
+                city: result.adcode
+              })
+
+              var lnglat = result.rectangle.split(';')[0].split(',');
+              self.centerPointer=lnglat
+              geocoder.getAddress(lnglat, function (status, data) {
+                if (status === 'complete' && data.info === 'OK') {
+                  // result为对应的地理位置详细信息
+                  console.log(data)
+                }
+              })
+            })
+          }
+        })
+      })
+    },
+    leftPerson(option){
+      if(option.leftVolume>0){
+        let left=option.leftVolume-option.voteVolume
+        return option.optionContent+'\xa0\xa0\xa0\xa0\xa0\xa0\xa0'+"(剩余"+left+"个名额)"
+      }else{
+        return option.optionContent
+      }
+    },
+    toPdf(){
+      if(this.$store.state.isPrint) {
+        this.msgSuccess(this.$store.state.isPrint);
+        this.getPdf();
+        this.$store.commit("setNoPrint");
+      }
+    },
+    PrefixInteger(num, n) {
+      return (Array(n).join(0) + num).slice(-n);
+    },
+    getQuestionnaireID(){
+      this.$http({
+        method:'get',
+        url:'/getOriginQuestionnaireID',
+        params:{
+          encryptQuestionnaireID:this.$route.params.id
+        }
+      }).then(res=>{
+        console.log(res.data)
+        if(res.data.success){
+          this.getQuestionnaire(res.data.originQuestionnaireID)
+        }
+      })
+    },
     getDataUrl(){
       this.$http({
         method: "post",
@@ -508,11 +699,31 @@ export default {
     submitValid() {
       let l = Object.keys(this.require).length
       return l === this.requireNum;
+    },
+    countDown(){
+      return function(endDate) {
+        let m1 = this.now
+        let m2 = moment(endDate)
+        var du = moment.duration(m2 - m1, 'ms'),
+            hours = du.get('hours'),
+            mins = du.get('minutes'),
+            ss = du.get('seconds');
+        if(hours<=0 && mins<=0 && ss<=0) {
+          return "已超时"
+        }else {
+          return this.PrefixInteger(hours,2) + ':' + this.PrefixInteger(mins,2) + ':' + this.PrefixInteger(ss,2)
+        }
+      }
     }
   },
   created() {
-    this.getQuestionnaire()
-
+    this.getQuestionnaireID()
+  },
+  mounted() {
+    this.toPdf()
+    setInterval(()=>{
+      this.now = moment()
+    },1000)
   }
 }
 </script>
@@ -522,11 +733,19 @@ export default {
   top:2%;
   right:2%;
 }
-.analyse{
+#pdfDom{
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e8e5d9;
-  height: 100%
+  background-color:#f8f5f1;
+  height: 100%;
+}
+.timeHint{
+  position: fixed;
+  right:1%;
+  top:50%;
+  width: 100px;
+  height: 70px;
+  margin-top: -40px;
 }
 </style>
