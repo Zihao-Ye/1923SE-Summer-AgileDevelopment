@@ -126,7 +126,7 @@
                         停止
                         <i class="el-icon-video-pause"></i>
                     </v-btn>
-                    <v-btn  text color="#00796B" :to="{path:`/normal/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
+                    <v-btn v-if="!item.havePublish" text color="#00796B" :to="{path:`/normal/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
                     <v-btn @click="printQuestionnaire(item.encryptQuestionnaireID)" color="#546E7A" text >
                            导出                               
                            <i class="el-icon-upload"></i>
