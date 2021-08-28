@@ -12,6 +12,8 @@ import FillQuestionnaire from "../views/FillQuestionnaire";
 import ThanksNormal from "../views/ThanksNormal";
 import NormalAnalyse from "../views/NormalAnalyse";
 import TurnedOff from "../views/TurnedOff";
+
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -73,6 +75,7 @@ const routes = [
     name: 'ThanksNormal',
     component: ThanksNormal,
   },
+  
   {
     path: '/normalAnalyse/:id',
     name: 'NormalAnalyse',

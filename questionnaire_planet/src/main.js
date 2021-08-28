@@ -7,7 +7,9 @@ import axios from "axios"
 import vuetify from './plugins/vuetify'
 import 'element-ui/lib/theme-chalk/index.css';
 import htmlToPdf from './print/htmlToPdf'
+import VueClipboard from 'vue-clipboard2'
 
+Vue.use(VueClipboard)
 Vue.use(ElementUI);
 Vue.use(htmlToPdf)
 var Cesium = require('cesium/Cesium');

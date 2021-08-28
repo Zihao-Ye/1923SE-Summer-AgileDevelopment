@@ -5,16 +5,25 @@
       :items-per-page.sync="itemsPerPage"
       :page.sync="page"
       :search="search"
-      :sort-by="sortBy"
+      :sort-by="funsortBy(sortBy)"
       :sort-desc="sortDesc"
       hide-default-footer
     >
       <template v-slot:header>
         <v-toolbar
           dark
-          color="blue darken-3"
+          color="#29B6F6"
           class="mb-1"
         >
+        <template v-slot:img="{ props }">
+        <v-img
+          v-bind="props"
+          gradient="to top right, rgba(100,115,201,.7), rgba(25,32,72,.7)"
+        ></v-img>
+      </template>
+      <v-icon large color="white">mdi-domain</v-icon>
+      <v-toolbar-title>我的问卷</v-toolbar-title>
+      <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
             clearable
@@ -26,7 +35,10 @@
           ></v-text-field>
           <template v-if="$vuetify.breakpoint.mdAndUp">
             <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            排序：
             <v-select
+              style="width:10%"
               v-model="sortBy"
               flat
               solo-inverted
@@ -35,6 +47,7 @@
               label="排序"
             ></v-select>
             <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
             <v-btn-toggle
               v-model="sortDesc"
               mandatory
@@ -42,7 +55,7 @@
               <v-btn
                 large
                 depressed
-                color="blue"
+                color="#29B6F6"
                 :value="false"
               >
                 <v-icon>mdi-arrow-up</v-icon>
@@ -50,146 +63,86 @@
               <v-btn
                 large
                 depressed
-                color="blue"
+                color="#29B6F6"
                 :value="true"
               >
                 <v-icon>mdi-arrow-down</v-icon>
               </v-btn>
             </v-btn-toggle>
           </template>
+          <template v-slot:extension>
+        <v-tabs
+          v-model="tab"
+          align-with-title
+        >
+          <v-tabs-slider color="yellow"></v-tabs-slider>
+
+          <v-tab
+            v-for="item in tabitems"
+            :key="item"
+          >
+            {{ item }}
+          </v-tab>
+        </v-tabs>
+      </template>
+
         </v-toolbar>
       </template>
 
       <template v-slot:default="props">
-        <v-row>
-          <v-col
-            v-for="item in props.items"
-            :key="item.questionnaireID"
-            cols="12"
-            sm="6"
-            md="4"
-            lg="3"
-          >
-            <v-card>
-              <v-card-title class="subheading font-weight-bold">
-                {{ item.title }}
+        <v-container>
+        <v-row v-for="item in props.items"
+            :key="item.questionnaireID">
+            <v-col>
+            <v-card  class="questionnaireCardClass" elevation="6" v-if="tab == 0 ||questionnaireStatusForTab (item) == tab" width="100%"
+            >
+              <v-card-title >
+                <div class="questionnaireTitle"  :class="{ 'blue--text': sortBy === '标题' }">{{ item.title }}</div>
+                <v-chip class="ma-2" text-color="white" :color="statusClass(item)">{{ questionnaireKind(item) }}</v-chip>
+                <v-chip class="ma-2" :color="questionnaireStatusClass(item)" outlined>{{ questionnaireStatus(item) }}</v-chip>
+                <v-spacer></v-spacer>
+                   <div class="titleInfoCreateTime" :class="{ 'blue--text': sortBy === '创建时间' }">创建于：{{ item.createTime | formatDate }}</div>
+                   <div class="titleInfoRecycle" :class="{ 'blue--text': sortBy === '已回收数量' }">已回收：{{item.recycleVolume}}份</div>
               </v-card-title>
-
               <v-divider></v-divider>
-
+              <!-- <v-container></v-container> -->
               <v-list dense>
                 <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === '已回收数量' }">
-                    已回收数量:
-                  </v-list-item-content>
-                  <v-list-item-content
-                    class="align-end"
-                    :class="{ 'blue--text': sortBy === '已回收数量' }"
-                  >
-                    {{ item.recycleVolume }}
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === '创建时间' }">
-                    创建时间:
-                  </v-list-item-content>
-                  <v-list-item-content
-                    class="align-end"
-                    :class="{ 'blue--text': sortBy === '创建时间' }"
-                  >
-                    {{ item.createTime | formatDate }}
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'startTime' }">
-                    第一次发布时间:
-                  </v-list-item-content>
-                  <v-list-item-content
-                    v-if="item.havePublish"
-                    class="align-end"
-                    :class="{ 'blue--text': sortBy === 'startTime' }"
-                  >
-                    {{ item.startTime | formatDate }}
-                  </v-list-item-content>
-                  <v-list-item-content v-else class="align-end" :class="{ 'blue--text': sortBy === 'startTime' }">
-                    未发布
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'endTime' }">
-                    最后一次发布时间:
-                  </v-list-item-content>
                   <v-list-item-content
                      v-if="item.havePublish"
                     class="align-end"
-                    :class="{ 'blue--text': sortBy === 'endTime' }"
+                    :class="{ 'blue--text': sortBy === '截止时间' }"
                   >
-                    {{ item.endTime | formatDate }}
+                    截止时间:{{ item.endTime | formatDate }}
                   </v-list-item-content>
                   <v-list-item-content v-else class="align-end" :class="{ 'blue--text': sortBy === 'endTime' }">
                     未发布
                   </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'status' }">
-                    状态:
-                  </v-list-item-content>
-                  <v-list-item-content
-                    class="align-end"
-                    :class="{ 'blue--text': sortBy === 'status' }"
-                  >
-                    {{ questionnaireStatus(item) }}
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content :class="{ 'blue--text': sortBy === 'kind' }">
-                    问卷类型:
-                  </v-list-item-content>
-                  <v-list-item-content
-                    class="align-end"
-                    :class="{ 'blue--text': sortBy === 'kind' }"
-                  >
-                    {{ questionnaireKind(item) }}
-                  </v-list-item-content>
-                </v-list-item>
-
-                <v-divider></v-divider>
-
-                <v-list-item>
-                    <v-btn text v-if='!item.isVisitable' @click="openQuestionnaire(item)" color="primary">
-                        开启问卷
+                    <v-btn   text v-if='!item.isVisitable' @click="openQuestionnaire(item)" color="primary">
+                        开启
                         <i class="el-icon-video-play"></i>
                     </v-btn>
-                    <v-btn text v-else color="error" @click="closeQuestionnaire(item.questionnaireID)">
-                        停止问卷
+                    <v-btn  text v-else color="error" @click="closeQuestionnaire(item.questionnaireID)">
+                        停止
                         <i class="el-icon-video-pause"></i>
                     </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn text color="#00796B" :to="{path:`/normal/${item.questionnaireID}`}">编辑问卷<i class="el-icon-edit"></i></v-btn>
-                </v-list-item>
-                <v-list-item>
-                    <v-btn @click="printQuestionnaire(item.questionnaireID)" color="#546E7A" text >
-                           导出问卷                               
+                    <v-btn  text color="#00796B" :to="{path:`/normal/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
+                    <v-btn @click="printQuestionnaire(item.encryptQuestionnaireID)" color="#546E7A" text >
+                           导出                               
                            <i class="el-icon-upload"></i>
                     </v-btn>
-                    <v-spacer></v-spacer>
                     <v-btn text @click="copyQuestionnaire(item.questionnaireID)" color="#000000">
-                        复制问卷
+                        复制
                         <i class="el-icon-document-copy"></i>
                         </v-btn>
-                </v-list-item>
-                <v-list-item>
-                    <v-btn text color="error" @click="deleteQuestionnaire(item.questionnaireID)">
-                        删除问卷
+                        <v-btn text color="error" @click="deleteQuestionnaire(item.questionnaireID)">
+                        删除
                         <i class="el-icon-delete-solid"></i>
                     </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn :to="'/preview/' + item.questionnaireID" text color="#FBC02D">
-                            预览问卷
+                    <v-btn :to="'/preview/' + item.encryptQuestionnaireID" text color="#FBC02D">
+                            预览
                             <i class="el-icon-view"></i>
                             </v-btn>
-                </v-list-item>
-                <v-list-item>
       <v-dialog
         transition="dialog-bottom-transition"
         max-width="600"
@@ -207,18 +160,46 @@
               color="primary"
               dark
             >{{item.title}}————问卷分享链接</v-toolbar>
-            <v-card-text>
-              <div  class="pa-5 justify-center">问卷填写链接：{{questionnaireURL(item)}}
+            <v-card-text class="URLcenter-block">
+              <div  class="pa-5 justify-center questionnaireURL">问卷填写链接：{{questionnaireURL(item)}}
               </div>
-              <div>
+              <v-list dense>
+                <v-list-item>
+                  <v-list-item-content>
                 <vue-qr :text="questionnaireURL(item)" 
                       :callback="qrCodeGenSuccess()"
-                      :margin="20" 
+                      :margin="0" 
                       colorDark="#000" 
                       colorLight="#fff" 
-                      :size="200">
+                      :size="250">
                 </vue-qr>
-              </div>
+                </v-list-item-content>
+                <v-list-item-content >
+                       <v-col>
+                        <v-btn class="fs12" @click="copyCode(item)">
+                        复制链接
+                        <i class="el-icon-document-copy"></i>
+                        </v-btn>
+                        
+                       </v-col> 
+                        <v-col> 
+                       <v-btn color="primary">
+                        下载二维码
+                        <i class="el-icon-download"></i>
+                        </v-btn>
+                        </v-col> 
+                       <v-col> 
+                        <v-btn @click="reset(item.questionnaireID)" color="success">
+                        重新生成链接和二维码
+                        <i class="el-icon-refresh"></i>
+                        </v-btn>
+                        </v-col> 
+                </v-list-item-content>
+                </v-list-item>
+                <div>
+                  
+                </div>
+              </v-list>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn
@@ -229,7 +210,7 @@
           </v-card>
         </template>
       </v-dialog>
-                    <v-spacer></v-spacer>
+            
                     <v-btn text color="#B388FF" :to="'/normalAnalyse/' + item.questionnaireID">
                         数据分析
                         <i class="el-icon-s-data"></i>
@@ -237,8 +218,9 @@
                 </v-list-item>
               </v-list>
             </v-card>
-          </v-col>
+            </v-col>
         </v-row>
+        </v-container>
       </template>
 
       <template v-slot:footer>
@@ -320,20 +302,28 @@ import {formatDate} from '../common/date.js';
     },
     data () {
       return {
+        tab:null,
         htmlTitle: '测试PDF文件名',
         qrCodeUrl: '',
         isOpening: false,
         itemsPerPageArray: [4, 8, 12],
         search: '',
         filter: {},
-        sortDesc: false,
+        sortDesc: true,
         page: 1,
         itemsPerPage: 4,
-        sortBy: '',
+        sortBy: '创建时间',
+        tabitems:[
+          '所有问卷',
+          '未发布',
+          '收集中',
+          '已停止'
+        ],
         sortkeys: [
           '标题',
           '创建时间',
           '已回收数量',
+          '截止时间'
         ],
         keys: [
           'title',
@@ -361,6 +351,26 @@ import {formatDate} from '../common/date.js';
     },
 
     methods: {
+      //复制网址函数
+      copyCode(item) {
+        this.msgSuccess(`${this.questionnaireURL(item)}`);
+	this.$copyText(`${this.questionnaireURL(item)}`).then(
+		        res => {
+		          console.log(res)
+		          this.msgSuccess("已成功复制，可直接去粘贴");
+		        },
+		        err => {
+		          this.msgSuccess("复制失败");
+		        }
+		      )
+		    },
+
+      funsortBy(sortBy) {
+        if(sortBy == '标题' ) return 'title';
+        else if(sortBy == '创建时间') return 'createTime';
+        else if(sortBy == '已回收数量') return 'recycleVolume';
+        else if(sortBy == '截止时间') return 'endTime';
+      },
       printQuestionnaire (id) {
         //直接调用$router.push 实现携带参数的跳转
         this.$store.commit("setIsPrint");
@@ -373,18 +383,38 @@ import {formatDate} from '../common/date.js';
             console.log(dataUrl)
         },
       questionnaireURL (item) {
-        return `http://39.105.38.175/fillQuestionnaire/${item.questionnaireID}`
+        return `http://39.105.38.175/fillQuestionnaire/${item.encryptQuestionnaireID}`
       },
+      questionnaireStatusForTab (item) {
+        if(item.havePublish == 0) return '1';
+        else if(item.havePublish == 1 && item.isVisitable == 0) return '3'
+        else return '2'
+      },
+
       questionnaireStatus (item) {
         if(item.havePublish == 0) return '未发布';
         else if(item.havePublish == 1 && item.isVisitable == 0) return '已暂停收集'
         else return '收集中'
       },
+      questionnaireStatusClass (item) {
+        if(item.havePublish == 0) return '#BDBDBD';
+        else if(item.havePublish == 1 && item.isVisitable == 0) return 'red'
+        else return 'success'
+      },
+      
       questionnaireKind (item) {
         if(item.kind == 1 ) return '普通问卷';
         else if(item.kind == 2) return '投票问卷';
         else if(item.kind == 3) return '报名问卷';
         else if(item.kind == 4) return '考试问卷';
+        else if(item.kind == 5) return '疫情防控问卷';
+      },
+
+      statusClass (item) {
+        if(item.kind == 1 ) return 'primary';
+        else if(item.kind == 2) return 'secondary';
+        else if(item.kind == 3) return 'red';
+        else if(item.kind == 4) return 'green';
       },
       showMyQuestionnaire() {
       this.$http({
@@ -480,6 +510,7 @@ import {formatDate} from '../common/date.js';
           console.log(err);
         });
       },
+      
       deleteQuestionnaire (questionnaireID) {
         this.$http({
         method: "post",
@@ -491,6 +522,24 @@ import {formatDate} from '../common/date.js';
         .then((res) => {
           if (res.data.success) {
             this.msgSuccess('删除成功');
+            this.showMyQuestionnaire();
+          } 
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      },
+      reset (questionnaireID) {
+        this.$http({
+        method: "post",
+        url: "/resetEncryptQuestionnaireID",
+        params: {
+          questionnaireID:questionnaireID
+        },
+      })
+        .then((res) => {
+          if (res.data.success) {
+            this.msgSuccess('刷新成功');
             this.showMyQuestionnaire();
           } 
         })
@@ -523,3 +572,33 @@ import {formatDate} from '../common/date.js';
     },
   }
 </script>
+
+<style lang="scss" scoped>
+.titleInfoRecycle {
+    font-size: 15px;
+    margin-right: 2%;
+}
+.titleInfoCreateTime {
+    font-size: 15px;
+    margin-right: 5%;
+}
+.startQuestionnaire{
+  margin-right: 15%;
+}
+.editQuestionnaire{
+  margin-right: 12%;
+}
+.questionnaireTitle{
+    font-size: 25px;
+    font-weight: bold;
+}
+.questionnaireCardClass{
+  border-bottom-width: 10px;
+}
+.questionnaireURL{
+  font-size: 15px;
+}
+.URLbutton{
+  margin-right: 10%;
+}
+</style>
