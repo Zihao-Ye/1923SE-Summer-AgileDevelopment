@@ -20,7 +20,7 @@ public class WebSocketController {
 
     @Autowired
     private QuestionDataService questionDataService;
-
+    @Autowired
     private WebSocketServer webSocketServer;
 
     @PostMapping("/decreaseVolume")
@@ -30,20 +30,21 @@ public class WebSocketController {
             @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "int",required = true),
             @ApiImplicitParam(name = "questionOptionID",value = "选项ID",dataType = "int",required = true)
     })
-    public Map<String,Object> decreaseVolume(@RequestParam Integer userID,@RequestParam Integer questionContentID){
+    public Map<String,Object> decreaseVolume(@RequestParam Integer userID,@RequestParam Integer questionContentID,@RequestParam Integer questionOptionID){
         Map<String ,Object> map = new HashMap<>();
         try {
-//            questionDataService.decreaseVolume(questionContentID);
-            QuestionContent question = questionDataService.getQuestionContent(questionContentID);
-            webSocketServer.sendAllObject(question);
-            webSocketServer.sendAllMessage("sending success");
+//            QuestionOption option = questionDataService.getQuestionOption(questionOptionID);
+//            Integer voteVolume = option.getVoteVolume();
+            webSocketServer.sendAllMessage("正在获取问题:"+questionContentID+", 选项:"+questionOptionID);
             map.put("success",true);
             map.put("message","执行成功");
         }
         catch (Exception e){
+            webSocketServer.sendAllMessage("发生了一处异常");
             e.printStackTrace();
             map.put("success",false);
             map.put("message","运行时出现异常");
+
         }
         return map;
     }

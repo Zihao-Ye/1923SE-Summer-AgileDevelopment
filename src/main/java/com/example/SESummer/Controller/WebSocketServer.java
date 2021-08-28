@@ -44,7 +44,7 @@ public class WebSocketServer {
     // 广播消息
     public void sendAllMessage(String message) {
         for(WebSocketServer webSocket : webSockets) {
-            System.out.println("[message]]广播消息:"+message);
+            System.out.println("[message]广播消息:"+message);
             try {
                 webSocket.session.getAsyncRemote().sendText(message);
             } catch (Exception e) {
@@ -58,6 +58,7 @@ public class WebSocketServer {
         for (WebSocketServer webSocket : webSockets){
             try {
                 webSocket.session.getAsyncRemote().sendObject(message);
+                webSocket.session.getAsyncRemote().sendText("对象已送达");
             }catch (Exception e){
                 e.printStackTrace();
             }
