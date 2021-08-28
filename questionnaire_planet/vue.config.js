@@ -28,6 +28,10 @@ module.exports = {
     output: {
       sourcePrefix: ' '
     },
+    externals: {
+      AMap: 'AMap', // 高德地图配置
+      AMapUI: 'AMapUI'
+    },
     amd: {
       toUrlUndefined: true
     },

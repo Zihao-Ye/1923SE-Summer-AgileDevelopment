@@ -1,286 +1,222 @@
 <template>
-  <div>
-    <v-card class="mx-auto" max-width="1000" elevation="10">
+  <div  class="analyse" >
+    <v-card class="mx-auto" width="1000" elevation="10">
       <h1 class="text-center">{{questionnaire.title}}</h1>
-      <h3 class="text-center">{{questionnaire.questionnaireNote}}</h3>
+      <p class="text-center">{{questionnaire.questionnaireNote}}</p>
       <v-container>
         <v-row>
           <v-spacer></v-spacer>
-          <!--
+
           <v-btn color="#546E7A" text @click="getDataUrl">
             导出数据
             <i class="el-icon-upload"></i>
           </v-btn>
-          -->
+
         </v-row>
       </v-container>
       <!--单选必做题-->
-      <v-card
-          v-for="(question,i) in questions"
-          :key="i"
-          class="mx-auto"
-          max-width="800"
-          min-height=auto
-          flat
-      >
-        <template v-if="question.questionKind===1 && question.requireSig===1">
-          <v-card-title>
-            {{question.questionNo}}.{{question.questionContent}}
-          </v-card-title>
-          <v-card-subtitle class="orange--text">
-            单选 * 必做
-          </v-card-subtitle>
-          <v-card-subtitle>
-            {{question.questionNote}}
-          </v-card-subtitle>
-          <v-container>
-            <v-radio-group v-model="radioModel[question.questionNo]">
-              <v-radio
-                  v-for="(option,n) in options[question.questionNo]"
-                  :key="n"
-                  :label="option.optionContent"
-                  :value="n"
-                  @change="radioAnswer[question.questionNo]=option;requirePlus(question)"
+      <v-container>
+        <v-card
+            v-for="(question,i) in questions"
+            :key="i"
+            class="mx-auto"
+            max-width="800"
+            min-height=auto
+            flat
+        >
+          <template v-if="question.questionKind===1 && question.requireSig===1">
+            <v-card-title>
+              <v-row>
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-radio-group v-model="radioModel[question.questionNo]">
+                <v-radio
+                    v-for="(option,n) in options[question.questionNo]"
+                    :key="n"
+                    :label="option.optionContent"
+                    :value="n"
+                    @change="radioAnswer[question.questionNo]=option;requirePlus(question)"
+                    disabled
+                ></v-radio>
+              </v-radio-group>
+            </v-container>
+          </template>
+          <!--单选非必做题-->
+          <template v-else-if="question.questionKind===1 && question.requireSig===0">
+            <v-card-title>
+              {{question.questionNo}}. {{question.questionContent}}
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-radio-group v-model="radioModel[question.questionNo]" >
+                <v-radio
+                    v-for="(option,n) in options[question.questionNo]"
+                    :key="n"
+                    :label="option.optionContent"
+                    :value="n"
+                    @change="radioAnswer[question.questionNo]=option"
+                    disabled
+                ></v-radio>
+              </v-radio-group>
+            </v-container>
+          </template>
+          <!--多选必做题-->
+          <template v-else-if="question.questionKind===2 && question.requireSig===1">
+            <v-card-title>
+              <v-row>
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}
+                <p class="grey--text">[多选题]</p>
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <el-checkbox-group v-model="checkboxModel[question.questionNo]" >
+                <el-checkbox
+                    v-for="(option,n) in options[question.questionNo]"
+                    :key="n"
+                    :label="option.optionContent"
+                    border
+                    @change="checkboxAnswer(option);requirePlus(question)"
+                    disabled
+                    style="display:block;zoom:120%"
+                ></el-checkbox>
+              </el-checkbox-group>
+            </v-container>
+          </template>
+          <!--多选非必做题-->
+          <template v-else-if="question.questionKind===2 && question.requireSig===0">
+            <v-card-title>
+              <v-row>
+                {{question.questionNo}}. {{question.questionContent}}
+                <p class="grey--text">[多选题]</p>
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <el-checkbox-group v-model="checkboxModel[question.questionNo]">
+                <el-checkbox
+                    v-for="(option,n) in options[question.questionNo]"
+                    :key="n"
+                    :label="option.optionContent"
+                    border
+                    @change="checkboxAnswer(option)"
+                    disabled
+                    style="display:block;zoom:120%"
+                ></el-checkbox>
+              </el-checkbox-group>
+            </v-container>
+          </template>
+          <!--填空必做题-->
+          <template v-else-if="question.questionKind===3 && question.requireSig===1">
+            <v-card-title>
+              <v-row>
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-text-field
+                  v-model="text[question.questionNo]"
+                  :rules="textRules"
+                  label="填空"
+                  required
+                  outlined
+                  @change="requirePlus(question)"
                   disabled
-              ></v-radio>
-            </v-radio-group>
-          </v-container>
-          <v-container>
-            <v-sheet
-                class="v-sheet--offset mx-auto"
-                color="#90A4AE"
-                elevation="2"
-            >
-              <v-sparkline
-                  :labels="optionName[question.questionNo]"
-                  :value="optionVote[question.questionNo]"
-                  color="white"
-                  line-width="2"
-                  padding="16"
-                  show-labels
-              ></v-sparkline>
-            </v-sheet>
-          </v-container>
-        </template>
-        <!--单选非必做题-->
-        <template v-else-if="question.questionKind===1 && question.requireSig===0">
-          <v-card-title>
-            {{question.questionNo}}.{{question.questionContent}}
-          </v-card-title>
-          <v-card-subtitle class="blue-grey--text">
-            单选 * 非必做
-          </v-card-subtitle>
-          <v-card-subtitle>
-            {{question.questionNote}}
-          </v-card-subtitle>
-          <v-container>
-            <v-radio-group v-model="radioModel[question.questionNo]" >
-              <v-radio
-                  v-for="(option,n) in options[question.questionNo]"
-                  :key="n"
-                  :label="option.optionContent"
-                  :value="n"
-                  @change="radioAnswer[question.questionNo]=option"
+              ></v-text-field>
+            </v-container>
+          </template>
+          <!--填空非必做题-->
+          <template v-else-if="question.questionKind===3 && question.requireSig===0">
+            <v-card-title>
+              {{question.questionNo}}. {{question.questionContent}}
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-text-field
+                  v-model="text[question.questionNo]"
+                  label="填空"
+                  outlined
                   disabled
-              ></v-radio>
-            </v-radio-group>
-          </v-container>
-          <v-container>
-            <v-sheet
-                class="v-sheet--offset mx-auto"
-                color="#90A4AE"
-                elevation="2"
-            >
-              <v-sparkline
-                  :labels="optionName[question.questionNo]"
-                  :value="optionVote[question.questionNo]"
-                  color="white"
-                  line-width="2"
-                  padding="16"
-              ></v-sparkline>
-            </v-sheet>
-          </v-container>
-        </template>
-        <!--多选必做题-->
-        <template v-else-if="question.questionKind===2 && question.requireSig===1">
-          <v-card-title>
-            {{question.questionNo}}.{{question.questionContent}}
-          </v-card-title>
-          <v-card-subtitle class="orange--text">
-            多选 * 必做
-          </v-card-subtitle>
-          <v-card-subtitle>
-            {{question.questionNote}}
-          </v-card-subtitle>
-          <v-container>
-            <el-checkbox-group v-model="checkboxModel[question.questionNo]" >
-              <el-checkbox
-                  v-for="(option,n) in options[question.questionNo]"
-                  :key="n"
-                  :label="option.optionContent"
-                  border
-                  @change="checkboxAnswer(option);requirePlus(question)"
-                  disabled
-              ></el-checkbox>
-            </el-checkbox-group>
-          </v-container>
-          <v-container>
-            <v-sheet
-                class="v-sheet--offset mx-auto"
-                color="#90A4AE"
-                elevation="2"
-            >
-              <v-sparkline
-                  :labels="optionName[question.questionNo]"
-                  :value="optionVote[question.questionNo]"
-                  color="white"
-                  line-width="2"
-                  padding="16"
-                  show-labels
-              ></v-sparkline>
-            </v-sheet>
-          </v-container>
-        </template>
-        <!--多选非必做题-->
-        <template v-else-if="question.questionKind===2 && question.requireSig===0">
-          <v-card-title>
-            {{question.questionNo}}.{{question.questionContent}}
-          </v-card-title>
-          <v-card-subtitle class="blue-grey--text">
-            多选 * 非必做
-          </v-card-subtitle>
-          <v-card-subtitle>
-            {{question.questionNote}}
-          </v-card-subtitle>
-          <v-container>
-            <el-checkbox-group v-model="checkboxModel[question.questionNo]">
-              <el-checkbox
-                  v-for="(option,n) in options[question.questionNo]"
-                  :key="n"
-                  :label="option.optionContent"
-                  border
-                  @change="checkboxAnswer(option)"
-                  disabled
-              ></el-checkbox>
-            </el-checkbox-group>
-          </v-container>
-          <v-container>
-            <v-sheet
-                class="v-sheet--offset mx-auto"
-                color="#90A4AE"
-                elevation="2"
-            >
-              <v-sparkline
-                  :labels="optionName[question.questionNo]"
-                  :value="optionVote[question.questionNo]"
-                  color="white"
-                  line-width="2"
-                  padding="16"
-              ></v-sparkline>
-            </v-sheet>
-          </v-container>
-        </template>
-        <!--填空必做题-->
-        <template v-else-if="question.questionKind===3 && question.requireSig===1">
-          <v-card-title>
-            {{question.questionNo}}.{{question.questionContent}}
-          </v-card-title>
-          <v-card-subtitle class="orange--text">
-            填空 * 必做
-          </v-card-subtitle>
-          <v-card-subtitle>
-            {{question.questionNote}}
-          </v-card-subtitle>
-          <v-container>
-            <v-text-field
-                v-model="text[question.questionNo]"
-                label="填空"
-                required
-                outlined
-                @change="requirePlus(question)"
-                disabled
-            ></v-text-field>
-          </v-container>
-        </template>
-        <!--填空非必做题-->
-        <template v-else-if="question.questionKind===3 && question.requireSig===0">
-          <v-card-title>
-            {{question.questionNo}}.{{question.questionContent}}
-          </v-card-title>
-          <v-card-subtitle class="blue-grey--text">
-            填空 * 非必做
-          </v-card-subtitle>
-          <v-card-subtitle>
-            {{question.questionNote}}
-          </v-card-subtitle>
-          <v-container>
-            <v-text-field
-                v-model="text[question.questionNo]"
-                label="填空"
-                outlined
-                disabled
-            ></v-text-field>
-          </v-container>
-        </template>
-        <!--评分必做题-->
-        <template v-else-if="question.questionKind===4 && question.requireSig===1">
-          <v-card-title>
-            {{question.questionNo}}.{{question.questionContent}}
-          </v-card-title>
-          <v-card-subtitle class="orange--text">
-            评分 * 必做
-          </v-card-subtitle>
-          <v-card-subtitle>
-            {{question.questionNote}}
-          </v-card-subtitle>
-          <v-container>
-            <v-slider
-                v-model="score[question.questionNo]"
-                color="orange"
-                label="分数"
-                min="1"
-                :max="maxScores[question.questionNo].maxScore"
-                thumb-label="always"
-                @change="requirePlus(question)"
-                disabled
-            ></v-slider>
-          </v-container>
-          <v-container>
-            <span
-                class="text-h2 font-weight-light"
-            >平均分：{{maxScores[question.questionNo].averageScore}}</span>
-          </v-container>
-        </template>
-        <!--评分非必做题-->
-        <template v-else-if="question.questionKind===4 && question.requireSig===0">
-          <v-card-title>
-            {{question.questionNo}}.{{question.questionContent}}
-          </v-card-title>
-          <v-card-subtitle class="blue-grey--text">
-            评分 * 非必做
-          </v-card-subtitle>
-          <v-card-subtitle>
-            {{question.questionNote}}
-          </v-card-subtitle>
-          <v-container>
-            <v-slider
-                v-model="score[question.questionNo]"
-                color="green"
-                label="分数"
-                min="1"
-                :max="maxScores[question.questionNo].maxScore"
-                thumb-label="always"
-                disabled
-            ></v-slider>
-          </v-container>
-          <v-container>
-            <span
-                class="text-h2 font-weight-light"
-            >平均分：{{maxScores[question.questionNo].averageScore}}</span>
-          </v-container>
-        </template>
-      </v-card>
+              ></v-text-field>
+            </v-container>
+          </template>
+          <!--评分必做题-->
+          <template v-else-if="question.questionKind===4 && question.requireSig===1">
+            <v-card-title>
+              <v-row>
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-card-actions class="pa-4">
+              <v-container>
+                <v-row>
+                  <h4>很不满意</h4>
+                  <el-rate
+                      v-model="score[question.questionNo]"
+                      :rules="scoreRules"
+                      :max="maxScores[question.questionNo].maxScore"
+                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                      @change="requirePlus(question)"
+                      disabled
+                      style="zoom:120%"
+                  ></el-rate>
+                  <h4 >很满意</h4>
+                </v-row>
+              </v-container>
+            </v-card-actions>
+          </template>
+          <!--评分非必做题-->
+          <template v-else-if="question.questionKind===4 && question.requireSig===0">
+            <v-card-title>
+              {{question.questionNo}}. {{question.questionContent}}
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-card-actions class="pa-4">
+              <v-container>
+                <v-row>
+                  <h4>很不满意</h4>
+                  <el-rate
+                      v-model="score[question.questionNo]"
+                      :max="maxScores[question.questionNo].maxScore"
+                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                      disabled
+                      style="zoom:120%"
+                  ></el-rate>
+                  <h4 >很满意</h4>
+                </v-row>
+              </v-container>
+            </v-card-actions>
+          </template>
+          <v-divider></v-divider>
+        </v-card>
+      </v-container>
     </v-card>
+
     <v-btn
         absolute
         class="goback"
@@ -585,5 +521,12 @@ export default {
 .goback{
   top:2%;
   right:2%;
+}
+.analyse{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e8e5d9;
+  height: 100%
 }
 </style>
