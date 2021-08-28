@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -119,10 +120,19 @@ public class UserController {
 
     @GetMapping("/test")
     @ApiOperation("测试接口")
-    public Map<String,Object> test (){
+    public Map<String,Object> test (@RequestParam String time){
         Map<String ,Object> map=new HashMap<>();
-        map.put("success",true);
-        map.put("message","test");
+        try {
+            Timestamp timestamp=Timestamp.valueOf(time);
+            Timestamp timestamp1=new Timestamp(System.currentTimeMillis());
+            map.put("success",true);
+            map.put("timestamp",timestamp);
+            map.put("timestamp1",timestamp1);
+            map.put("time",time);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
         return map;
     }
 }

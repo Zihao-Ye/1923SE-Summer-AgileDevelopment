@@ -247,4 +247,16 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     public Integer getOriginQuestionnaireID(String encryptQuestionnaireID){
         return questionnaireDao.getOriginQuestionnaireID(encryptQuestionnaireID);
     }
+
+    @Override
+    //添加默认问题
+    public void addDefaultQuestion(QuestionContent questionContent){
+        questionnaireDao.addDefaultQuestion(questionContent);
+    }
+
+    @Override
+    //添加默认选项
+    public void addDefaultOption(QuestionOption questionOption){
+        questionnaireDao.addDefaultOption(questionOption);
+    }
 }

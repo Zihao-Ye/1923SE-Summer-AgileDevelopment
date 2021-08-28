@@ -122,4 +122,10 @@ public interface QuestionnaireService {
 
     //根据加密ID获取原ID
     Integer getOriginQuestionnaireID(String encryptQuestionnaireID);
+
+    //添加默认问题
+    void addDefaultQuestion(QuestionContent questionContent);
+
+    //添加默认选项
+    void addDefaultOption(QuestionOption questionOption);
 }

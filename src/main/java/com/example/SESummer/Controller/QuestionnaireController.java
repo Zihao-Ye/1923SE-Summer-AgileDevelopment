@@ -61,6 +61,7 @@ public class QuestionnaireController {
         } catch (Exception e) {
             e.printStackTrace();
             map.put("success", false);
+            map.put("endTime",endTime);
         }
         return map;
     }
@@ -115,11 +116,283 @@ public class QuestionnaireController {
             questionnaire.setEndMessage("问卷到此结束，感谢您的参与！");
             questionnaireService.createQuestionnaire(questionnaire);
             Questionnaire recentQuestionnaire=questionnaireService.getRecentQuestionnaireCreateByUserID(userID);
-            String encryptQuestionnaireID= UUID.randomUUID()+ DigestUtils.md5DigestAsHex(String.valueOf(recentQuestionnaire.getQuestionnaireID()).getBytes(StandardCharsets.UTF_8));
+            Integer QuestionnaireID=recentQuestionnaire.getQuestionnaireID();
+            String encryptQuestionnaireID= UUID.randomUUID()+ DigestUtils.md5DigestAsHex(String.valueOf(QuestionnaireID).getBytes(StandardCharsets.UTF_8));
             recentQuestionnaire.setEncryptQuestionnaireID(encryptQuestionnaireID);
-            questionnaireService.editEncryptQuestionnaireID(recentQuestionnaire.getQuestionnaireID(),encryptQuestionnaireID);
-            //todo
+            questionnaireService.editEncryptQuestionnaireID(QuestionnaireID,encryptQuestionnaireID);
+            //单选投票
+            QuestionContent questionContent=new QuestionContent();
+            questionContent.setQuestionnaireID(QuestionnaireID);
+            questionContent.setQuestionNo(1);
+            questionContent.setQuestionKind(1);
+            questionContent.setQuestionContent("您最喜欢哪项运动？");
+            questionContent.setRequireSig(1);
+            questionContent.setQuestionNote("请为您最喜欢的运动投上一票");
+            questionContent.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent);
+            QuestionContent recentQuestionContent=questionnaireService.getRecentQuestionByQuestionnaireID(QuestionnaireID);
+            Integer questionContentID=recentQuestionContent.getQuestionContentID();
+            //选项1
+            QuestionOption questionOption1=new QuestionOption();
+            questionOption1.setOptionNo(1);
+            questionOption1.setQuestionContentID(questionContentID);
+            questionOption1.setOptionKind(1);
+            questionOption1.setOptionContent("球类运动");
+            questionOption1.setIsAnswer(0);
+            questionOption1.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption1);
+            //选项2
+            QuestionOption questionOption2=new QuestionOption();
+            questionOption2.setOptionNo(2);
+            questionOption2.setQuestionContentID(questionContentID);
+            questionOption2.setOptionKind(1);
+            questionOption2.setOptionContent("田径运动");
+            questionOption2.setIsAnswer(0);
+            questionOption2.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption2);
+            //选项3
+            QuestionOption questionOption3=new QuestionOption();
+            questionOption3.setOptionNo(3);
+            questionOption3.setQuestionContentID(questionContentID);
+            questionOption3.setOptionKind(1);
+            questionOption3.setOptionContent("水上运动");
+            questionOption3.setIsAnswer(0);
+            questionOption3.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption3);
+            map.put("success", true);
+            map.put("recentQuestionnaire",recentQuestionnaire);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("success", false);
+        }
+        return map;
+    }
 
+    @PostMapping("/createSignQuestionnaire")
+    @ApiOperation("创建报名问卷")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "kind", value = "问卷类型", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "userID", value = "创建者ID", required = true, dataType = "int")
+    })
+    public Map<String, Object> createSignQuestionnaire(@RequestParam Integer kind, @RequestParam Integer userID) {
+        Map<String, Object> map = new HashMap<>();
+        Timestamp createTime = new Timestamp(System.currentTimeMillis());
+        try {
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setTitle("报名问卷");
+            questionnaire.setQuestionnaireNote("为了给您提供更好的服务，希望您能抽出几分钟时间，将您的感受和建议告诉我们，我们非常重视每位用户的宝贵意见，期待您的参与！现在我们就马上开始吧！");
+            questionnaire.setKind(kind);
+            questionnaire.setCreateTime(createTime);
+            questionnaire.setMasterID(userID);
+            questionnaire.setEndMessage("问卷到此结束，感谢您的参与！");
+            questionnaireService.createQuestionnaire(questionnaire);
+            Questionnaire recentQuestionnaire=questionnaireService.getRecentQuestionnaireCreateByUserID(userID);
+            Integer QuestionnaireID=recentQuestionnaire.getQuestionnaireID();
+            String encryptQuestionnaireID= UUID.randomUUID()+ DigestUtils.md5DigestAsHex(String.valueOf(QuestionnaireID).getBytes(StandardCharsets.UTF_8));
+            recentQuestionnaire.setEncryptQuestionnaireID(encryptQuestionnaireID);
+            questionnaireService.editEncryptQuestionnaireID(QuestionnaireID,encryptQuestionnaireID);
+            //姓名填空
+            QuestionContent questionContent1=new QuestionContent();
+            questionContent1.setQuestionnaireID(QuestionnaireID);
+            questionContent1.setQuestionNo(1);
+            questionContent1.setQuestionKind(3);
+            questionContent1.setQuestionContent("姓名");
+            questionContent1.setRequireSig(1);
+            questionContent1.setQuestionNote("请填写您的姓名");
+            questionContent1.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent1);
+            //电话号码填空
+            QuestionContent questionContent2=new QuestionContent();
+            questionContent2.setQuestionnaireID(QuestionnaireID);
+            questionContent2.setQuestionNo(2);
+            questionContent2.setQuestionKind(3);
+            questionContent2.setQuestionContent("电话号码");
+            questionContent2.setRequireSig(1);
+            questionContent2.setQuestionNote("请填写您的电话号码");
+            questionContent2.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent2);
+            //单选投票
+            QuestionContent questionContent3=new QuestionContent();
+            questionContent3.setQuestionnaireID(QuestionnaireID);
+            questionContent3.setQuestionNo(3);
+            questionContent3.setQuestionKind(1);
+            questionContent3.setQuestionContent("您希望参与哪个活动？");
+            questionContent3.setRequireSig(1);
+            questionContent3.setQuestionNote("请您选择想参与的活动以报名");
+            questionContent3.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent3);
+            QuestionContent recentQuestionContent=questionnaireService.getRecentQuestionByQuestionnaireID(QuestionnaireID);
+            Integer questionContentID=recentQuestionContent.getQuestionContentID();
+            //选项1
+            QuestionOption questionOption1=new QuestionOption();
+            questionOption1.setOptionNo(1);
+            questionOption1.setQuestionContentID(questionContentID);
+            questionOption1.setOptionKind(2);
+            questionOption1.setOptionContent("参观北航");
+            questionOption1.setIsAnswer(0);
+            questionOption1.setLeftVolume(10);
+            questionnaireService.addDefaultOption(questionOption1);
+            //选项2
+            QuestionOption questionOption2=new QuestionOption();
+            questionOption2.setOptionNo(2);
+            questionOption2.setQuestionContentID(questionContentID);
+            questionOption2.setOptionKind(2);
+            questionOption2.setOptionContent("参观北航附中");
+            questionOption2.setIsAnswer(0);
+            questionOption2.setLeftVolume(10);
+            questionnaireService.addDefaultOption(questionOption2);
+            //选项3
+            QuestionOption questionOption3=new QuestionOption();
+            questionOption3.setOptionNo(3);
+            questionOption3.setQuestionContentID(questionContentID);
+            questionOption3.setOptionKind(2);
+            questionOption3.setOptionContent("参观北航附小");
+            questionOption3.setIsAnswer(0);
+            questionOption3.setLeftVolume(10);
+            questionnaireService.addDefaultOption(questionOption3);
+            map.put("success", true);
+            map.put("recentQuestionnaire",recentQuestionnaire);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("success", false);
+        }
+        return map;
+    }
+
+    @PostMapping("/createTestQuestionnaire")
+    @ApiOperation("创建考试问卷")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "kind", value = "问卷类型", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "userID", value = "创建者ID", required = true, dataType = "int")
+    })
+    public Map<String, Object> createTestQuestionnaire(@RequestParam Integer kind, @RequestParam Integer userID) {
+        Map<String, Object> map = new HashMap<>();
+        Timestamp createTime = new Timestamp(System.currentTimeMillis());
+        try {
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setTitle("报名问卷");
+            questionnaire.setQuestionnaireNote("为了给您提供更好的服务，希望您能抽出几分钟时间，将您的感受和建议告诉我们，我们非常重视每位用户的宝贵意见，期待您的参与！现在我们就马上开始吧！");
+            questionnaire.setKind(kind);
+            questionnaire.setCreateTime(createTime);
+            questionnaire.setMasterID(userID);
+            questionnaire.setEndMessage("问卷到此结束，感谢您的参与！");
+            questionnaireService.createQuestionnaire(questionnaire);
+            Questionnaire recentQuestionnaire=questionnaireService.getRecentQuestionnaireCreateByUserID(userID);
+            Integer QuestionnaireID=recentQuestionnaire.getQuestionnaireID();
+            String encryptQuestionnaireID= UUID.randomUUID()+ DigestUtils.md5DigestAsHex(String.valueOf(QuestionnaireID).getBytes(StandardCharsets.UTF_8));
+            recentQuestionnaire.setEncryptQuestionnaireID(encryptQuestionnaireID);
+            questionnaireService.editEncryptQuestionnaireID(QuestionnaireID,encryptQuestionnaireID);
+            //姓名填空
+            QuestionContent questionContent1=new QuestionContent();
+            questionContent1.setQuestionnaireID(QuestionnaireID);
+            questionContent1.setQuestionNo(1);
+            questionContent1.setQuestionKind(3);
+            questionContent1.setQuestionContent("姓名");
+            questionContent1.setRequireSig(1);
+            questionContent1.setQuestionNote("请填写您的姓名");
+            questionContent1.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent1);
+            //学号填空
+            QuestionContent questionContent2=new QuestionContent();
+            questionContent2.setQuestionnaireID(QuestionnaireID);
+            questionContent2.setQuestionNo(2);
+            questionContent2.setQuestionKind(3);
+            questionContent2.setQuestionContent("学号");
+            questionContent2.setRequireSig(1);
+            questionContent2.setQuestionNote("请填写您的学号");
+            questionContent2.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent2);
+            map.put("success", true);
+            map.put("recentQuestionnaire",recentQuestionnaire);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("success", false);
+        }
+        return map;
+    }
+
+    @PostMapping("/createCovidQuestionnaire")
+    @ApiOperation("创建疫情打卡问卷")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "kind", value = "问卷类型", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "userID", value = "创建者ID", required = true, dataType = "int")
+    })
+    public Map<String, Object> createCovidQuestionnaire(@RequestParam Integer kind, @RequestParam Integer userID) {
+        Map<String, Object> map = new HashMap<>();
+        Timestamp createTime = new Timestamp(System.currentTimeMillis());
+        try {
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setTitle("疫情打卡问卷");
+            questionnaire.setQuestionnaireNote("为了给您提供更好的服务，希望您能抽出几分钟时间，将您的感受和建议告诉我们，我们非常重视每位用户的宝贵意见，期待您的参与！现在我们就马上开始吧！");
+            questionnaire.setKind(kind);
+            questionnaire.setCreateTime(createTime);
+            questionnaire.setMasterID(userID);
+            questionnaire.setEndMessage("问卷到此结束，感谢您的参与！");
+            questionnaireService.createQuestionnaire(questionnaire);
+            Questionnaire recentQuestionnaire=questionnaireService.getRecentQuestionnaireCreateByUserID(userID);
+            Integer QuestionnaireID=recentQuestionnaire.getQuestionnaireID();
+            String encryptQuestionnaireID= UUID.randomUUID()+ DigestUtils.md5DigestAsHex(String.valueOf(QuestionnaireID).getBytes(StandardCharsets.UTF_8));
+            recentQuestionnaire.setEncryptQuestionnaireID(encryptQuestionnaireID);
+            questionnaireService.editEncryptQuestionnaireID(QuestionnaireID,encryptQuestionnaireID);
+            //姓名填空
+            QuestionContent questionContent1=new QuestionContent();
+            questionContent1.setQuestionnaireID(QuestionnaireID);
+            questionContent1.setQuestionNo(1);
+            questionContent1.setQuestionKind(3);
+            questionContent1.setQuestionContent("姓名");
+            questionContent1.setRequireSig(1);
+            questionContent1.setQuestionNote("请填写您的姓名");
+            questionContent1.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent1);
+            //学号填空
+            QuestionContent questionContent2=new QuestionContent();
+            questionContent2.setQuestionnaireID(QuestionnaireID);
+            questionContent2.setQuestionNo(2);
+            questionContent2.setQuestionKind(3);
+            questionContent2.setQuestionContent("学号");
+            questionContent2.setRequireSig(1);
+            questionContent2.setQuestionNote("请填写您的学号");
+            questionContent2.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent2);
+            //体温单选
+            QuestionContent questionContent3=new QuestionContent();
+            questionContent3.setQuestionnaireID(QuestionnaireID);
+            questionContent3.setQuestionNo(3);
+            questionContent3.setQuestionKind(1);
+            questionContent3.setQuestionContent("体温");
+            questionContent3.setRequireSig(1);
+            questionContent3.setQuestionNote("请您选择当前的体温");
+            questionContent3.setQuestionScore(0);
+            questionnaireService.addDefaultQuestion(questionContent3);
+            QuestionContent recentQuestionContent1=questionnaireService.getRecentQuestionByQuestionnaireID(QuestionnaireID);
+            Integer questionContentID1=recentQuestionContent1.getQuestionContentID();
+            //选项1
+            QuestionOption questionOption1=new QuestionOption();
+            questionOption1.setOptionNo(1);
+            questionOption1.setQuestionContentID(questionContentID1);
+            questionOption1.setOptionKind(1);
+            questionOption1.setOptionContent("");
+            questionOption1.setIsAnswer(0);
+            questionOption1.setLeftVolume(0);
+            questionnaireService.addDefaultOption(questionOption1);
+            //选项2
+            QuestionOption questionOption2=new QuestionOption();
+            questionOption2.setOptionNo(2);
+            questionOption2.setQuestionContentID(questionContentID1);
+            questionOption2.setOptionKind(2);
+            questionOption2.setOptionContent("参观北航附中");
+            questionOption2.setIsAnswer(0);
+            questionOption2.setLeftVolume(10);
+            questionnaireService.addDefaultOption(questionOption2);
+            //选项3
+            QuestionOption questionOption3=new QuestionOption();
+            questionOption3.setOptionNo(3);
+            questionOption3.setQuestionContentID(questionContentID1);
+            questionOption3.setOptionKind(2);
+            questionOption3.setOptionContent("参观北航附小");
+            questionOption3.setIsAnswer(0);
+            questionOption3.setLeftVolume(10);
+            questionnaireService.addDefaultOption(questionOption3);
             map.put("success", true);
             map.put("recentQuestionnaire",recentQuestionnaire);
         } catch (Exception e) {
