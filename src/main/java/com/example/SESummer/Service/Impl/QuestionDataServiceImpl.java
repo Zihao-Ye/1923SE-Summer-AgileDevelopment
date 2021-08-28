@@ -1,9 +1,13 @@
 package com.example.SESummer.Service.Impl;
 
 import com.example.SESummer.Dao.QuestionDataDao;
+import com.example.SESummer.Entity.QuestionContent;
+import com.example.SESummer.Entity.Questionnaire;
 import com.example.SESummer.Service.QuestionDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class QuestionDataServiceImpl implements QuestionDataService {
@@ -32,5 +36,22 @@ public class QuestionDataServiceImpl implements QuestionDataService {
     //更新评分题平均分
     public void updateAverageScore(Integer questionContentID){
         questionDataDao.updateAverageScore(questionContentID);
+    }
+
+    @Override
+    public QuestionContent getQuestionContent(Integer questionContent){
+        return questionDataDao.getQuestionContent(questionContent);
+    }
+
+    @Override
+    //获取所有已公布的问卷
+    public List<Questionnaire> getAllVisitableQuestionnaire(){
+        return questionDataDao.getAllVisitableQuestionnaire();
+    }
+
+    @Override
+    //修改问卷发布情况
+    public void updateVisitableQuestionnaire(Integer questionnaireID){
+        questionDataDao.updateVisitableQuestionnaire(questionnaireID);
     }
 }

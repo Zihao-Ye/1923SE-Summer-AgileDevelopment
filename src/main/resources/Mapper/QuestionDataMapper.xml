@@ -27,4 +27,24 @@
         set average_score=(select sum(score) from user_score_question where user_score_question.question_contentid=#{questionContentID})/(select count(*) from user_score_question where user_score_question.question_contentid=#{questionContentID})
         where question_contentid=#{questionContentID}
     </update>
+
+    <select id="getQuestionContent" resultType="QuestionContent">
+        select *
+        from question_content
+        where question_contentid = #{questionContentID}
+    </select>
+
+    <!-- 获取所有已发布的问卷 -->
+    <select id="getAllVisitableQuestionnaire" resultType="Questionnaire">
+        select *
+        from questionnaire
+        where is_visitable = 1
+    </select>
+
+    <!-- 更新问卷的可访问状态 -->
+    <update id="updateVisitableQuestionnaire" parameterType="Questionnaire">
+        update questionnaire
+        set is_visitable = 0
+        where questionnaireid = #{questionnaireID}
+    </update>
 </mapper>

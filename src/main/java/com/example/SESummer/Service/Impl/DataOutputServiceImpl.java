@@ -14,8 +14,8 @@ public class DataOutputServiceImpl implements DataOutputService {
     private DataOutputDao dataOutputDao;
 
     @Override
-    public List<QuestionContent> getQuestionsByQuestionnaireID(Integer userID,Integer questionnaireID){
-        return dataOutputDao.getQuestionsByQuestionnaireID(userID,questionnaireID);
+    public List<QuestionContent> getQuestionsByQuestionnaireID(Integer questionnaireID){
+        return dataOutputDao.getQuestionsByQuestionnaireID(questionnaireID);
     }
 
 //    @Override
@@ -24,18 +24,18 @@ public class DataOutputServiceImpl implements DataOutputService {
 //    }
 
     @Override
-    public List<UserChooseQuestion> getChooseByID(Integer userID,Integer questionnaireID){
-        return dataOutputDao.getChooseByID(userID,questionnaireID);
+    public UserChooseQuestion getChooseByID(Integer userID,Integer questionContentID){
+        return dataOutputDao.getChooseByID(userID,questionContentID);
     }
 
     @Override
-    public List<UserCompletionQuestion> getCompletionByID(Integer userID,Integer questionnaireID){
-        return dataOutputDao.getCompletionByID(userID,questionnaireID);
+    public UserCompletionQuestion getCompletionByID(Integer userID,Integer questionContentID){
+            return dataOutputDao.getCompletionByID(userID,questionContentID);
     }
 
     @Override
-    public List<UserScoreQuestion> getScoreByID(Integer userID,Integer questionnaireID){
-        return dataOutputDao.getScoreByID(userID,questionnaireID);
+    public UserScoreQuestion getScoreByID(Integer userID,Integer questionContentID){
+        return dataOutputDao.getScoreByID(userID,questionContentID);
     }
 
     @Override
@@ -64,7 +64,42 @@ public class DataOutputServiceImpl implements DataOutputService {
     }
 
     @Override
-    public List<UserChooseQuestion> getOptionByOptionID(Integer userid,Integer questionOptionID){
-        return dataOutputDao.getOptionByOptionID(userid,questionOptionID);
+    public UserChooseQuestion getOptionByOptionID(Integer userid,Integer questionContentID,Integer questionOptionID){
+        return dataOutputDao.getOptionByOptionID(userid,questionContentID,questionOptionID);
+    }
+
+    @Override
+    public List<QuestionContent> getChooseContentByID(Integer questionnaireID){
+        return dataOutputDao.getChooseContentByID(questionnaireID);
+    }
+
+    @Override
+    public List<QuestionContent> getCompletionContentByID(Integer questionnaireID){
+        return dataOutputDao.getCompletionContentByID(questionnaireID);
+    }
+
+    @Override
+    public List<QuestionContent> getScoreContentByID(Integer questionnaireID){
+        return dataOutputDao.getScoreContentByID(questionnaireID);
+    }
+
+    @Override
+    public QuestionContent getQuestionContentByID(Integer questionContentID){
+        return dataOutputDao.getQuestionContentByID(questionContentID);
+    }
+
+    @Override
+    public List<UserChooseQuestion> getChooseList(Integer questionContentID){
+        return dataOutputDao.getChooseList(questionContentID);
+    }
+
+    @Override
+    public List<UserCompletionQuestion> getCompletionList(Integer questionContentID){
+        return dataOutputDao.getCompletionList(questionContentID);
+    }
+
+    @Override
+    public List<UserScoreQuestion> getScoreList(Integer questionContentID){
+        return dataOutputDao.getScoreList(questionContentID);
     }
 }
