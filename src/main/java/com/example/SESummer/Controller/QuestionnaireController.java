@@ -741,6 +741,22 @@ public class QuestionnaireController {
         return map;
     }
 
+    @PostMapping("/showCompletionQuestion")
+    @ApiOperation("预览问卷-预览考试填空题答案")
+    @ApiImplicitParam(name = "questionContentID", value = "问题ID", required = true, dataType = "int")
+    public Map<String, Object> showCompletionQuestion(@RequestParam Integer questionContentID){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            CompletionQuestion completionQuestion=questionnaireService.getCompletionQuestionByQuestionContentID(questionContentID);
+            map.put("success", true);
+            map.put("completionQuestion", completionQuestion);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("success", false);
+        }
+        return map;
+    }
+
     @PostMapping("/rankQuestion")
     @ApiOperation("问题排序")
     @ApiImplicitParams({

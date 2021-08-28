@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.SESummer.Dao.UserLocateQuestionDao">
+    <!-- 检索用户是否答过该定位题-->
+    <select id="getLocateRecordByID" resultType="UserLocateQuestion">
+        select *
+        from user_locate_question
+        where userid=#{userID} and questionnaireid=#{questionnaireID} and question_contentid=#{questionContentID}
+    </select>
+    <!-- 添加用户定位记录-->
+    <insert id="addLocateRecord" parameterType="UserLocateQuestion">
+        insert into user_locate_question(userid, questionnaireid, question_contentid, locate)
+        values(#{userID},#{questionnaireID},#{questionContentID},#{locate})
+    </insert>
+    <!-- 修改用户定位记录-->
+    <update id="updateLocateRecord" parameterType="UserLocateQuestion">
+        update user_locate_question
+        set locate=#{locate}
+        where userid=#{userID} and questionnaireid=#{questionnaireID} and question_contentid=#{questionContentID}
+    </update>
+</mapper>

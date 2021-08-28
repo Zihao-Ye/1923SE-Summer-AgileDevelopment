@@ -235,11 +235,11 @@
     <!-- 添加默认问题-->
     <insert id="addDefaultQuestion" parameterType="QuestionContent">
         insert into question_content(questionnaireid, question_kind, require_sig, question_content, question_no, question_note, question_score)
-        values(#{questionnaireID},#{questionKind},#{requireSig},#{quesitonContent},#{questionNo},#{questionNote},#{questionScore})
+        values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent},#{questionNo},#{questionNote},#{questionScore})
     </insert>
     <!-- 添加默认选项-->
     <insert id="addDefaultOption" parameterType="QuestionOption">
         insert into question_option(option_kind, question_contentid, option_content, left_volume, is_answer, option_no)
-        values(#{optionKind},#{quesitonContentID},#{optionContent},#{leftVolume},#{isAnswer},#{optionNo})
+        values(#{optionKind},#{questionContentID},#{optionContent},#{leftVolume},#{isAnswer},#{optionNo})
     </insert>
 </mapper>

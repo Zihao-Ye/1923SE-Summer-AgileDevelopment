@@ -16,6 +16,7 @@ public class UserLocateQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userLocateQuestionID;//定位题答题记录
+    private Integer userID;//用户ID
     private Integer questionnaireID;//问卷ID
     private Integer questionContentID;//问题ID
     private String locate;//填写的位置信息

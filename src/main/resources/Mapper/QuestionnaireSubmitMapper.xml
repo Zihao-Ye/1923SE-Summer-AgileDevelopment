@@ -6,4 +6,16 @@
         insert into questionnaire_submit (userid,questionnaireid,is_submit,submit_time)
         values (#{userID},#{questionnaireID},#{isSubmit},#{submitTime})
     </insert>
+    <!-- 用户是否提交过问卷-->
+    <select id="haveFinish" resultType="QuestionnaireSubmit">
+        select *
+        from questionnaire_submit
+        where questionnaireid=#{questionnaireID} and userid=#{userID} and is_submit=1
+    </select>
+    <!-- 用户是否填过问卷-->
+    <select id="haveFill" resultType="QuestionnaireSubmit">
+        select *
+        from questionnaire_submit
+        where questionnaireid=#{questionnaireID} and userid=#{userID}
+    </select>
 </mapper>    

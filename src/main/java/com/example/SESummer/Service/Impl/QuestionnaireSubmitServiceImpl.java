@@ -17,4 +17,15 @@ public class QuestionnaireSubmitServiceImpl implements QuestionnaireSubmitServic
         questionnaireSubmitDao.addQuestionnaireSubmit(questionnaireSubmit);
     }
 
+    @Override
+    //用户是否提交过问卷
+    public QuestionnaireSubmit haveFinish(Integer questionnaireID,Integer userID){
+        return questionnaireSubmitDao.haveFinish(questionnaireID,userID);
+    }
+
+    @Override
+    //用户是否填过问卷
+    public QuestionnaireSubmit haveFill(Integer questionnaireID,Integer userID){
+        return questionnaireSubmitDao.haveFill(questionnaireID,userID);
+    }
 }
