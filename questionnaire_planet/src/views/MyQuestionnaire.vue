@@ -211,7 +211,7 @@
         </template>
       </v-dialog>
             
-                    <v-btn text color="#B388FF" :to="'/normalAnalyse/' + item.questionnaireID">
+                    <v-btn text color="#B388FF" :to="'/normalAnalyse/' + item.encryptQuestionnaireID">
                         数据分析
                         <i class="el-icon-s-data"></i>
                         </v-btn>
