@@ -51,15 +51,33 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     }
 
     @Override
+    //根据问题ID于选项序号获取选项
+    public QuestionOption getRecentQuestionOptionByQuestionContentIDAndOptionNo(Integer questionContentID,Integer optionNo){
+        return questionnaireDao.getRecentQuestionOptionByQuestionContentIDAndOptionNo(questionContentID,optionNo);
+    }
+
+    @Override
     //添加评分题分数上限
     public void setScore(ScoreQuestion scoreQuestion){
         questionnaireDao.setScore(scoreQuestion);
     }
 
     @Override
+    //获取问题的评分题信息
+    public ScoreQuestion getRecentScoreQuestionByQuestionContentID(Integer questionContentID){
+        return questionnaireDao.getRecentScoreQuestionByQuestionContentID(questionContentID);
+    }
+
+    @Override
     //设置考试填空题答案
     public void setCompletionAnswer(CompletionQuestion completionQuestion){
         questionnaireDao.setCompletionAnswer(completionQuestion);
+    }
+
+    @Override
+    //获取考试填空题的答案
+    public CompletionQuestion getRecentCompletionQuestionByQuestionContentID(Integer questionContentID){
+        return questionnaireDao.getRecentCompletionQuestionByQuestionContentID(questionContentID);
     }
 
     @Override

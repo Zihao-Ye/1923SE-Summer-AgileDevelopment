@@ -9,7 +9,7 @@
     <!-- 修改问卷加密ID-->
     <update id="editEncryptQuestionnaireID" parameterType="Questionnaire">
         update questionnaire
-        set encrypt_questionnaireid=#{encrptQuestionnaireID}
+        set encrypt_questionnaireid=#{encryptQuestionnaireID}
         where questionnaireid=#{questionnaireID}
     </update>
     <!-- 获取用户最新创建的问卷-->
@@ -38,16 +38,34 @@
         insert into question_option(option_kind, question_contentid, option_content, left_volume,is_answer,option_no)
         values(#{optionKind},#{questionContentID},#{optionContent},#{leftVolume},#{isAnswer},#{optionNo})
     </insert>
+    <!-- 根据问题ID于选项序号获取选项-->
+    <select id="getRecentQuestionOptionByQuestionContentIDAndOptionNo" resultType="QuestionOption">
+        select *
+        from question_option
+        where question_contentid=#{questionContentID} and option_no=#{optionNo}
+    </select>
     <!-- 添加评分题分数上限-->
     <insert id="setScore" parameterType="ScoreQuestion">
         insert into score_question(question_contentid, max_score,start_word,end_word)
         values(#{questionContentID},#{maxScore},#{startWord},#{endWord})
     </insert>
+    <!-- 获取问题的评分题信息-->
+    <select id="getRecentScoreQuestionByQuestionContentID" resultType="ScoreQuestion">
+        select *
+        from score_question
+        where question_contentid=#{questionContentID}
+    </select>
     <!-- 设置考试填空题答案-->
     <insert id="setCompletionAnswer" parameterType="CompletionQuestion">
         insert into completion_question(question_contentid, answer)
         values(#{questionContentID},#{answer})
     </insert>
+    <!-- 获取考试填空题的答案-->
+    <select id="getRecentCompletionQuestionByQuestionContentID" resultType="CompletionQuestion">
+        select *
+        from completion_question
+        where question_contentid=#{questionContentID}
+    </select>
     <!-- 问题排序-->
     <update id="rankQuestion" parameterType="QuestionContent">
         update question_content

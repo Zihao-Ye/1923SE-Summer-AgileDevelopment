@@ -26,11 +26,20 @@ public interface QuestionnaireDao {
     //添加选择题选项
     void setOptions(QuestionOption questionOption);
 
+    //根据问题ID于选项序号获取选项
+    QuestionOption getRecentQuestionOptionByQuestionContentIDAndOptionNo(Integer questionContentID,Integer optionNo);
+
     //添加评分题分数上限
     void setScore(ScoreQuestion scoreQuestion);
 
+    //获取问题的评分题信息
+    ScoreQuestion getRecentScoreQuestionByQuestionContentID(Integer questionContentID);
+
     //设置考试填空题答案
     void setCompletionAnswer(CompletionQuestion completionQuestion);
+
+    //获取考试填空题的答案
+    CompletionQuestion getRecentCompletionQuestionByQuestionContentID(Integer questionContentID);
 
     //问题排序
     void rankQuestion(Integer questionContentID,Integer questionNo);
