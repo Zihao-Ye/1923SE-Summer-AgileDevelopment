@@ -2,7 +2,7 @@
   <v-menu bottom min-width="150px" round offset-y>
     <template v-slot:activator="{ on }">
       <v-btn icon v-on="on">
-        <v-avatar  size="40" color="#96CDCD">
+        <v-avatar  size="80" color="#64B5F6">
             <span>{{$store.state.userName.substr(0,1)}}</span>
         </v-avatar>
       </v-btn>

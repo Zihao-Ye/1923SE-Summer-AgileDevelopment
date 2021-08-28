@@ -1,12 +1,11 @@
 <template>
     <div class="home-container">
         <el-container>
-            <el-header class="header-container" height="38">
-                <div>管理问卷页面</div>
-            </el-header>
             <el-container>
-                <el-aside width="280px">
+                <el-aside class="asidePosition" width="280px">
                     <el-card>
+                        <svg t="1630120164825" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1271" width="64" height="64"><path d="M808.832 478.592c-42.794667 57.685333-94.762667 117.504-153.770667 176.469333-219.989333 220.032-451.584 342.613333-540.16 254.037334-52.736-52.778667-32.938667-147.968 36.053334-266.112A384 384 0 0 1 643.029333 150.954667c118.101333-68.992 213.333333-88.789333 266.069334-36.053334 51.114667 51.157333 31.872 149.930667-35.84 266.666667a384.128 384.128 0 0 1-312.32 511.36 42.666667 42.666667 0 0 1-10.752-84.693333 298.794667 298.794667 0 0 0 258.645333-329.642667zM776.96 374.186667a298.666667 298.666667 0 1 0-402.901333 402.901333c70.314667-45.781333 147.072-108.757333 220.629333-182.314667 73.557333-73.557333 136.533333-150.272 182.272-220.586666zM289.536 825.088a384.469333 384.469333 0 0 1-90.581333-90.624c-28.8 60.714667-35.114667 102.869333-23.722667 114.304 10.837333 10.794667 52.650667 5.546667 114.304-23.68zM734.464 198.954667a386.176 386.176 0 0 1 90.581333 90.624c29.226667-61.653333 34.517333-103.509333 23.722667-114.346667-11.434667-11.392-53.589333-5.12-114.346667 23.722667z" p-id="1272" fill="#1296db"></path></svg>
+                        <h3 class="blue--text" style="font-size: 30px;">问卷星球</h3>
                         <el-button type="primary" @click="createBlankQuestionnaire">新建问卷</el-button>
                         <div class="menu-view">
                             <div v-for="menu in menuList" :key="menu.route"
@@ -16,8 +15,9 @@
                                 <i :class="menu.icon"></i>
                                 <span>{{ menu.name }}</span>
                             </div>
+                            <div class="avatarposition"><avatar ></avatar></div>
                         </div>
-                        <avatar></avatar>
+                    
                     </el-card>
                 </el-aside>
                 <el-container>
@@ -194,6 +194,12 @@ $menuActiveText: #409eff;
         color: rgba(172, 172, 172, 100);
         margin: 1px;
     }
+}
+.avatarposition{
+    margin-top: 100%;
+}
+.asidePosition{
+    margin-top: 0%;
 }
 
 </style>

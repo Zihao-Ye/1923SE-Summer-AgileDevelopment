@@ -1,4 +1,45 @@
 <template>
+<div>
+    <v-dialog
+      v-model="dialog2"
+      width="500"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+         color="error"
+          v-bind="attrs"
+          v-on="on"
+        >
+          清空回收站
+        </v-btn>
+      </template>
+
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+         确定要清空回收站吗？
+        </v-card-title>
+
+
+        <v-card-actions>
+            <v-btn
+            color="error"
+            text
+            @click="emptyRubbish()"
+          >
+            确定
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
+            @click="dialog2 = false"
+          >
+            取消
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+<!-- <el-button type="danger" icon="el-icon-delete" @click="emptyRubbish()">清空回收站</el-button> -->
     <div class="rc-bin-container">
         <el-table
             :data="projectList"
@@ -14,23 +55,20 @@
                 show-overflow-tooltip
                 align="center"
                 label="标题"
+                width="360"
             />
             <el-table-column
                 prop="recycleVolume"
                 align="center"
                 label="已收集数"
+                width="130"
             />
             <el-table-column align="center" label="创建时间">
                 <template slot-scope="scope">
                     <div>{{scope.row.createTime | formatDate}}</div>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="第一次发布时间">
-                <template slot-scope="scope">
-                    <div>{{scope.row.startTime | formatDate}}</div>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="最后一次发布时间">
+            <el-table-column align="center" label="截止时间">
                 <template slot-scope="scope">
                     <div>{{scope.row.endTime | formatDate}}</div>
                 </template>
@@ -38,19 +76,45 @@
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <v-btn text color="primary" @click="recoverQuestionnaire(scope.row.questionnaireID)">恢复</v-btn>
-                    <!-- <el-popconfirm
-                        title="确定删除该项目吗？"
-                        @confirm="deleteProject(scope.row.key)"
-                    > -->
-                        <!-- <v-btn text color="error">删除</v-btn> -->
-                        <!-- <el-button type="danger" slot="reference" plain>删除</el-button> -->
-                        <!-- <el-button slot="reference"
-                                   class="pink-text-btn"
-                                   type="text"
-                        >
-                            删除
-                        </el-button> -->
-                    <!-- </el-popconfirm> -->
+                    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          text color="error"
+          v-bind="attrs"
+          v-on="on"
+        >
+          删除
+        </v-btn>
+      </template>
+
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+         确定要彻底删除该问卷吗？
+        </v-card-title>
+
+
+        <v-card-actions>
+            <v-btn
+            color="error"
+            text
+            @click="deleteQuestionnaire(scope.row.questionnaireID)"
+          >
+            确定删除
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
+            @click="dialog = false"
+          >
+            取消
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
                 </template>
             </el-table-column>
         </el-table>
@@ -65,6 +129,7 @@
                 @current-change="queryRecycleProjectPage"
             />
         </div>
+    </div>
     </div>
 </template>
 <script>
@@ -81,6 +146,8 @@ export default {
     name: 'RecycleBin',
     data() {
         return {
+            dialog2: false,
+            dialog: false,
             total: 0,
             projectList: [
                 {
@@ -101,6 +168,13 @@ export default {
         this.showRubbishList()
     },
     methods: {
+        emptyRubbish () {
+            for (var i=0;i<this.projectList.length;i++)
+            { 
+                this.deleteQuestionnaire(this.projectList[i].questionnaireID)
+            }
+
+        },
         showRubbishList() {
              this.$http({
              method: "get",
@@ -123,6 +197,25 @@ export default {
         .then((res) => {
           if (res.data.success) {
             this.msgSuccess('恢复成功');
+            this.showRubbishList();
+          } 
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      },
+      deleteQuestionnaire (questionnaireID) {
+        this.$http({
+        method: "post",
+        url: "/delRubbish",
+        params: {
+          questionnaireID:questionnaireID
+        },
+      })
+        .then((res) => {
+          if (res.data.success) {
+            this.dialog = false;
+            this.msgSuccess('已删除');
             this.showRubbishList();
           } 
         })
