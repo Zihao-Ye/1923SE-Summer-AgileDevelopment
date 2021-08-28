@@ -57,11 +57,10 @@ public class QuestionnaireController {
         try {
             Timestamp EndTime=Timestamp.valueOf(endTime);
             questionnaireService.editQuestionnaire(questionnaireID, title, EndTime, questionnaireNote,endMessage);
-            map.put("success", false);
+            map.put("success", true);
         } catch (Exception e) {
             e.printStackTrace();
             map.put("success", false);
-            map.put("endTime",endTime);
         }
         return map;
     }
