@@ -241,4 +241,10 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     public void copyQuestion(QuestionContent questionContent){
         questionnaireDao.copyQuestion(questionContent);
     }
+
+    @Override
+    //根据加密ID获取原ID
+    public Integer getOriginQuestionnaireID(String encryptQuestionnaireID){
+        return questionnaireDao.getOriginQuestionnaireID(encryptQuestionnaireID);
+    }
 }

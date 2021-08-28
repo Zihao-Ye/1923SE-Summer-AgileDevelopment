@@ -226,5 +226,10 @@
         insert into question_content(questionnaireid, question_kind, require_sig, question_content, question_no, question_note,question_score)
         values(#{questionnaireID},#{questionKind},#{requireSig},#{questionContent},#{questionNo},#{questionNote},#{questionScore})
     </insert>
-
+    <!-- 根据加密ID获取原ID-->
+    <select id="getOriginQuestionnaireID" resultType="Integer">
+        select questionnaireid
+        from questionnaire
+        where encrypt_questionnaireid=#{encryptQuestionnaireID}
+    </select>
 </mapper>

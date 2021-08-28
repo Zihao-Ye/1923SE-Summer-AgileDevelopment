@@ -121,4 +121,7 @@ public interface QuestionnaireDao {
 
     //复制问卷-复制问题基本信息
     void copyQuestion(QuestionContent questionContent);
+
+    //根据加密ID获取原ID
+    Integer getOriginQuestionnaireID(String encryptQuestionnaireID);
 }

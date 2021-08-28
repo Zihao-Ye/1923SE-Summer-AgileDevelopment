@@ -119,6 +119,7 @@ public class QuestionnaireController {
             recentQuestionnaire.setEncryptQuestionnaireID(encryptQuestionnaireID);
             questionnaireService.editEncryptQuestionnaireID(recentQuestionnaire.getQuestionnaireID(),encryptQuestionnaireID);
             //todo
+
             map.put("success", true);
             map.put("recentQuestionnaire",recentQuestionnaire);
         } catch (Exception e) {
@@ -600,5 +601,20 @@ public class QuestionnaireController {
         return map;
     }
 
+    @GetMapping("/getOriginQuestionnaireID")
+    @ApiOperation("根据加密ID获取原ID")
+    @ApiImplicitParam(name = "encryptQuestionnaireID",value = "加密后的ID",required = true,dataType = "String")
+    public Map<String,Object> getOriginQuestionnaireID(@RequestParam String encryptQuestionnaireID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            Integer originQuestionnaireID=questionnaireService.getOriginQuestionnaireID(encryptQuestionnaireID);
+            map.put("success",true);
+            map.put("originQuestionnaireID",originQuestionnaireID);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
 
 }
