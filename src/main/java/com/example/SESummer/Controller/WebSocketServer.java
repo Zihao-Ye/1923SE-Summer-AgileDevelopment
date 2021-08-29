@@ -9,11 +9,12 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
-@ServerEndpoint("/websocket/{userID}/{questionnaireID}")
+@ServerEndpoint("/websocket/{questionnaireID}")
 //此注解相当于设置访问URL
 public class WebSocketServer {
 
@@ -23,10 +24,10 @@ public class WebSocketServer {
     private static Map<String,Session> sessionPool = new HashMap<>();
 
     @OnOpen
-    public void onOpen(Session session, @PathParam(value="userID")String userID) {
+    public void onOpen(Session session, @PathParam(value="questionnaireID")String questionnaireID) {
         this.session = session;
         webSockets.add(this);
-        sessionPool.put(userID, session);
+        sessionPool.put(questionnaireID, session);
         System.out.println("[message]有新的连接，总数为:"+webSockets.size());
     }
 
@@ -42,11 +43,12 @@ public class WebSocketServer {
     }
 
     // 广播消息
-    public void sendAllMessage(String message) {
+    public void sendAllMessage(String questionnaireID,String message) {
         for(WebSocketServer webSocket : webSockets) {
             System.out.println("[message]广播消息:"+message);
             try {
-                webSocket.session.getAsyncRemote().sendText(message);
+                if (webSocket.session.getId().equals(questionnaireID));
+                session.getAsyncRemote().sendText(message);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -66,8 +68,8 @@ public class WebSocketServer {
     }
 
     // 单点消息 (发送文本)
-    public void sendTextMessage(String userID, String message) {
-        Session session = sessionPool.get(userID);
+    public void sendTextMessage(String questionnaireID, String message) {
+        Session session = sessionPool.get(questionnaireID);
         if (session != null) {
             try {
                 session.getBasicRemote().sendText(message);
@@ -78,8 +80,8 @@ public class WebSocketServer {
     }
 
     // 单点消息 (发送对象)
-    public void sendObjMessage(String userID, Object message){
-        Session session = sessionPool.get(userID);
+    public void sendObjMessage(String questionnaireID, Object message){
+        Session session = sessionPool.get(questionnaireID);
         if (session != null) {
             try {
                 session.getAsyncRemote().sendObject(message);

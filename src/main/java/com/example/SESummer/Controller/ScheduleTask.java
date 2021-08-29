@@ -19,9 +19,11 @@ public class ScheduleTask {
         List<Questionnaire> questionnaires = questionDataService.getAllVisitableQuestionnaire();
         Timestamp time = new Timestamp(System.currentTimeMillis());
         for (Questionnaire questionnaire:questionnaires){
-            if (questionnaire.getEndTime().before(time)){
-                questionDataService.updateVisitableQuestionnaire(questionnaire.getQuestionnaireID());
-                System.out.println("已关闭问卷:"+questionnaire.getQuestionnaireID());
+            if (questionnaire.getEndTime() != null){
+                if (questionnaire.getEndTime().before(time)){
+                    questionDataService.updateVisitableQuestionnaire(questionnaire.getQuestionnaireID());
+                    System.out.println("已关闭问卷:"+questionnaire.getQuestionnaireID());
+                }
             }
         }
     }

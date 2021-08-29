@@ -47,4 +47,10 @@
         set is_visitable = 0
         where questionnaireid = #{questionnaireID}
     </update>
+    
+    <select id="getQuestionOption" parameterType="QuestionOption">
+        select *
+        from question_option
+        where question_optionid = #{questionOptionID}
+    </select>
 </mapper>

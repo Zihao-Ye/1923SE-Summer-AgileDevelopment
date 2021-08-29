@@ -1,6 +1,7 @@
 package com.example.SESummer.Dao;
 
 import com.example.SESummer.Entity.QuestionContent;
+import com.example.SESummer.Entity.QuestionOption;
 import com.example.SESummer.Entity.Questionnaire;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -20,7 +21,11 @@ public interface QuestionDataDao {
     //更新评分题平均分
     void updateAverageScore(Integer questionContentID);
 
+    //根据问题号获得问题实体
     QuestionContent getQuestionContent(Integer questionContentID);
+
+    //根据选项号获取选项
+    QuestionOption getQuestionOption(Integer questionOptionID);
 
     //获取所有已公布的问卷
     List<Questionnaire> getAllVisitableQuestionnaire();

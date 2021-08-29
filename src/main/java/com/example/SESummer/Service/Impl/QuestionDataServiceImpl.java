@@ -2,6 +2,7 @@ package com.example.SESummer.Service.Impl;
 
 import com.example.SESummer.Dao.QuestionDataDao;
 import com.example.SESummer.Entity.QuestionContent;
+import com.example.SESummer.Entity.QuestionOption;
 import com.example.SESummer.Entity.Questionnaire;
 import com.example.SESummer.Service.QuestionDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +54,11 @@ public class QuestionDataServiceImpl implements QuestionDataService {
     //修改问卷发布情况
     public void updateVisitableQuestionnaire(Integer questionnaireID){
         questionDataDao.updateVisitableQuestionnaire(questionnaireID);
+    }
+
+    @Override
+    //根据选项号获取选项
+    public QuestionOption getQuestionOption(Integer questionOptionID){
+        return questionDataDao.getQuestionOption(questionOptionID);
     }
 }

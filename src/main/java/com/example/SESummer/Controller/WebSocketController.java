@@ -27,20 +27,19 @@ public class WebSocketController {
     @ApiOperation("减少剩余投票数的接口")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",dataType = "int",required = true),
-            @ApiImplicitParam(name = "questionContentID",value = "题目ID",dataType = "int",required = true),
+            @ApiImplicitParam(name = "questionnaireID",value = "题目ID",dataType = "int",required = true),
             @ApiImplicitParam(name = "questionOptionID",value = "选项ID",dataType = "int",required = true)
     })
-    public Map<String,Object> decreaseVolume(@RequestParam Integer userID,@RequestParam Integer questionContentID,@RequestParam Integer questionOptionID){
+    public Map<String,Object> decreaseVolume(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer questionOptionID){
         Map<String ,Object> map = new HashMap<>();
         try {
-//            QuestionOption option = questionDataService.getQuestionOption(questionOptionID);
-//            Integer voteVolume = option.getVoteVolume();
-            webSocketServer.sendAllMessage("正在获取问题:"+questionContentID+", 选项:"+questionOptionID);
+            QuestionOption option = questionDataService.getQuestionOption(questionOptionID);
+            Integer voteVolume = option.getVoteVolume();
+            webSocketServer.sendAllMessage(String.valueOf(questionnaireID),questionOptionID+"#"+voteVolume);
             map.put("success",true);
             map.put("message","执行成功");
         }
         catch (Exception e){
-            webSocketServer.sendAllMessage("发生了一处异常");
             e.printStackTrace();
             map.put("success",false);
             map.put("message","运行时出现异常");

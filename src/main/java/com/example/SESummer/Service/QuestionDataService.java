@@ -1,6 +1,7 @@
 package com.example.SESummer.Service;
 
 import com.example.SESummer.Entity.QuestionContent;
+import com.example.SESummer.Entity.QuestionOption;
 import com.example.SESummer.Entity.Questionnaire;
 
 import java.util.List;
@@ -19,6 +20,9 @@ public interface QuestionDataService {
     void updateAverageScore(Integer questionContentID);
 
     QuestionContent getQuestionContent(Integer questionContentID);
+
+    //根据选项号获取选项
+    QuestionOption getQuestionOption(Integer questionOptionID);
 
     //获取所有已公布的问卷
     List<Questionnaire> getAllVisitableQuestionnaire();
