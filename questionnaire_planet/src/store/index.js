@@ -13,7 +13,8 @@ export default new Vuex.Store({
       radioAnswer:{},
       optionAnswer:{},
       text:{},
-    }
+    },
+    questions:[]
   },
   mutations: {
     setLogin(state) {
@@ -43,6 +44,9 @@ export default new Vuex.Store({
     setText(state,answer){
       state.answer.text=answer
     },
+    setQuestions(state,questions){
+      state.questions=questions
+    }
   },
   actions: {
   },

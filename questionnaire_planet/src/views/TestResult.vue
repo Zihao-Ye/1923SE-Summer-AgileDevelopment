@@ -1,6 +1,15 @@
 <template>
   <div id= 'pdfDom'>
     <div>
+      <v-card class="timeHint text-center"
+              elevation="12"
+              rounded
+              color="#607D8B"
+              dark
+      >
+        <h2 style="color: #EFEBE9">总分</h2>
+        <h2 style="color: #FF9100">{{totalScore}}</h2>
+      </v-card>
       <v-card class="mx-auto" width="1000" elevation="10">
         <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
         <p class="text-center" style="width: 800px;padding-left: 150px">{{questionnaire.questionnaireNote}}</p>
@@ -61,6 +70,9 @@
                 <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
                 <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
                 <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+                <template v-if="question.questionScore>0">
+                  <v-card-text>本题得分：{{questionScore[question.questionNo]}}</v-card-text>
+                </template>
               </v-row>
             </v-card>
             <!--单选必做题数据分析——常规分析-->
@@ -137,6 +149,9 @@
                 <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
                 <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
                 <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+                <template v-if="question.questionScore>0">
+                  <v-card-text>本题得分：{{questionScore[question.questionNo]}}</v-card-text>
+                </template>
               </v-row>
             </v-card>
             <!--单选非必做题数据分析——常规分析-->
@@ -219,6 +234,9 @@
                 <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
                 <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
                 <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+                <template v-if="question.questionScore>0">
+                  <v-card-text>本题得分：{{questionScore[question.questionNo]}}</v-card-text>
+                </template>
               </v-row>
             </v-card>
             <!--多选必做题数据分析——常规分析-->
@@ -298,6 +316,9 @@
                 <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
                 <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
                 <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+                <template v-if="question.questionScore>0">
+                  <v-card-text>本题得分：{{questionScore[question.questionNo]}}</v-card-text>
+                </template>
               </v-row>
             </v-card>
             <!--多选非必做题数据分析——常规分析-->
@@ -341,7 +362,365 @@
               </template>
             </v-card>
           </template>
+          <!--填空必做题-->
+          <template v-else-if="question.questionKind===3 && question.requireSig===1">
+            <v-card-title>
+              <v-row v-if="question.questionScore>0">
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}({{question.questionScore}}分)
+              </v-row>
+              <v-row v-else>
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-text-field
+                  disabled
+                  v-model="text[question.questionNo]"
+                  :rules="textRules"
+                  label="填空"
+                  required
+                  outlined
+                  @change="requirePlus(question)"
+              ></v-text-field>
+            </v-container>
+            <!--填空必做题数据分析——考试数据分析-->
+            <v-container v-if="question.questionScore>0"></v-container>
+            <v-card v-if="question.questionScore>0">
+              <v-row>
+                <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>本题答案：{{completionQuestions[question.questionNo].answer}}</v-card-text>
+                <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
+                <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
+                <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+                <template v-if="question.questionScore>0">
+                  <v-card-text>本题得分：{{questionScore[question.questionNo]}}</v-card-text>
+                </template>
+              </v-row>
+            </v-card>
+            <!--填空必做题数据分析——常规分析-->
+            <v-container>
+              <v-card  elevation="8">
+                <v-card-title style="color:#6A76AB">填空题用户所填列表</v-card-title>
+                <el-table
+                    :data="userCompletionQuestionList[question.questionNo]"
+                    style="width: 100%">
+                  <el-table-column fixed label="序号" width="90"   align="center">
+                    <template slot-scope="scope">
+                      <span>{{(scope.$index + 1)}} </span>
+                    </template>
+                  </el-table-column>>
+                  <el-table-column
+                      prop="completionContent"
+                      label="用户所填内容"
+                      width="650">
+                  </el-table-column>
+                </el-table>
+              </v-card>
+            </v-container>
+          </template>
+          <!--填空非必做题-->
+          <template v-else-if="question.questionKind===3 && question.requireSig===0">
+            <v-card-title v-if="question.questionScore>0">
+              {{question.questionNo}}. {{question.questionContent}}({{question.questionScore}})
+            </v-card-title>
+            <v-card-title v-else>
+              {{question.questionNo}}. {{question.questionContent}}
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-text-field
+                  disabled
+                  v-model="text[question.questionNo]"
+                  label="填空"
+                  outlined
+              ></v-text-field>
+            </v-container>
+            <!--填空非必做题数据分析——考试数据分析-->
+            <v-container v-if="question.questionScore>0"></v-container>
+            <v-card v-if="question.questionScore>0">
+              <v-row>
+                <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>本题答案：{{completionQuestions[question.questionNo].answer}}</v-card-text>
+                <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
+                <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
+                <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+                <template v-if="question.questionScore>0">
+                  <v-card-text>本题得分：{{questionScore[question.questionNo]}}</v-card-text>
+                </template>
+              </v-row>
+            </v-card>
+            <!--填空非必做题数据分析——常规分析-->
+            <v-container>
+              <v-card  elevation="8">
+                <v-card-title style="color:#6A76AB">填空题用户所填列表</v-card-title>
+                <el-table
+                    :data="userCompletionQuestionList[question.questionNo]"
+                    style="width: 100%">
+                  <el-table-column fixed label="序号" width="90"   align="center">
+                    <template slot-scope="scope">
+                      <span>{{(scope.$index + 1)}} </span>
+                    </template>
+                  </el-table-column>>
+                  <el-table-column
+                      prop="completionContent"
+                      label="用户所填内容"
+                      width="650">
+                  </el-table-column>
+                </el-table>
+              </v-card>
+            </v-container>
+          </template>
+          <!--评分必做题-->
+          <template v-else-if="question.questionKind===4 && question.requireSig===1">
+            <v-card-title>
+              <v-row>
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-card-actions class="pa-4">
+              <v-container>
+                <v-row>
+                  <h4>很不满意</h4>
+                  <el-rate
+                      disabled
+                      v-model="score[question.questionNo]"
+                      :rules="scoreRules"
+                      :max="maxScores[question.questionNo].maxScore"
+                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                      @change="requirePlus(question)"
+                      style="zoom:120%"
+                  ></el-rate>
+                  <h4 >很满意</h4>
+                </v-row>
+              </v-container>
+            </v-card-actions>
+            <!--评分必做题数据分析-->
+            <v-container></v-container>
+            <v-card style="width: 800px;height:550px;">
+              <v-card-title style="color:#6A76AB">视图统计</v-card-title>
+              <v-card-subtitle style="color:#EF5350">平均分：{{maxScores[question.questionNo].averageScore}}</v-card-subtitle>
+              <template>
+                <v-tabs v-model="tab[question.questionNo]">
+                  <v-tab>评分分值选择人数小计表</v-tab>
+                  <v-tab @click="toDrawScoreCharts(question.questionNo+'01','bar',question)">柱状图</v-tab>
+                  <v-tab @click="toDrawScoreCharts(question.questionNo+'02','pie',question)">饼图</v-tab>
+                  <v-tab @click="toDrawScoreCharts(question.questionNo+'03','line',question)">折线图</v-tab>
+                </v-tabs>
+                <v-tabs-items v-model="tab[question.questionNo]">
+                  <v-tab-item>
+                    <v-card class="scoretableCard" width="600" elevation="8">
+                      <v-data-table
+                          :headers="scoreHeaders"
+                          :items="distributeList[question.questionNo]"
+                          :sort-desc="[false, true]"
+                          multi-sort
+                          items-per-page="5"
+                          class="elevation-1"
 
+                          :footer-props="{
+                              disableItemsPerPage: true,
+                              showFirstLastPage: true,
+                              firstIcon: 'mdi-arrow-collapse-left',
+                              lastIcon: 'mdi-arrow-collapse-right',
+                              prevIcon: 'mdi-minus',
+                              nextIcon: 'mdi-plus'
+                              }"
+                      >
+                      </v-data-table>
+                    </v-card>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <v-container></v-container>
+                    <div class="chartsClass" :id="question.questionNo+'01'" style="width: 600px;height:400px;"></div>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <v-container></v-container>
+                    <div class="chartsClass" :id="question.questionNo+'02'" style="width: 600px;height:400px;"></div>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <v-container></v-container>
+                    <div class="chartsClass" :id="question.questionNo+'03'" style="width: 600px;height:400px;"></div>
+                  </v-tab-item>
+                </v-tabs-items>
+              </template>
+            </v-card>
+          </template>
+          <!--评分非必做题-->
+          <template v-else-if="question.questionKind===4 && question.requireSig===0">
+            <v-card-title>
+              {{question.questionNo}}. {{question.questionContent}}
+            </v-card-title>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-card-actions class="pa-4">
+              <v-container>
+                <v-row>
+                  <h4>很不满意</h4>
+                  <el-rate
+                      disabled
+                      v-model="score[question.questionNo]"
+                      :max="maxScores[question.questionNo].maxScore"
+                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                      style="zoom:120%"
+                  ></el-rate>
+                  <h4 >很满意</h4>
+                </v-row>
+              </v-container>
+            </v-card-actions>
+            <!--评分非必做题数据分析-->
+            <v-container></v-container>
+            <v-card style="width: 800px;height:550px;">
+              <v-card-title style="color:#6A76AB">视图统计</v-card-title>
+              <v-card-subtitle style="color:#EF5350">平均分：{{maxScores[question.questionNo].averageScore}}</v-card-subtitle>
+              <template>
+                <v-tabs v-model="tab[question.questionNo]">
+                  <v-tab>评分分值选择人数小计表</v-tab>
+                  <v-tab @click="drawScoreCharts(question.questionNo+'01','bar',question)">柱状图</v-tab>
+                  <v-tab @click="drawScoreCharts(question.questionNo+'02','pie',question)">饼图</v-tab>
+                  <v-tab @click="drawScoreCharts(question.questionNo+'03','line',question)">折线图</v-tab>
+                </v-tabs>
+                <v-tabs-items v-model="tab[question.questionNo]">
+                  <v-tab-item>
+                    <v-card class="scoretableCard" width="600" elevation="8">
+                      <v-data-table
+                          :headers="scoreHeaders"
+                          :items="distributeList[question.questionNo]"
+                          :sort-desc="[false, true]"
+                          multi-sort
+                          items-per-page="5"
+                          class="elevation-1"
+
+                          :footer-props="{
+                              disableItemsPerPage: true,
+                              showFirstLastPage: true,
+                              firstIcon: 'mdi-arrow-collapse-left',
+                              lastIcon: 'mdi-arrow-collapse-right',
+                              prevIcon: 'mdi-minus',
+                              nextIcon: 'mdi-plus'
+                              }"
+                      >
+                      </v-data-table>
+                    </v-card>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <v-container></v-container>
+                    <div class="chartsClass" :id="question.questionNo+'01'" style="width: 600px;height:400px;"></div>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <v-container></v-container>
+                    <div class="chartsClass" :id="question.questionNo+'02'" style="width: 600px;height:400px;"></div>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <v-container></v-container>
+                    <div class="chartsClass" :id="question.questionNo+'03'" style="width: 600px;height:400px;"></div>
+                  </v-tab-item>
+                </v-tabs-items>
+              </template>
+            </v-card>
+          </template>
+          <!--定位必做题-->
+          <template v-else-if="question.questionKind===5 && question.requireSig===1">
+            <v-card-title>
+              <v-row>
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}
+              </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+              由于测试机型有限，暂只有Windows平台Edge/火狐浏览器可获取定位（为获取准确定位，请给与浏览器定位权限）
+            </v-card-subtitle>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-text-field
+                  disabled
+                  v-model="location[question.questionNo]"
+                  :rules="textRules"
+                  label="点击获取定位"
+                  required
+                  solo
+                  @change="requirePlus(question)"
+                  readonly
+                  @click="getLocation(question.questionNo)"
+              ></v-text-field>
+            </v-container>
+            <v-container>
+              <v-card  elevation="8">
+                <v-card-title style="color:#6A76AB">定位题用户所填列表</v-card-title>
+                <el-table
+                    :data="userLocateQuestionList[question.questionNo]"
+                    style="width: 100%">
+                  <el-table-column fixed label="序号" width="90"   align="center">
+                    <template slot-scope="scope">
+                      <span>{{(scope.$index + 1)}} </span>
+                    </template>
+                  </el-table-column>>
+                  <el-table-column
+                      prop="locate"
+                      label="用户定位内容"
+                      width="650">
+                  </el-table-column>
+                </el-table>
+              </v-card>
+            </v-container>
+          </template>
+          <!--定位非必做题-->
+          <template v-else-if="question.questionKind===5 && question.requireSig===0">
+            <v-card-title>
+              {{question.questionNo}}. {{question.questionContent}}
+            </v-card-title>
+            <v-card-subtitle>
+              由于测试机型有限，暂只有Windows平台Edge/火狐浏览器可获取定位（为获取准确定位，请给与浏览器定位权限）
+            </v-card-subtitle>
+            <v-card-subtitle>
+              {{question.questionNote}}
+            </v-card-subtitle>
+            <v-container>
+              <v-text-field
+                  disabled
+                  v-model="location[question.questionNo]"
+                  label="获取定位"
+                  outlined
+                  solo
+                  readonly
+                  @click="getLocation(question.questionNo)"
+              ></v-text-field>
+            </v-container>
+            <v-container>
+              <v-card  elevation="8">
+                <v-card-title style="color:#6A76AB">定位题用户所填列表</v-card-title>
+                <el-table
+                    :data="userLocateQuestionList[question.questionNo]"
+                    style="width: 100%">
+                  <el-table-column fixed label="序号" width="90"   align="center">
+                    <template slot-scope="scope">
+                      <span>{{(scope.$index + 1)}} </span>
+                    </template>
+                  </el-table-column>>
+                  <el-table-column
+                      prop="locate"
+                      label="用户定位内容"
+                      width="650">
+                  </el-table-column>
+                </el-table>
+              </v-card>
+            </v-container>
+          </template>
           <v-divider></v-divider>
         </v-card>
         <!-- <div class="text-center" style="padding-top: 30px">
@@ -350,6 +729,19 @@
           </v-btn>
         </div> -->
       </v-card>
+      <v-btn
+          absolute
+          class="goback"
+          fab
+          dark
+          small
+          color="primary"
+          :to="{path:'/QuestionnaireManage'}"
+      >
+        <v-icon dark>
+          mdi-close
+        </v-icon>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -410,6 +802,8 @@ export default {
     location:{},//定位题所定位
     now:moment(),
     end:"2021-08-28T12:21:40.000+00:00",
+    questionScore:{},
+    totalScore:0
   }),
   methods:{
     //图表实例(选择题)
@@ -497,7 +891,6 @@ export default {
                   }
                 },
               },
-
               data:tempPieData
             }
           ]
@@ -640,45 +1033,111 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
+              this.requireNum=0
               this.htmlTitle = res.data.questionnaire.title
               this.questionnaire=res.data.questionnaire
               this.questions=res.data.questionList
-              this.requireNum=0
-              for(const question of this.questions){
-                if(question.requireSig===1){
-                  this.requireNum+=1
-                }
-                if(question.questionKind===1){
-                  this.$set(this.radioModel,question.questionNo,null)
-                  this.$set(this.tab,question.questionNo,[])
-                  this.getOptions(question)
-                }else if(question.questionKind===4){
-                  this.$set(this.score,question.questionNo,0)
-                  this.$set(this.tab,question.questionNo,[])
-                  this.UserScoreQuestion(question)
-                  this.getMaxScore(question)
-                }else if(question.questionKind===2){
-                  this.$set(this.checkboxModel,question.questionNo,[])
-                  this.$set(this.tab,question.questionNo,[])
-                  this.getOptions(question)
-                }else if(question.questionKind===3){
-                  this.$set(this.text,question.questionNo,"")
-                  this.getCompletionQuestion(question)
-                  this.UserCompletionQuestion(question)
-                }else if(question.questionKind===5){
-                  this.$set(this.location,question.questionNo,"")
-                  this.UserLocateQuestion(question)
-                }
-                if(question.questionScore>0){
-                  this.getTestData(question)
+              if(res.data.questionnaire.kind===4){
+                this.questions=this.$store.state.questions
+              }
+                for(const question of this.questions){
+                  if(question.questionScore>0){
+                    this.autoScore(question)
+                  }
+                  if(question.requireSig===1){
+                    this.requireNum+=1
+                  }
+                  if(question.questionKind===1){
+                    this.$set(this.radioModel,question.questionNo,null)
+                    this.$set(this.tab,question.questionNo,[])
+                    this.getOptions(question)
+                  }else if(question.questionKind===4){
+                    this.$set(this.score,question.questionNo,0)
+                    this.$set(this.tab,question.questionNo,[])
+                    this.UserScoreQuestion(question)
+                    this.getMaxScore(question)
+                  }else if(question.questionKind===2){
+                    this.$set(this.checkboxModel,question.questionNo,[])
+                    this.$set(this.tab,question.questionNo,[])
+                    this.getOptions(question)
+                  }else if(question.questionKind===3){
+                    this.$set(this.text,question.questionNo,"")
+                    this.getCompletionQuestion(question)
+                    this.UserCompletionQuestion(question)
+                  }else if(question.questionKind===5){
+                    this.$set(this.location,question.questionNo,"")
+                    this.UserLocateQuestion(question)
+                  }
+                  if(question.questionScore>0){
+                    this.getTestData(question)
+                  }
                 }
               }
 
-            }
           })
           .catch((err) => {
             console.log(err);
           });
+    },
+    getTestOrder(id){
+      this.$http({
+        method:'post',
+        url:'/randomQuestionNo',
+        params:{
+          questionnaireID:id,
+          userID:this.$store.state.userID
+        }
+      }).then(res=>{
+        console.log(res.data)
+        if(res.data.success){
+          let questions=this.questions
+          for(let i=0;i<questions.length;i++){
+            questions[i].questionNo=res.data.testQuestionRankList[i].showNo
+          }
+          var compare = function (obj1, obj2) {
+            var val1 = obj1.questionNo;
+            var val2 = obj2.questionNo;
+            if (val1 < val2) {
+              return -1;
+            } else if (val1 > val2) {
+              return 1;
+            } else {
+              return 0;
+            }
+          }
+          questions.sort(compare)
+          this.questions=questions
+          for(const question of this.questions){
+            if(question.requireSig===1){
+              this.requireNum+=1
+            }
+            if(question.questionKind===1){
+              this.$set(this.radioModel,question.questionNo,null)
+              this.$set(this.tab,question.questionNo,[])
+              this.getOptions(question)
+            }else if(question.questionKind===4){
+              this.$set(this.score,question.questionNo,0)
+              this.$set(this.tab,question.questionNo,[])
+              this.UserScoreQuestion(question)
+              this.getMaxScore(question)
+            }else if(question.questionKind===2){
+              this.$set(this.checkboxModel,question.questionNo,[])
+              this.$set(this.tab,question.questionNo,[])
+              this.getOptions(question)
+            }else if(question.questionKind===3){
+              this.$set(this.text,question.questionNo,"")
+              this.getCompletionQuestion(question)
+              this.UserCompletionQuestion(question)
+            }else if(question.questionKind===5){
+              this.$set(this.location,question.questionNo,"")
+              this.UserLocateQuestion(question)
+            }
+            if(question.questionScore>0){
+              this.getTestData(question)
+            }
+          }
+        }
+      })
     },
     getOptions(question){
       this.$http({
@@ -1118,6 +1577,25 @@ export default {
             console.log(err);
           });
     },
+    autoScore(question){
+      this.$http({
+        method:'post',
+        url:'/setTestScore',
+        params:{
+          questionContentID:question.questionContentID,
+          questionKind:question.questionKind,
+          questionScore:question.questionScore,
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID
+        }
+      }).then(res=>{
+        console.log(res.data)
+        if(res.data.success){
+          this.$set(this.questionScore,question.questionNo,res.data.score)
+          this.totalScore+=res.data.score
+        }
+      })
+    }
   },
   computed:{
     submitValid() {
@@ -1151,6 +1629,9 @@ export default {
     var that = this;
     setTimeout(function () {
       that.drawcharts(103,'bar')
+      that.radioAnswer=that.$store.state.answer.radioAnswer
+      that.optionAnswer=that.$store.state.answer.optionAnswer
+      that.text=that.$store.state.answer.text
     },1000);
     // this.drawcharts()
   }
@@ -1190,5 +1671,13 @@ export default {
 .chartsClass{
   margin-left: auto;
   margin-right: auto;
+}
+.timeHint{
+  position: fixed;
+  right:1%;
+  top:50%;
+  width: 100px;
+  height: 70px;
+  margin-top: -40px;
 }
 </style>

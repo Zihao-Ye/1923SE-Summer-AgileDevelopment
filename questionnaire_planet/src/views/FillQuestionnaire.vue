@@ -611,6 +611,7 @@ export default {
         this.$store.commit('setRadioAnswer',this.radioAnswer)
         this.$store.commit('setOptionAnswer',this.optionAnswer)
         this.$store.commit('setText',this.text)
+        this.$store.commit('setQuestions',this.questions)
         //设置延迟执行
         this.$http({
           method: "post",
@@ -628,6 +629,8 @@ export default {
                   this.$router.push(({name:'ThanksNormal',params:{id:this.questionnaire.questionnaireID}}))
                 }else if(this.questionnaire.kind===2){
                   this.$router.push({path:'/voteResult/'+this.$route.params.id})
+                }else if(this.questionnaire.kind===4){
+                  this.$router.push({path:'/testResult/'+this.$route.params.id})
                 }
               }else if(res.data.failure){
                 window.alert("名额已满")
