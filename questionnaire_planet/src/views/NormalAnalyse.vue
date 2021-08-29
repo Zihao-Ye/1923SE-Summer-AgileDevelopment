@@ -58,6 +58,7 @@
               <v-row>
               <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
               <v-divider></v-divider>
+              <v-card-text>本题答案：{{getquestionAnswer(question)}}</v-card-text>
               <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
               <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
               <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
@@ -134,6 +135,7 @@
               <v-row>
               <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
               <v-divider></v-divider>
+              <v-card-text>本题答案：{{getquestionAnswer(question)}}</v-card-text>
               <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
               <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
               <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
@@ -216,6 +218,7 @@
               <v-row>
               <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
               <v-divider></v-divider>
+              <v-card-text>本题答案：{{getquestionAnswer(question)}}</v-card-text>
               <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
               <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
               <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
@@ -295,6 +298,7 @@
               <v-row>
               <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
               <v-divider></v-divider>
+              <v-card-text>本题答案：{{getquestionAnswer(question)}}</v-card-text>
               <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
               <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
               <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
@@ -965,6 +969,17 @@ else if(kind=='pie'){
     },
     getradiocolor(option) {
       if(option.isAnswer === 1) return '#42A5F5'
+    },
+    getquestionAnswer(question) {
+      var answer = []
+      var that = this;
+      var tmpOption = that.options[question.questionNo];
+      for(var i =0;i<tmpOption.length;i++){
+        if(tmpOption[i].isAnswer){
+          answer.push(tmpOption[i].optionContent);
+        }
+      }
+      return answer;
     },
     toDrawScoreCharts (id,kind,question){
       console.log(id)
