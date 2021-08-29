@@ -577,6 +577,9 @@ export default {
         this.submitLocate(this.location[index],index-1)
       }
       this.timer = setTimeout(() => {
+        this.$store.commit('setRadioAnswer',this.radioAnswer)
+        this.$store.commit('setOptionAnswer',this.optionAnswer)
+        this.$store.commit('setText',this.text)
         //设置延迟执行
         this.$http({
           method: "post",
