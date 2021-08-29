@@ -14,15 +14,7 @@
         <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
         <p class="text-center" style="width: 800px;padding-left: 150px">{{questionnaire.questionnaireNote}}</p>
         <h3 class="text-center" style="padding-top: 40px">已回收：{{questionnaire.recycleVolume}}份</h3>
-        <v-container>
-          <v-row>
-            <v-spacer></v-spacer>
-            <v-btn color="#546E7A" text @click="getDataUrl">
-              导出数据
-              <i class="el-icon-upload"></i>
-            </v-btn>
-          </v-row>
-        </v-container>
+
         <v-card
             v-for="(question,i) in questions"
             :key="i"
@@ -88,7 +80,7 @@
                 </v-tabs>
                 <v-tabs-items v-model="tab[question.questionNo]">
                   <v-tab-item>
-                    <v-card class="tableCard" width="600" elevation="8">
+                    <v-card class="tableCard" width="600" flat>
                       <v-data-table
                           :headers="choosenHeaders"
                           :items="options[question.questionNo]"
@@ -167,7 +159,7 @@
                 </v-tabs>
                 <v-tabs-items v-model="tab[question.questionNo]">
                   <v-tab-item>
-                    <v-card class="tableCard" width="600" elevation="8">
+                    <v-card class="tableCard" width="600" flat>
                       <v-data-table
                           :headers="choosenHeaders"
                           :items="options[question.questionNo]"
@@ -252,7 +244,7 @@
                 </v-tabs>
                 <v-tabs-items v-model="tab[question.questionNo]">
                   <v-tab-item>
-                    <v-card class="tableCard" width="600" elevation="8">
+                    <v-card class="tableCard" width="600" flat>
                       <v-data-table
                           :headers="choosenHeaders"
                           :items="options[question.questionNo]"
@@ -335,7 +327,7 @@
                 </v-tabs>
                 <v-tabs-items v-model="tab[question.questionNo]">
                   <v-tab-item>
-                    <v-card class="tableCard" width="600" elevation="8">
+                    <v-card class="tableCard" width="600" flat>
                       <v-data-table
                           :headers="choosenHeaders"
                           :items="options[question.questionNo]"
