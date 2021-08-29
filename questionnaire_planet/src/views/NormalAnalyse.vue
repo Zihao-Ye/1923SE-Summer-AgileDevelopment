@@ -25,7 +25,7 @@
           <!--单选必做题-->
           <template v-if="question.questionKind===1 && question.requireSig===1">
             <v-card-title>
-              <v-row v-if="questionnaire.kind===4">
+              <v-row v-if="question.questionScore>0">
                 <p class="red--text"> * </p>
                 {{question.questionNo}}. {{question.questionContent}}({{question.questionScore}}分)
               </v-row>
@@ -45,23 +45,36 @@
                     :key="n"
                     :label="leftPerson(option)"
                     :value="n"
+                    :color="getradiocolor(option)"
                     @change="radioAnswer[question.questionNo]=option;requirePlus(question)"
                 ></v-radio>
               </v-radio-group>
             </v-container>
 
             <!--单选必做题数据分析-->
+            <!--单选必做题数据分析——考试数据分析-->
+            <v-container v-if="question.questionScore>0"></v-container>
+            <v-card v-if="question.questionScore>0">
+              <v-row>
+              <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
+              <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
+              <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+              </v-row>
+            </v-card>
+            <!--单选必做题数据分析——常规分析-->
             <v-container></v-container>
             <v-card style="width: 800px;height:550px;">
               <v-card-title style="color:#6A76AB">视图统计</v-card-title>
               <template>
-                  <v-tabs v-model="tab">
+                  <v-tabs v-model="tab[question.questionNo]">
                      <v-tab>选项选择人数小计表</v-tab>
                      <v-tab @click="zhuCharts(question.questionNo+'01',question)">柱状图</v-tab>
                      <v-tab @click="bingCharts(question.questionNo+'02',question)">饼图</v-tab>
                      <v-tab @click="zheCharts(question.questionNo+'03',question)">折线图</v-tab>
                   </v-tabs>
-                  <v-tabs-items v-model="tab">
+                  <v-tabs-items v-model="tab[question.questionNo]">
                     <v-tab-item>
                       <v-card class="tableCard" width="600" elevation="8">
                       <v-data-table
@@ -92,7 +105,7 @@
           </template>
           <!--单选非必做题-->
           <template v-else-if="question.questionKind===1 && question.requireSig===0">
-            <v-card-title v-if="questionnaire.Kind===4">
+            <v-card-title v-if="question.questionScore>0">
               {{question.questionNo}}. {{question.questionContent}}({{question.questionScore}}分)
             </v-card-title>
             <v-card-title>
@@ -108,23 +121,36 @@
                     v-for="(option,n) in options[question.questionNo]"
                     :key="n"
                     :label="option.optionContent"
+                    :color="getradiocolor(option)"
                     :value="n"
                     @change="radioAnswer[question.questionNo]=option"
                 ></v-radio>
               </v-radio-group>
             </v-container>
             <!--单选非必做题数据分析-->
+            <!--单选非必做题数据分析——考试数据分析-->
+            <v-container v-if="question.questionScore>0"></v-container>
+            <v-card v-if="question.questionScore>0">
+              <v-row>
+              <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
+              <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
+              <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+              </v-row>
+            </v-card>
+            <!--单选非必做题数据分析——常规分析-->
             <v-container></v-container>
             <v-card style="width: 800px;height:550px;">
               <v-card-title style="color:#6A76AB">视图统计</v-card-title>
               <template>
-                  <v-tabs v-model="tab">
+                  <v-tabs v-model="tab[question.questionNo]">
                      <v-tab>选项选择人数小计表</v-tab>
                      <v-tab @click="zhuCharts(question.questionNo+'01',question)">柱状图</v-tab>
                      <v-tab @click="bingCharts(question.questionNo+'02',question)">饼图</v-tab>
                      <v-tab @click="zheCharts(question.questionNo+'03',question)">折线图</v-tab>
                   </v-tabs>
-                  <v-tabs-items v-model="tab">
+                  <v-tabs-items v-model="tab[question.questionNo]">
                     <v-tab-item>
                       <v-card class="tableCard" width="600" elevation="8">
                       <v-data-table
@@ -156,7 +182,7 @@
           <!--多选必做题-->
           <template v-else-if="question.questionKind===2 && question.requireSig===1">
             <v-card-title>
-              <v-row v-if="questionnaire.kind===4">
+              <v-row v-if="question.questionScore>0">
                 <p class="red--text"> * </p>
                 {{question.questionNo}}. {{question.questionContent}}({{question.questionScore}}分)
                 <p class="grey--text">[多选题]</p>
@@ -177,23 +203,36 @@
                     v-for="(option,n) in options[question.questionNo]"
                     :key="n"
                     :label="option.optionContent"
+                    :class="{ 'blue--text': option.isAnswer ===1 }"
                     @change="checkboxAnswer(option);requirePlus(question)"
                     style="display:block;zoom:120%"
                 ></el-checkbox>
               </el-checkbox-group>
             </v-container>
             <!--多选必做题数据分析-->
+            <!--多选必做题数据分析——考试数据分析-->
+            <v-container v-if="question.questionScore>0"></v-container>
+            <v-card v-if="question.questionScore>0">
+              <v-row>
+              <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
+              <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
+              <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+              </v-row>
+            </v-card>
+            <!--多选必做题数据分析——常规分析-->
             <v-container></v-container>
             <v-card style="width: 800px;height:550px;">
               <v-card-title style="color:#6A76AB">视图统计</v-card-title>
               <template>
-                  <v-tabs v-model="tab">
+                  <v-tabs v-model="tab[question.questionNo]">
                      <v-tab>选项选择人数小计表</v-tab>
                      <v-tab @click="zhuCharts(question.questionNo+'01',question)">柱状图</v-tab>
                      <v-tab @click="bingCharts(question.questionNo+'02',question)">饼图</v-tab>
                      <v-tab @click="zheCharts(question.questionNo+'03',question)">折线图</v-tab>
                   </v-tabs>
-                  <v-tabs-items v-model="tab">
+                  <v-tabs-items v-model="tab[question.questionNo]">
                     <v-tab-item>
                       <v-card class="tableCard" width="600" elevation="8">
                       <v-data-table
@@ -225,7 +264,7 @@
           <!--多选非必做题-->
           <template v-else-if="question.questionKind===2 && question.requireSig===0">
             <v-card-title>
-              <v-row v-if="questionnaire.kind===4">
+              <v-row v-if="question.questionScore>0">
                 {{question.questionNo}}. {{question.questionContent}}({{question.questionScore}}分)
                 <p class="grey--text">[多选题]</p>
               </v-row>
@@ -244,23 +283,36 @@
                     v-for="(option,n) in options[question.questionNo]"
                     :key="n"
                     :label="option.optionContent"
+                    :class="{ 'blue--text': option.isAnswer ===1 }"
                     @change="checkboxAnswer(option)"
                     style="display:block;zoom:120%"
                 ></el-checkbox>
               </el-checkbox-group>
             </v-container>
+            <!--多选非必做题数据分析——考试数据分析-->
+            <v-container v-if="question.questionScore>0"></v-container>
+            <v-card v-if="question.questionScore>0">
+              <v-row>
+              <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
+              <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
+              <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+              </v-row>
+            </v-card>
+            <!--多选非必做题数据分析——常规分析-->
             <!--多选非必做题数据分析-->
             <v-container></v-container>
             <v-card style="width: 800px;height:550px;">
               <v-card-title style="color:#6A76AB">视图统计</v-card-title>
               <template>
-                  <v-tabs v-model="tab">
+                  <v-tabs v-model="tab[question.questionNo]">
                      <v-tab>选项选择人数小计表</v-tab>
                      <v-tab @click="zhuCharts(question.questionNo+'01',question)">柱状图</v-tab>
                      <v-tab @click="bingCharts(question.questionNo+'02',question)">饼图</v-tab>
                      <v-tab @click="zheCharts(question.questionNo+'03',question)">折线图</v-tab>
                   </v-tabs>
-                  <v-tabs-items v-model="tab">
+                  <v-tabs-items v-model="tab[question.questionNo]">
                     <v-tab-item>
                       <v-card class="tableCard" width="600" elevation="8">
                       <v-data-table
@@ -292,7 +344,11 @@
           <!--填空必做题-->
           <template v-else-if="question.questionKind===3 && question.requireSig===1">
             <v-card-title>
-              <v-row>
+              <v-row v-if="question.questionScore>0">
+                <p class="red--text"> * </p>
+                {{question.questionNo}}. {{question.questionContent}}({{question.questionScore}}分)
+              </v-row>
+              <v-row v-else>
                 <p class="red--text"> * </p>
                 {{question.questionNo}}. {{question.questionContent}}
               </v-row>
@@ -311,6 +367,19 @@
                   @change="requirePlus(question)"
               ></v-text-field>
             </v-container>
+            <!--填空必做题数据分析——考试数据分析-->
+            <v-container v-if="question.questionScore>0"></v-container>
+            <v-card v-if="question.questionScore>0">
+              <v-row>
+              <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>本题答案：{{completionQuestions[question.questionNo].answer}}</v-card-text>
+              <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
+              <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
+              <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+              </v-row>
+            </v-card>
+            <!--填空必做题数据分析——常规分析-->
             <v-container>
               <v-card  elevation="8">
                 <v-card-title style="color:#6A76AB">填空题用户所填列表</v-card-title>
@@ -333,7 +402,10 @@
           </template>
           <!--填空非必做题-->
           <template v-else-if="question.questionKind===3 && question.requireSig===0">
-            <v-card-title>
+            <v-card-title v-if="question.questionScore>0">
+              {{question.questionNo}}. {{question.questionContent}}({{question.questionScore}})
+            </v-card-title>
+            <v-card-title v-else>
               {{question.questionNo}}. {{question.questionContent}}
             </v-card-title>
             <v-card-subtitle>
@@ -347,6 +419,19 @@
                   outlined
               ></v-text-field>
             </v-container>
+            <!--填空非必做题数据分析——考试数据分析-->
+            <v-container v-if="question.questionScore>0"></v-container>
+            <v-card v-if="question.questionScore>0">
+              <v-row>
+              <v-card-title style="color:#FFA726">本题作答情况</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>本题答案：{{completionQuestions[question.questionNo].answer}}</v-card-text>
+              <v-card-text>平均分：{{testDataAverage[question.questionNo]}}</v-card-text>
+              <v-card-text>正确作答人数：{{testDataRightCounts[question.questionNo]}}</v-card-text>
+              <v-card-text>正确率：{{testDataAccuracy[question.questionNo]}}</v-card-text>
+              </v-row>
+            </v-card>
+            <!--填空非必做题数据分析——常规分析-->
             <v-container>
               <v-card  elevation="8">
                 <v-card-title style="color:#6A76AB">填空题用户所填列表</v-card-title>
@@ -395,6 +480,56 @@
                 </v-row>
               </v-container>
             </v-card-actions>
+            <!--评分必做题数据分析-->
+            <v-container></v-container>
+            <v-card style="width: 800px;height:550px;">
+              <v-card-title style="color:#6A76AB">视图统计</v-card-title>
+              <v-card-subtitle style="color:#EF5350">平均分：{{maxScores[question.questionNo].averageScore}}</v-card-subtitle>
+              <template>
+                  <v-tabs v-model="tab[question.questionNo]">
+                     <v-tab>评分分值选择人数小计表</v-tab>
+                     <v-tab @click="toDrawScoreCharts(question.questionNo+'01','bar',question)">柱状图</v-tab>
+                     <v-tab @click="toDrawScoreCharts(question.questionNo+'02','pie',question)">饼图</v-tab>
+                     <v-tab @click="toDrawScoreCharts(question.questionNo+'03','line',question)">折线图</v-tab>
+                  </v-tabs>
+                  <v-tabs-items v-model="tab[question.questionNo]">
+                    <v-tab-item>
+                      <v-card class="scoretableCard" width="600" elevation="8">
+                      <v-data-table
+                           :headers="scoreHeaders"
+                           :items="distributeList[question.questionNo]"
+                           :sort-desc="[false, true]"
+                           multi-sort
+                           items-per-page="5"
+                           class="elevation-1"
+                           
+                           :footer-props="{
+                              disableItemsPerPage: true,
+                              showFirstLastPage: true,
+                              firstIcon: 'mdi-arrow-collapse-left',
+                              lastIcon: 'mdi-arrow-collapse-right',
+                              prevIcon: 'mdi-minus',
+                              nextIcon: 'mdi-plus'
+                              }"
+                           >
+                       </v-data-table>
+                       </v-card>
+                    </v-tab-item>
+                    <v-tab-item>
+                      <v-container></v-container>
+                      <div class="chartsClass" :id="question.questionNo+'01'" style="width: 600px;height:400px;"></div>
+                    </v-tab-item>
+                    <v-tab-item>
+                      <v-container></v-container>
+                      <div class="chartsClass" :id="question.questionNo+'02'" style="width: 600px;height:400px;"></div>
+                    </v-tab-item>
+                    <v-tab-item>
+                      <v-container></v-container>
+                      <div class="chartsClass" :id="question.questionNo+'03'" style="width: 600px;height:400px;"></div>
+                    </v-tab-item>
+                  </v-tabs-items>
+              </template>
+            </v-card>
           </template>
           <!--评分非必做题-->
           <template v-else-if="question.questionKind===4 && question.requireSig===0">
@@ -419,6 +554,56 @@
                 </v-row>
               </v-container>
             </v-card-actions>
+            <!--评分非必做题数据分析-->
+            <v-container></v-container>
+            <v-card style="width: 800px;height:550px;">
+              <v-card-title style="color:#6A76AB">视图统计</v-card-title>
+              <v-card-subtitle style="color:#EF5350">平均分：{{maxScores[question.questionNo].averageScore}}</v-card-subtitle>
+              <template>
+                  <v-tabs v-model="tab[question.questionNo]">
+                     <v-tab>评分分值选择人数小计表</v-tab>
+                     <v-tab @click="drawScoreCharts(question.questionNo+'01','bar',question)">柱状图</v-tab>
+                     <v-tab @click="drawScoreCharts(question.questionNo+'02','pie',question)">饼图</v-tab>
+                     <v-tab @click="drawScoreCharts(question.questionNo+'03','line',question)">折线图</v-tab>
+                  </v-tabs>
+                  <v-tabs-items v-model="tab[question.questionNo]">
+                    <v-tab-item>
+                      <v-card class="scoretableCard" width="600" elevation="8">
+                      <v-data-table
+                           :headers="scoreHeaders"
+                           :items="distributeList[question.questionNo]"
+                           :sort-desc="[false, true]"
+                           multi-sort
+                           items-per-page="5"
+                           class="elevation-1"
+                           
+                           :footer-props="{
+                              disableItemsPerPage: true,
+                              showFirstLastPage: true,
+                              firstIcon: 'mdi-arrow-collapse-left',
+                              lastIcon: 'mdi-arrow-collapse-right',
+                              prevIcon: 'mdi-minus',
+                              nextIcon: 'mdi-plus'
+                              }"
+                           >
+                       </v-data-table>
+                       </v-card>
+                    </v-tab-item>
+                    <v-tab-item>
+                      <v-container></v-container>
+                      <div class="chartsClass" :id="question.questionNo+'01'" style="width: 600px;height:400px;"></div>
+                    </v-tab-item>
+                    <v-tab-item>
+                      <v-container></v-container>
+                      <div class="chartsClass" :id="question.questionNo+'02'" style="width: 600px;height:400px;"></div>
+                    </v-tab-item>
+                    <v-tab-item>
+                      <v-container></v-container>
+                      <div class="chartsClass" :id="question.questionNo+'03'" style="width: 600px;height:400px;"></div>
+                    </v-tab-item>
+                  </v-tabs-items>
+              </template>
+            </v-card>
           </template>
           <!--定位必做题-->
           <template v-else-if="question.questionKind===5 && question.requireSig===1">
@@ -539,7 +724,7 @@ import * as echarts from 'echarts';
 import moment from "moment";
 export default {
   data: () => ({
-    tab:[],
+    tab:{},
     choosenHeaders: [
           {
             text: '选项',
@@ -549,6 +734,15 @@ export default {
           },
           { text: '选项选择人数', value: 'voteVolume' },
         ],
+      scoreHeaders: [
+          {
+            text: '选项',
+            align: 'start',
+            sortable: false,
+            value: 'index',
+          },
+          { text: '选项选择人数', value: 'count' },
+        ],
     htmlTitle: '页面导出PDF文件名',
     questionnaire:{},//问卷信息
     questions:[],//问卷包含问题列表
@@ -557,14 +751,19 @@ export default {
     radioAnswer:{},//单选题所选（用于上交）
     optionAnswer:{},//多选题所选（用于上交）
     checkboxModel:{},//多选题所选（用于ui）
-    userCompletionQuestionList:{},
-    userLocateQuestionList:{},
+    userCompletionQuestionList:{},//填空题数据列表
+    userLocateQuestionList:{},//定位题数据列表
+    distributeList:{},//评分题数据列表
     flag:false,
+    completionQuestions:{},
     text: {},//填空题所填
     textRules:[val => (val || '').length > 0 || '必填题目'],
     score:{},//评分提所选
     scoreRules:[v=> v >1||'必须选择评分'],
     maxScores:{},//评分题实体表
+    testDataAverage:{},
+    testDataRightCounts:{},
+    testDataAccuracy:{},
     require:{},
     requireNum:0,
     user:{
@@ -578,7 +777,7 @@ export default {
     end:"2021-08-28T12:21:40.000+00:00",
   }),
   methods:{
-    //图表实例
+    //图表实例(选择题)
 drawcharts (id,kind,question) {
       // 基于准备好的dom，初始化echarts实例
 var that = this;
@@ -670,6 +869,110 @@ else if(kind=='pie'){
         })
 }
     },
+    //图表实例（评分题）
+    drawScoreCharts (id,kind,question) {
+      // 基于准备好的dom，初始化echarts实例
+var that = this;
+if(kind=='line'||kind == 'bar'){
+     // var tempText = question.questionContent
+     var tempOptionsContent = [];
+     var tempOptionsCount = [];
+     for (var i=0;i<that.distributeList[question.questionNo].length;i++)
+     { 
+         tempOptionsContent.push(that.distributeList[question.questionNo][i].index);
+         tempOptionsCount.push(that.distributeList[question.questionNo][i].count);
+     }
+     var myChart = echarts.init(document.getElementById(id));
+     // 绘制图表
+     myChart.setOption({
+         title: {
+             text: ''
+         },
+         tooltip: {},
+         legend: {
+                     data:['选择人数']
+                 },
+         xAxis: {
+              axisLabel : {//坐标轴刻度标签的相关设置。
+                     interval:0,
+                     // rotate:"45"
+                 },
+              data: tempOptionsContent
+         },
+         yAxis: {},
+         series: [{
+            name: '选择人数',
+            type: kind,
+            data: tempOptionsCount
+        }]
+     });}
+else if(kind=='pie'){
+  var tempOptionsContent2 = [];
+  var myChart = echarts.init(document.getElementById(id));
+  var tempPieData = [];
+  for (var i=0;i<that.distributeList[question.questionNo].length;i++)
+     {   
+         var tempTuple = {value:0,name:0};
+         tempTuple.value = that.distributeList[question.questionNo][i].count;
+         tempTuple.name = that.distributeList[question.questionNo][i].index;
+         tempPieData.push(tempTuple)
+         tempOptionsContent2.push(`${that.distributeList[question.questionNo][i].index}`);
+     }
+     console.log(tempPieData)
+     console.log(tempOptionsContent2)
+        myChart.setOption({
+            //提示框组件,鼠标移动上去显示的提示内容
+            tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c} ({d}%)"//模板变量有 {a}、{b}、{c}、{d}，分别表示系列名，数据名，数据值，百分比。
+          },
+          //图例
+            legend: {
+                //图例垂直排列
+                    orient: 'vertical',
+                    x: 'left',
+                    //data中的名字要与series-data中的列名对应，方可点击操控
+                    data:tempOptionsContent2
+          },
+            series : [
+                {
+                    name: '选项饼图',
+                    type: 'pie',    // 设置图表类型为饼图
+                    radius: '55%',  // 饼图的半径，外半径为可视区尺寸（容器高宽中较小一项）的 55% 长度。
+                    avoidLabelOverlap: false,
+                    //标签
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'inside',
+                            formatter: '{d}%',//模板变量有 {a}、{b}、{c}、{d}，分别表示系列名，数据名，数据值，百分比。{d}数据会根据value值计算百分比
+
+                            textStyle : {                   
+                                 align : 'center',
+                                 baseline : 'middle',
+                                 fontFamily : '微软雅黑',
+                                 fontSize : 15,
+                                 fontWeight : 'bolder'
+                          }
+                         },
+                     },
+
+                    data:tempPieData
+                }
+            ]
+        })
+}
+    },
+    getradiocolor(option) {
+      if(option.isAnswer === 1) return '#42A5F5'
+    },
+    toDrawScoreCharts (id,kind,question){
+      console.log(id)
+      var that = this;
+      setTimeout(function () {
+      that.drawScoreCharts(id,kind,question)
+      },1000);
+    },
     zhuCharts (id,question) {
        console.log(id)
       var that = this;
@@ -712,19 +1015,27 @@ else if(kind=='pie'){
                 }
                 if(question.questionKind===1){
                   this.$set(this.radioModel,question.questionNo,null)
+                  this.$set(this.tab,question.questionNo,[])
                   this.getOptions(question)
                 }else if(question.questionKind===4){
                   this.$set(this.score,question.questionNo,0)
+                  this.$set(this.tab,question.questionNo,[])
+                  this.UserScoreQuestion(question)
                   this.getMaxScore(question)
                 }else if(question.questionKind===2){
                   this.$set(this.checkboxModel,question.questionNo,[])
+                  this.$set(this.tab,question.questionNo,[])
                   this.getOptions(question)
                 }else if(question.questionKind===3){
                   this.$set(this.text,question.questionNo,"")
+                  this.getCompletionQuestion(question)
                   this.UserCompletionQuestion(question)
                 }else if(question.questionKind===5){
                   this.$set(this.location,question.questionNo,"")
                   this.UserLocateQuestion(question)
+                }
+                if(question.questionScore>0){
+                  this.getTestData(question)
                 }
               }
 
@@ -745,6 +1056,42 @@ else if(kind=='pie'){
         console.log(res.data)
         if (res.data.success) {
           this.$set(this.options,question.questionNo,res.data.questionOptionList)
+        }
+      })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    getCompletionQuestion(question){
+      this.$http({
+        method: "get",
+        url: "/showCompletionQuestion",
+        params: {
+          questionContentID:question.questionContentID
+        },
+      }).then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.$set(this.completionQuestions,question.questionNo,res.data.completionQuestion)
+        }
+      })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    getTestData(question){
+      this.$http({
+        method: "get",
+        url: "/getTestData",
+        params: {
+          questionContentID:question.questionContentID
+        },
+      }).then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.$set(this.testDataAverage,question.questionNo,res.data.average);
+          this.$set(this.testDataRightCounts,question.questionNo,res.data.rightCounts);
+          this.$set(this.testDataAccuracy,question.questionNo,res.data.accuracy);
         }
       })
           .catch((err) => {
@@ -781,6 +1128,24 @@ else if(kind=='pie'){
         if (res.data.success) {
           console.log(res.data);
           this.$set(this.userLocateQuestionList,question.questionNo,res.data.userLocateQuestionList)
+        }
+      })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    UserScoreQuestion(question){
+      this.$http({
+        method: "get",
+        url: "/getScoreRecordDistribute",
+        params: {
+          questionContentID:question.questionContentID
+        },
+      }).then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          console.log(res.data);
+          this.$set(this.distributeList,question.questionNo,res.data.distributeList)
         }
       })
           .catch((err) => {
@@ -1160,6 +1525,11 @@ setTimeout(function () {
 <style scoped>
 .tableCard{
   margin-top: 50px;
+  margin-left: 100px;
+  margin-right: 100px;
+}
+.scoretableCard{
+  margin-top:10px;
   margin-left: 100px;
   margin-right: 100px;
 }
