@@ -13,7 +13,8 @@
                                  @click="menuClickHandle(menu)"
                             >
                                 <i :class="menu.icon"></i>
-                                <span>{{ menu.name }}</span>
+                                <span class="homemenuClass">{{ menu.name }}</span>
+                                <v-container></v-container>
                             </div>
                             <div class="avatarposition"><avatar ></avatar></div>
                         </div>
@@ -111,7 +112,7 @@ $menuActiveText: #409eff;
     }
 }
 .menu-view {
-    margin-top: 20px;
+    margin-top: 50px;
     height: 501px;
     background-color: rgba(255, 255, 255, 100);
     padding: 20px;
@@ -200,6 +201,9 @@ $menuActiveText: #409eff;
 }
 .asidePosition{
     margin-top: 0%;
+}
+.homemenuClass{
+    font-size: 18px;
 }
 
 </style>
