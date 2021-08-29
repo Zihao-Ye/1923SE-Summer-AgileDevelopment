@@ -297,19 +297,6 @@
           </v-btn>
         </div> -->
       </v-card>
-      <v-btn
-          absolute
-          class="goback"
-          fab
-          dark
-          small
-          color="primary"
-          :to="{path:'/QuestionnaireManage'}"
-      >
-        <v-icon dark>
-          mdi-close
-        </v-icon>
-      </v-btn>
     </div>
   </div>
 </template>
