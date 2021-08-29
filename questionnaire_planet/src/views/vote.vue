@@ -71,14 +71,12 @@
               max-height="98vh"
               rounded="lg"
             >
-              <div style="width:80%;
-              margin: auto;
-              height:100%
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;">
+              <div style="width:80%;margin: auto;height:100%
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;">
                 
               <!--  -->
               <v-text-field
@@ -843,9 +841,9 @@
         } else{
           this.$http({
           method:"post",
-          url:"/createQuestionnaire",
+          url:"/createVoteQuestionnaire",
           params:{
-            kind:1,
+            kind:2,
             userID:this.userID
           },
         })
@@ -856,6 +854,23 @@
               this.desciption=res.data.recentQuestionnaire.questionnaireNote
               this.endMess=res.data.recentQuestionnaire.endMessage
               this.title=res.data.recentQuestionnaire.title
+              this.$http({
+                  method:"get",
+                  url:"/showQuestionnaireInfo",
+                  params:{
+                    questionnaireID:this.qid
+                  },
+                })
+                  .then((res) => {
+                    if(res.data.success){
+                        let li=res.data.questionList
+                        let j
+                        this.loadPro(0,li)
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err)
+                  })
             }
           })
           .catch((err) => {
@@ -918,37 +933,3 @@
   }
 </script>
 
-<style>
-page {
-		background: #e6f0f9;
-	}
-.bord{
-  border-style:none none groove none
-}
-.chosen {
-  border: solid 1px #3089dc !important;
-}
-.scoll {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 90%;
-  width: 100%;
-}
-.card2 {
-  position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        height:600px;
-        width: 800px;
-}
-.dialog{
-  width:1500px;
-  margin: auto;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-}
-</style>

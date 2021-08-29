@@ -3,7 +3,7 @@
     <div>
       <v-card class="mx-auto" width="1000" elevation="10">
         <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
-        <p class="text-center">{{questionnaire.questionnaireNote}}</p>
+        <p class="text-center" style="width: 800px;padding-left: 150px">{{questionnaire.questionnaireNote}}</p>
         <h3 class="text-center" style="padding-top: 40px">已回收：{{questionnaire.recycleVolume}}份</h3>
         <v-container>
           <v-row>

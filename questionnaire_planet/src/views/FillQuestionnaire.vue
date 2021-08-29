@@ -8,12 +8,12 @@
               dark
       >
         <h2 style="color: #EFEBE9">倒计时</h2>
-        <h2 style="color: #FF9100">{{countDown(end)}}</h2>
+        <h2 style="color: #FF9100">{{countDown(questionnaire.endTime)}}</h2>
       </v-card>
     </template>
   <v-card class="mx-auto" width="1000" elevation="10">
     <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
-    <p class="text-center">{{questionnaire.questionnaireNote}}</p>
+    <p class="text-center"  style="width: 800px;padding-left: 150px">{{questionnaire.questionnaireNote}}</p>
     <!--单选必做题-->
     <v-card
         v-for="(question,i) in questions"
@@ -58,7 +58,7 @@
             <v-radio
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
-                :label="option.optionContent"
+                :label="leftPerson(option)"
                 :value="n"
                 @change="radioAnswer[question.questionNo]=option"
             ></v-radio>
@@ -82,7 +82,7 @@
             <el-checkbox
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
-                :label="option.optionContent"
+                :label="leftPerson(option)"
                 @change="checkboxAnswer(option);requirePlus(question)"
                 style="display:block;zoom:120%"
             ></el-checkbox>
@@ -93,6 +93,7 @@
       <template v-else-if="question.questionKind===2 && question.requireSig===0">
         <v-card-title>
           <v-row>
+            <p>&nbsp&nbsp</p>
             {{question.questionNo}}. {{question.questionContent}}
             <p class="grey--text">[多选题]</p>
           </v-row>
@@ -105,7 +106,7 @@
             <el-checkbox
                 v-for="(option,n) in options[question.questionNo]"
                 :key="n"
-                :label="option.optionContent"
+                :label="leftPerson(option)"
                 @change="checkboxAnswer(option)"
                 style="display:block;zoom:120%"
             ></el-checkbox>
@@ -210,7 +211,7 @@
           </v-row>
         </v-card-title>
         <v-card-subtitle>
-          由于测试机型有限，暂只有Windows平台Edge/火狐浏览器可获取定位（为获取准确定位，请给与浏览器定位权限）
+          （为获取准确定位，请给与浏览器定位权限）
         </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
@@ -234,7 +235,7 @@
           {{question.questionNo}}. {{question.questionContent}}
         </v-card-title>
         <v-card-subtitle>
-          由于测试机型有限，暂只有Windows平台Edge/火狐浏览器可获取定位（为获取准确定位，请给与浏览器定位权限）
+          （为获取准确定位，请给与浏览器定位权限）
         </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
@@ -262,10 +263,9 @@
         v-model="dialog"
         persistent
         max-width="200"
-
     >
       <v-card class="text-center">
-      <h2>请先登录</h2>
+      <h3>请先登录</h3>
       <v-btn text color="primary" :to="{name:'Login'}">
         登录
       </v-btn>
@@ -319,29 +319,34 @@ export default {
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
+              this.requireNum=0
               this.htmlTitle = res.data.questionnaire.title
               this.questionnaire=res.data.questionnaire
               this.questions=res.data.questionList
-              this.requireNum=0
-              for(const question of this.questions){
-                if(question.requireSig===1){
-                  this.requireNum+=1
+                if(res.data.questionnaire.kind===4){
+                  this.getTestOrder(this.questionnaire.questionnaireID)
+                }else {
+                  for(const question of this.questions){
+                    if(question.requireSig===1){
+                      this.requireNum+=1
+                    }
+                    if(question.questionKind===1){
+                      this.$set(this.radioModel,question.questionNo,null)
+                      this.getOptions(question)
+                    }else if(question.questionKind===4){
+                      this.$set(this.score,question.questionNo,0)
+                      this.getMaxScore(question)
+                    }else if(question.questionKind===2){
+                      this.$set(this.checkboxModel,question.questionNo,[])
+                      this.getOptions(question)
+                    }else if(question.questionKind===3){
+                      this.$set(this.text,question.questionNo,"")
+                    }else if(question.questionKind===5){
+                      this.$set(this.location,question.questionNo,"")
+                    }
+                  }
                 }
-                if(question.questionKind===1){
-                  this.$set(this.radioModel,question.questionNo,null)
-                  this.getOptions(question)
-                }else if(question.questionKind===4){
-                  this.$set(this.score,question.questionNo,0)
-                  this.getMaxScore(question)
-                }else if(question.questionKind===2){
-                  this.$set(this.checkboxModel,question.questionNo,[])
-                  this.getOptions(question)
-                }else if(question.questionKind===3){
-                  this.$set(this.text,question.questionNo,"")
-                }else if(question.questionKind===5){
-                  this.$set(this.location,question.questionNo,"")
-                }
-              }
+
 
             }
           })
@@ -425,7 +430,8 @@ export default {
           .then((res) => {
             console.log(res.data)
             if(res.data.success){
-              this.user.userID=res.data.user.userID
+              this.$store.commit('setUserID',res.data.user.userID)
+              this.$store.commit('setLogin')
             }
           })
           .catch((err) => {
@@ -439,8 +445,8 @@ export default {
         params: {
           questionContentID:option.questionContentID,
           questionOptionID:option.questionOptionID,
-          questionnaireID:this.$route.params.id,
-          userID:this.user.userID
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID
         },
       })
           .then((res) => {
@@ -463,8 +469,8 @@ export default {
         url: "/completion",
         params: {
           questionContentID:question.questionContentID,
-          questionnaireID:this.$route.params.id,
-          userID:this.user.userID,
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID,
           completionContent:content
         },
       })
@@ -488,9 +494,57 @@ export default {
         url: "/score",
         params: {
           questionContentID:question.questionContentID,
-          questionnaireID:this.$route.params.id,
-          userID:this.user.userID,
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID,
           score:score
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              this.fillsuccess=true
+            }else {
+              this.fillsuccess=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submitLocate(locate,index){
+      const question=this.questions[index]
+      console.log(question)
+      this.$http({
+        method: "post",
+        url: "/locate",
+        params: {
+          questionContentID:question.questionContentID,
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID,
+          locate:locate
+        },
+      })
+          .then((res) => {
+            console.log("定位题")
+            console.log(res.data)
+            if (res.data.success) {
+              this.fillsuccess=true
+            }else {
+              this.fillsuccess=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    decreaseVolume(option){
+      this.$http({
+        method: "post",
+        url: "/decreaseVolume",
+        params: {
+          questionContentID:option.questionContentID,
+          questionOptionID:option.questionOptionID,
+          userID:this.$store.state.userID
         },
       })
           .then((res) => {
@@ -508,7 +562,8 @@ export default {
     submit(){
       for(const index in this.radioAnswer){
         console.log(this.radioAnswer[index])
-        this.submitChoose(this.radioAnswer[index])
+        let option=this.radioAnswer[index]
+        this.submitChoose(option)
       }
       for(const index in this.optionAnswer){
         console.log(this.optionAnswer[index])
@@ -522,26 +577,41 @@ export default {
         console.log(this.score[index])
         this.submitScore(this.score[index],index-1)
       }
+      for(const index in this.location){
+        console.log(this.location[index])
+        this.submitLocate(this.location[index],index-1)
+      }
       this.timer = setTimeout(() => {
+        this.$store.commit('setRadioAnswer',this.radioAnswer)
+        this.$store.commit('setOptionAnswer',this.optionAnswer)
+        this.$store.commit('setText',this.text)
         //设置延迟执行
         this.$http({
           method: "post",
           url: "/submit",
           params: {
             isSubmit:1,
-            questionnaireID:this.$route.params.id,
-            userID:this.user.userID,
+            questionnaireID:this.questionnaire.questionnaireID,
+            userID:this.$store.state.userID,
           },
         })
             .then((res) => {
               console.log(res.data)
-              this.$router.push(({name:'ThanksNormal'}))
+              if(res.data.success){
+                if(this.questionnaire.kind===1||this.questionnaire.kind===3||this.questionnaire.kind===5){
+                  this.$router.push(({name:'ThanksNormal',params:{id:this.questionnaire.questionnaireID}}))
+                }
+              }else if(res.data.failure){
+                window.alert("名额已满")
+                this.timer=setTimeout(()=>{
+                  this.reload()
+                },1000)
+              }
             })
             .catch((err) => {
               console.log(err);
             });
       }, 1000);
-
     },
     getLocation(id) {
       const self = this
@@ -572,7 +642,7 @@ export default {
           // 定位出错
           console.log('定位失败错误：', data);
           // 调用ip定位
-          self.getLngLatLocation();
+          self.getLngLatLocation(id);
         }
       })
       var GPS = {
@@ -635,7 +705,7 @@ export default {
         }
       };
     },
-    getLngLatLocation() {
+    getLngLatLocation(id) {
       const self=this
       const AMap=window.AMap
       AMap.plugin('AMap.CitySearch', function () {
@@ -650,27 +720,21 @@ export default {
                 // city 指定进行编码查询的城市，支持传入城市名、adcode 和 citycode
                 city: result.adcode
               })
-
+              //self.$set(self.location,id,result.city)
               var lnglat = result.rectangle.split(';')[0].split(',');
               self.centerPointer=lnglat
               geocoder.getAddress(lnglat, function (status, data) {
                 if (status === 'complete' && data.info === 'OK') {
                   // result为对应的地理位置详细信息
                   console.log(data)
+                  let address=data.regeocode.addressComponent.province+data.regeocode.addressComponent.city+data.regeocode.addressComponent.district
+                  self.$set(self.location,id,address)
                 }
               })
             })
           }
         })
       })
-    },
-    leftPerson(option){
-      if(option.leftVolume>0){
-        let left=option.leftVolume-option.voteVolume
-        return option.optionContent+'\xa0\xa0\xa0\xa0\xa0\xa0\xa0'+"(剩余"+left+"个名额)"
-      }else{
-        return option.optionContent
-      }
     },
     toPdf(){
       if(this.$store.state.isPrint) {
@@ -701,11 +765,114 @@ export default {
         //设置延迟执行
         if((this.questionnaire.kind===2||this.questionnaire.kind===3||this.questionnaire.kind===4)&&this.$store.state.login===false){
           this.dialog=true
-        }else{
+        }else if((this.questionnaire.kind===1||this.questionnaire.kind===5)&&this.$store.state.login===false){
           this.getUser()
+          this.dialog=false
+        }else{
           this.dialog=false
         }
       }, 1000);
+    },
+    isFill(){
+      this.$http({
+        method:'get',
+        url:'/haveFinish',
+        params:{
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID
+        }
+      }).then(res=>{
+        console.log(res.data)
+        if(res.data.success){
+          if(res.data.haveFinish===1){
+            this.$router.push({name:'IsFill'})
+          }
+        }
+      })
+    },
+    initWebSocket: function () {
+      // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
+      this.websock = new WebSocket("ws://39.105.38.175:8080/api/websocket/"+this.questionnaire.questionnaireID);
+      this.websock.onopen = this.websocketonopen;
+      this.websock.onerror = this.websocketonerror;
+      this.websock.onmessage = this.websocketonmessage;
+      this.websock.onclose = this.websocketclose;
+    },
+    websocketonopen: function () {
+      console.log("WebSocket连接成功");
+    },
+    websocketonerror: function (e) {
+      console.log("WebSocket连接发生错误");
+    },
+    websocketonmessage: function (e) {
+      console.log(e.data)
+      this.splitMessage(e.data)
+    },
+    websocketclose: function (e) {
+      console.log("connection closed (" + e.code + ")");
+    },
+    splitMessage(message){
+      let messages=message.split('#')
+      for(let index in this.options){
+        let optionList=this.options[index]
+        console.log(optionList)
+        for(let i=0;i<optionList.length;i++){
+          if(optionList[i].questionOptionID===parseInt(messages[0])){
+            console.log(this.options[index][i])
+            this.options[index][i].voteVolume=parseInt(messages[1])
+          }
+        }
+      }
+    },
+    getTestOrder(id){
+      this.$http({
+        method:'post',
+        url:'/randomQuestionNo',
+        params:{
+          questionnaireID:id,
+          userID:this.$store.state.userID
+        }
+      }).then(res=>{
+        console.log(res.data)
+        if(res.data.success){
+          let questions=this.questions
+          for(let i=0;i<questions.length;i++){
+            questions[i].questionNo=res.data.testQuestionRankList[i].showNo
+          }
+          var compare = function (obj1, obj2) {
+            var val1 = obj1.questionNo;
+            var val2 = obj2.questionNo;
+            if (val1 < val2) {
+              return -1;
+            } else if (val1 > val2) {
+              return 1;
+            } else {
+              return 0;
+            }
+          }
+          questions.sort(compare)
+          this.questions=questions
+          for(const question of this.questions){
+            if(question.requireSig===1){
+              this.requireNum+=1
+            }
+            if(question.questionKind===1){
+              this.$set(this.radioModel,question.questionNo,null)
+              this.getOptions(question)
+            }else if(question.questionKind===4){
+              this.$set(this.score,question.questionNo,0)
+              this.getMaxScore(question)
+            }else if(question.questionKind===2){
+              this.$set(this.checkboxModel,question.questionNo,[])
+              this.getOptions(question)
+            }else if(question.questionKind===3){
+              this.$set(this.text,question.questionNo,"")
+            }else if(question.questionKind===5){
+              this.$set(this.location,question.questionNo,"")
+            }
+          }
+        }
+      })
     }
   },
   computed:{
@@ -722,22 +889,44 @@ export default {
             mins = du.get('minutes'),
             ss = du.get('seconds');
         if(hours<=0 && mins<=0 && ss<=0) {
-          return "已超时"
+          return "时间到"
+          this.submit()
         }else {
           return this.PrefixInteger(hours,2) + ':' + this.PrefixInteger(mins,2) + ':' + this.PrefixInteger(ss,2)
         }
       }
-    }
+    },
+    leftPerson(option){
+      return function(option){
+        if(option.leftVolume>0){
+          let left=option.leftVolume-option.voteVolume
+          return option.optionContent+'\xa0\xa0\xa0\xa0\xa0\xa0\xa0'+"(剩余"+left+"个名额)"
+        }else{
+          return option.optionContent
+        }
+      }
+    },
   },
   created() {
-    this.getQuestionnaireID()
-
+      this.getQuestionnaireID()
   },
   mounted() {
+
     setInterval(()=>{
       this.now = moment()
     },1000);
-    this.tologin()
+    this.tologin();
+    this.timer = setTimeout(() => {
+      if(this.questionnaire.isVisitable===0){
+        this.$router.push({name:'TurnedOff'})
+      }
+      if(this.$store.state.login){
+        this.isFill()
+      }
+      if(this.questionnaire.kind===3){
+        this.initWebSocket()
+      }
+    }, 1000);
   }
 }
 </script>

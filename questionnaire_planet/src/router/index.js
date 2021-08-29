@@ -12,6 +12,12 @@ import FillQuestionnaire from "../views/FillQuestionnaire";
 import ThanksNormal from "../views/ThanksNormal";
 import NormalAnalyse from "../views/NormalAnalyse";
 import TurnedOff from "../views/TurnedOff";
+import exam from "../views/exam";
+import sign from "../views/sign";
+import covid from "../views/covid";
+import vote from "../views/vote";
+import create from "../views/create";
+import IsFill from "../views/IsFill";
 
 
 import star from "../views/Star";
@@ -97,6 +103,36 @@ const routes = [
     name: 'star',
     component: star,
   },
+  {
+    path: '/exam',
+    name: 'exam',
+    component: exam,
+  },
+  {
+    path: '/sign',
+    name: 'sign',
+    component: sign,
+  },
+  {
+    path: '/covid',
+    name: 'covid',
+    component: covid,
+  },
+  {
+    path: '/vote',
+    name: 'vote',
+    component: vote,
+  },
+  {
+    path: '/create',
+    name: 'create',
+    component: create,
+  },
+  {
+    path: '/isFill',
+    name: 'IsFill',
+    component: IsFill,
+  }
 ]
 
 const router = new VueRouter({
