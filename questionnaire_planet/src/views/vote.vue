@@ -44,17 +44,13 @@
                   <i class="el-icon-edit-outline"></i>  添加填空题
                 </v-btn>
                 </v-list-item>
-                <v-list-item>
-                <v-btn text color="#2196F3" @click="addProblem(4)">
-                  <i class="el-icon-star-off"></i>  添加评分题
-                </v-btn>
-                </v-list-item>
 
                 <v-divider class="my-2"></v-divider>
 
+                
                 <v-list-item>
                 <v-btn color="#2196F3" @click="save">
-                  <i class="el-icon-download"></i>  保存
+                  <i class="el-icon-back"></i>  保存并返回
                 </v-btn>
                 </v-list-item>
               </v-list>
@@ -123,22 +119,27 @@
                         {{problems[index].desciption}}
                         </br>
                         <div v-if="problems[index].type===1">
-                            <v-radio-group>
+                           <v-row v-for="(it,i) in problems[index].options" :key="i">
+                            <v-col>
                             <v-radio
-                                v-for="(it,i) in problems[index].options"
                                 :key="i"
                                 :label="problems[index].options[i].content"
                                 readonly
                             ></v-radio>
-                            </v-radio-group>
+                            </v-col>
+                          </v-row>
                         </div>
                         <div v-if="problems[index].type===2">
+                          <v-row v-for="(it,i) in problems[index].options" :key="i">
+                            <v-col>
                                   <el-checkbox
                                       style="display:block;zoom:120%"
-                                      v-for="(it,i) in problems[index].options"
                                       :key="i"
                                       :label="problems[index].options[i].content"
+                                      readonly
                                   ></el-checkbox>
+                            </v-col>
+                          </v-row>
                         </div>
                         <div v-if="problems[index].type===3">
                             <v-text-field
@@ -215,6 +216,7 @@
         <v-card
         v-if="reveal==1 || reveal==2"
         style="overflow-y:scroll;"
+        flat
         >
             <div style="font-weight:900;text-align: center;" v-if="reveal==1">单选题</div>
             <div style="font-weight:900;text-align: center;" v-if="reveal==2">多选题</div>
@@ -277,6 +279,7 @@
       <el-dialog :visible.sync="fill" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==3"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==3">填空题</div>
             <v-text-field
@@ -303,6 +306,7 @@
       <el-dialog :visible.sync="rate" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==4"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==4">评分题</div>
             <v-text-field
@@ -707,6 +711,9 @@
           this.end="0000-00-00 00:00:00"
         }
       },
+      back() {
+        window.location.href="/QuestionnaireManage"
+      },
       loadPro(j,li){
         if(j==li.length){
           return
@@ -904,7 +911,10 @@
             if (res.data.success) {
               this.$message.success("保存成功！");
               let i
-        for(i=0;i<this.problems.length;i++){
+              if(this.problems.length==0){
+                window.location.href="/QuestionnaireManage"
+              }else{
+                for(i=0;i<this.problems.length;i++){
           this.$http({
           method: "post",
           url: "/rankQuestion",
@@ -916,12 +926,15 @@
           .then((res) => {
             
             if (res.data.success) {
+        window.location.href="/QuestionnaireManage"
             }
           })
           .catch((err) => {
             console.log(err);
           });
         }
+              }
+        
             }
           })
           .catch((err) => {

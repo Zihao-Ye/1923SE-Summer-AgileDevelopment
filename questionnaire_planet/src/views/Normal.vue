@@ -52,9 +52,10 @@
 
                 <v-divider class="my-2"></v-divider>
 
+                
                 <v-list-item>
                 <v-btn color="#2196F3" @click="save">
-                  <i class="el-icon-download"></i>  保存
+                  <i class="el-icon-back"></i>  保存并返回
                 </v-btn>
                 </v-list-item>
               </v-list>
@@ -216,6 +217,7 @@
       <el-dialog :visible.sync="choose" :show-close="false" class="dialog">
         <v-card
         v-if="reveal==1 || reveal==2"
+        flat
         style="overflow-y:scroll;"
         >
             <div style="font-weight:900;text-align: center;" v-if="reveal==1">单选题</div>
@@ -279,6 +281,7 @@
       <el-dialog :visible.sync="fill" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==3"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==3">填空题</div>
             <v-text-field
@@ -305,6 +308,7 @@
       <el-dialog :visible.sync="rate" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==4"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==4">评分题</div>
             <v-text-field
@@ -695,6 +699,9 @@
               console.log(err);
             });
       },
+      back() {
+        window.location.href="/QuestionnaireManage"
+      },
       endChange() {
         if(this.haveEnd){
           let date=new Date()
@@ -889,7 +896,10 @@
             if (res.data.success) {
               this.$message.success("保存成功！");
               let i
-        for(i=0;i<this.problems.length;i++){
+              if(this.problems.length==0){
+                window.location.href="/QuestionnaireManage"
+              }else{
+                for(i=0;i<this.problems.length;i++){
           this.$http({
           method: "post",
           url: "/rankQuestion",
@@ -901,12 +911,16 @@
           .then((res) => {
             
             if (res.data.success) {
+              console.log(1)
+        window.location.href="/QuestionnaireManage"
             }
           })
           .catch((err) => {
             console.log(err);
           });
         }
+              }
+        
             }
           })
           .catch((err) => {

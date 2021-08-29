@@ -126,7 +126,11 @@
                         停止
                         <i class="el-icon-video-pause"></i>
                     </v-btn>
-                    <v-btn v-if="!item.havePublish" text color="#00796B" :to="{path:`/normal/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
+                    <v-btn v-if="!item.havePublish&&item.kind==1" text color="#00796B" :to="{path:`/normal/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
+                    <v-btn v-if="!item.havePublish&&item.kind==2" text color="#00796B" :to="{path:`/vote/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
+                    <v-btn v-if="!item.havePublish&&item.kind==3" text color="#00796B" :to="{path:`/sign/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
+                    <v-btn v-if="!item.havePublish&&item.kind==4" text color="#00796B" :to="{path:`/exam/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
+                    <v-btn v-if="!item.havePublish&&item.kind==5" text color="#00796B" :to="{path:`/covid/${item.encryptQuestionnaireID}`}">编辑<i class="el-icon-edit"></i></v-btn>
                     <v-btn @click="printQuestionnaire(item.encryptQuestionnaireID)" color="#546E7A" text >
                            导出                               
                            <i class="el-icon-upload"></i>
