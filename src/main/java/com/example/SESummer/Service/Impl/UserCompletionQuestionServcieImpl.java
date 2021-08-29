@@ -28,8 +28,8 @@ public class UserCompletionQuestionServcieImpl implements UserCompletionQuestion
 
     @Override
     //修改用户填空题答题记录
-    public void updateCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID,String questionContent){
-        userCompletionQuestionDao.updateCompletionRecord(userID,questionnaireID,questionContentID,questionContent);
+    public void updateCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID,String completionContent){
+        userCompletionQuestionDao.updateCompletionRecord(userID,questionnaireID,questionContentID,completionContent);
     }
 
     @Override

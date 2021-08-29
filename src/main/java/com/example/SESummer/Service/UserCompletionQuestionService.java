@@ -13,7 +13,7 @@ public interface UserCompletionQuestionService {
     void addCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID, String completionContent);
 
     //修改用户填空题答题记录
-    void updateCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID,String questionContent);
+    void updateCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID,String completionContent);
 
     //判断填空题答案是否正确
     CompletionQuestion judgeCompletionScore(Integer questionContentID, String answer);
