@@ -197,11 +197,15 @@ public class UserMessageStoreController {
                 List<UserChooseQuestion> userChooseQuestionList=userChooseQuestionService.getAllChooseRecordOfQuestionnaireByUserIDAndQuestionnaireID(userID,questionnaireID);
                 //找到所有有限额的选项
                 List<QuestionOption> questionOptionList = new ArrayList<>();
+                List<QuestionOption> otherQuestionOptionList=new ArrayList<>();
                 for(UserChooseQuestion userChooseQuestion:userChooseQuestionList){
                     Integer questionOptionID=userChooseQuestion.getQuestionOptionID();
                     QuestionOption questionOption=questionnaireService.getQuestionOptionByQuestionOptionID(questionOptionID);
                     if(questionOption.getLeftVolume()>0){
                         questionOptionList.add(questionOption);
+                    }
+                    else{
+                        otherQuestionOptionList.add(questionOption);
                     }
                 }
                 //循环判断是否已经满了
@@ -226,6 +230,9 @@ public class UserMessageStoreController {
                         Integer optionID = questionOption.getQuestionOptionID();
                         questionDataService.addVoteVolume(questionOption.getQuestionOptionID());
                         webSocketServer.sendAllMessage(optionID+"#"+volume);
+                    }
+                    for(QuestionOption questionOption:otherQuestionOptionList){
+                        questionDataService.addVoteVolume(questionOption.getQuestionOptionID());
                     }
                     //找到所有评分题
                     List<QuestionContent> questionContentList=questionnaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
