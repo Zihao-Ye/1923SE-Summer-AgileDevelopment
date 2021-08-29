@@ -102,28 +102,34 @@
                 
               <draggable v-model="problems"  chosenClass="chosen" forceFallback="false" animation="400" filter=".nodrag" @start="onStart" @end="onEnd">
                 <transition-group>
-                    <div v-for="(item,index) in problems" :key="item.no">
-                    <div class="bord">
+                    <v-row v-for="(item,index) in problems" :key="item.no">
+                    <v-col>
+                    <v-card class="questionCardClass" elevation="6">
+                    <div >
                         <div style="font-weight:900">
                         <div v-if="item.must" style="color:red;display:inline">
                             *
                         </div>
+                        <v-card-title>
                         问题{{index+1}}--{{problems[index].name}}
-                        <v-row>
-                          <v-col>
-                            <div v-if="item.type==1">(单选题)</div>
-                            <div v-else-if="item.type==2">(多选题)</div>
-                            <div v-else-if="item.type==3">(填空题)</div>
-                            <div v-else-if="item.type==4">(评分题)</div>
-                          </v-col>
-                          <v-col v-if="problems[index].haveAnswer">
+                        </v-card-title>
+                        <v-row><v-col>
+                        <v-card-subtitle v-if="item.type==1">(单选题)</v-card-subtitle>
+                        <v-card-subtitle v-else-if="item.type==2">(多选题)</v-card-subtitle>
+                        <v-card-subtitle v-else-if="item.type==3">(填空题)</v-card-subtitle>
+                        <v-card-subtitle v-else-if="item.type==4">(评分题)</v-card-subtitle>
+                        </v-col>
+                        <v-col>
+                        <v-col v-if="problems[index].haveAnswer">
                             分值:{{item.score}}
                           </v-col>
+                        </v-col>
                         </v-row>
-                        
                         </div>
+                        <v-card-subtitle>
                         {{problems[index].desciption}}
-                        </br>
+                        </v-card-subtitle>
+                        <v-card-text>
                         <div v-if="problems[index].type===1">
                           <v-row v-for="(it,i) in problems[index].options" :key="i">
                             <v-col>
@@ -195,25 +201,24 @@
                           </v-row>
                             
                         </div>
+                        </v-card-text>
+                        <v-divider></v-divider>
                     <v-row no-gutters>
                       <v-col md="1">
-                        <v-btn  color="#FFCBA4" class="nodrag"  @click="alterProblem(index)">
+                        <v-btn text color="#00897B" class="nodrag"  @click="alterProblem(index)">
                             编辑问题
                         </v-btn>    
                       </v-col>
                       <v-col md="1" offset-md="1">
-                        <v-btn color="#FAAFBE" class="nodrag"  @click="deleteProblem(index)">
+                        <v-btn text color="#039BE5" class="nodrag"  @click="deleteProblem(index)">
                             删除问题
                         </v-btn>    
                       </v-col>
                     </v-row>  
-                    </br>
-                    
-                    
                     </div>
-                    </br>
-                    </div>
-                    
+                    </v-card>
+                    </v-col>
+                    </v-row>
                 </transition-group>
               </draggable> 
               <v-text-field
@@ -508,7 +513,7 @@
           params:{
             questionContent:this.problems[this.alter].name,
             questionContentID:this.problems[this.alter].id,
-            questionNote:this.problems[this.alter].no,
+            questionNote:this.problems[this.alter].desciption,
             questionScore:this.problems[this.alter].score,
             requireSig:m
           },
