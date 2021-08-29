@@ -37,6 +37,6 @@
     <select id="getRightCounts" resultType="Integer">
         select count(*)
         from test_score_record
-        where score>0
+        where score>0 and question_contentid=#{questionContentID}
     </select>
 </mapper>
