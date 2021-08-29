@@ -451,7 +451,7 @@ public class UserMessageStoreController {
             Double average=questionnaireSubmitService.getQuestionAverage(questionContentID);
             Integer total=questionnaireSubmitService.getQuestionTotal(questionContentID);
             Integer rightCounts=questionnaireSubmitService.getRightCounts(questionContentID);
-            Double accuracy= (double) (rightCounts / total);
+            double accuracy= (double) rightCounts / total;
             map.put("success",true);
             map.put("average",average);
             map.put("rightCounts",rightCounts);
