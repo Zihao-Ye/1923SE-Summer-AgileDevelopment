@@ -12,6 +12,7 @@ import FillQuestionnaire from "../views/FillQuestionnaire";
 import ThanksNormal from "../views/ThanksNormal";
 import NormalAnalyse from "../views/NormalAnalyse";
 import TurnedOff from "../views/TurnedOff";
+import IsFill from "../views/IsFill";
 
 
 import star from "../views/Star";
@@ -97,6 +98,11 @@ const routes = [
     name: 'star',
     component: star,
   },
+  {
+    path: '/isFill',
+    name: 'IsFill',
+    component: IsFill,
+  }
 ]
 
 const router = new VueRouter({

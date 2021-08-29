@@ -262,10 +262,9 @@
         v-model="dialog"
         persistent
         max-width="200"
-
     >
       <v-card class="text-center">
-      <h2>请先登录</h2>
+      <h3>请先登录</h3>
       <v-btn text color="primary" :to="{name:'Login'}">
         登录
       </v-btn>
@@ -342,7 +341,6 @@ export default {
                   this.$set(this.location,question.questionNo,"")
                 }
               }
-
             }
           })
           .catch((err) => {
@@ -425,7 +423,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             if(res.data.success){
-              this.user.userID=res.data.user.userID
+              this.$store.commit('setUserID',res.data.user.userID)
             }
           })
           .catch((err) => {
@@ -439,8 +437,8 @@ export default {
         params: {
           questionContentID:option.questionContentID,
           questionOptionID:option.questionOptionID,
-          questionnaireID:this.$route.params.id,
-          userID:this.user.userID
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID
         },
       })
           .then((res) => {
@@ -463,8 +461,8 @@ export default {
         url: "/completion",
         params: {
           questionContentID:question.questionContentID,
-          questionnaireID:this.$route.params.id,
-          userID:this.user.userID,
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID,
           completionContent:content
         },
       })
@@ -488,9 +486,57 @@ export default {
         url: "/score",
         params: {
           questionContentID:question.questionContentID,
-          questionnaireID:this.$route.params.id,
-          userID:this.user.userID,
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID,
           score:score
+        },
+      })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data.success) {
+              this.fillsuccess=true
+            }else {
+              this.fillsuccess=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    submitLocate(locate,index){
+      const question=this.questions[index]
+      console.log(question)
+      this.$http({
+        method: "post",
+        url: "/locate",
+        params: {
+          questionContentID:question.questionContentID,
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID,
+          locate:locate
+        },
+      })
+          .then((res) => {
+            console.log("定位题")
+            console.log(res.data)
+            if (res.data.success) {
+              this.fillsuccess=true
+            }else {
+              this.fillsuccess=false
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+    decreaseVolume(option){
+      this.$http({
+        method: "post",
+        url: "/decreaseVolume",
+        params: {
+          questionContentID:option.questionContentID,
+          questionOptionID:option.questionOptionID,
+          userID:this.$store.state.userID
         },
       })
           .then((res) => {
@@ -508,7 +554,11 @@ export default {
     submit(){
       for(const index in this.radioAnswer){
         console.log(this.radioAnswer[index])
-        this.submitChoose(this.radioAnswer[index])
+        let option=this.radioAnswer[index]
+        if(option.leftVolume>0){
+          this.decreaseVolume(option)
+        }
+        this.submitChoose(option)
       }
       for(const index in this.optionAnswer){
         console.log(this.optionAnswer[index])
@@ -522,6 +572,10 @@ export default {
         console.log(this.score[index])
         this.submitScore(this.score[index],index-1)
       }
+      for(const index in this.location){
+        console.log(this.location[index])
+        this.submitLocate(this.location[index],index-1)
+      }
       this.timer = setTimeout(() => {
         //设置延迟执行
         this.$http({
@@ -529,19 +583,24 @@ export default {
           url: "/submit",
           params: {
             isSubmit:1,
-            questionnaireID:this.$route.params.id,
+            questionnaireID:this.questionnaire.questionnaireID,
             userID:this.user.userID,
           },
         })
             .then((res) => {
               console.log(res.data)
-              this.$router.push(({name:'ThanksNormal'}))
+              if(res.data.success){
+                if(this.questionnaire.kind===1){
+                  this.$router.push(({name:'ThanksNormal',params:{id:this.questionnaire.questionnaireID}}))
+                }
+              }else if(res.data.failure){
+                this.reload()
+              }
             })
             .catch((err) => {
               console.log(err);
             });
       }, 1000);
-
     },
     getLocation(id) {
       const self = this
@@ -664,14 +723,7 @@ export default {
         })
       })
     },
-    leftPerson(option){
-      if(option.leftVolume>0){
-        let left=option.leftVolume-option.voteVolume
-        return option.optionContent+'\xa0\xa0\xa0\xa0\xa0\xa0\xa0'+"(剩余"+left+"个名额)"
-      }else{
-        return option.optionContent
-      }
-    },
+
     toPdf(){
       if(this.$store.state.isPrint) {
         this.msgSuccess(this.$store.state.isPrint);
@@ -701,11 +753,63 @@ export default {
         //设置延迟执行
         if((this.questionnaire.kind===2||this.questionnaire.kind===3||this.questionnaire.kind===4)&&this.$store.state.login===false){
           this.dialog=true
-        }else{
+        }else if((this.questionnaire.kind===1||this.questionnaire.kind===5)&&this.$store.state.login===false){
           this.getUser()
+          this.dialog=false
+        }else{
           this.dialog=false
         }
       }, 1000);
+    },
+    isFill(){
+      this.$http({
+        method:'get',
+        url:'/haveFinish',
+        params:{
+          questionnaireID:this.questionnaire.questionnaireID,
+          userID:this.$store.state.userID
+        }
+      }).then(res=>{
+        console.log(res.data)
+        if(res.data.success){
+          if(res.data.haveFinish===1){
+            this.$router.push({name:'IsFill'})
+          }
+        }
+      })
+    },
+    initWebSocket: function () {
+      // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
+      this.websock = new WebSocket("ws://39.105.38.175:8080/api/websocket/"+this.questionnaire.questionnaireID);
+      this.websock.onopen = this.websocketonopen;
+      this.websock.onerror = this.websocketonerror;
+      this.websock.onmessage = this.websocketonmessage;
+      this.websock.onclose = this.websocketclose;
+    },
+    websocketonopen: function () {
+      console.log("WebSocket连接成功");
+    },
+    websocketonerror: function (e) {
+      console.log("WebSocket连接发生错误");
+    },
+    websocketonmessage: function (e) {
+      console.log(e.data)
+      this.splitMessage(e.data)
+    },
+    websocketclose: function (e) {
+      console.log("connection closed (" + e.code + ")");
+    },
+    splitMessage(message){
+      let messages=message.split('#')
+      for( let index in this.options){
+        let optionList=this.options[index]
+        for(let i=0;i<optionList.length;i++){
+          if(optionList[i].questionOptionID===messages[0]){
+            this.options.index[i].voteVolume=messages[1]
+          }
+        }
+      }
+
     }
   },
   computed:{
@@ -727,17 +831,32 @@ export default {
           return this.PrefixInteger(hours,2) + ':' + this.PrefixInteger(mins,2) + ':' + this.PrefixInteger(ss,2)
         }
       }
-    }
+    },
+    leftPerson(option){
+      if(option.leftVolume>0){
+        let left=option.leftVolume-option.voteVolume
+        return option.optionContent+'\xa0\xa0\xa0\xa0\xa0\xa0\xa0'+"(剩余"+left+"个名额)"
+      }else{
+        return option.optionContent
+      }
+    },
   },
   created() {
     this.getQuestionnaireID()
-
   },
   mounted() {
     setInterval(()=>{
       this.now = moment()
     },1000);
-    this.tologin()
+    this.tologin();
+    this.timer = setTimeout(() => {
+      if(this.$store.state.login){
+        this.isFill()
+      }
+      if(this.questionnaire.kind===3){
+        this.initWebSocket()
+      }
+    }, 1000);
   }
 }
 </script>
