@@ -463,7 +463,7 @@ public class QuestionnaireController {
             questionOption8.setOptionContent("是");
             questionOption8.setIsAnswer(0);
             questionOption8.setLeftVolume(0);
-            questionnaireService.addDefaultOption(questionOption6);
+            questionnaireService.addDefaultOption(questionOption8);
             //选项2
             QuestionOption questionOption9=new QuestionOption();
             questionOption9.setOptionNo(2);
