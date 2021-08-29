@@ -421,9 +421,10 @@ public class UserMessageStoreController {
         try {
             ScoreQuestion scoreQuestion=questionnaireService.getScoreQuestionByQuestionContentID(questionContentID);
             Integer score=scoreQuestion.getMaxScore();
-            List<Integer> distributeList=new ArrayList<>();
+            List<ScoreData> distributeList=new ArrayList<>();
             for(int i=1;i<=score;i++){
-                distributeList.add(userScoreQuestionService.sumOfScore(questionContentID,i));
+                ScoreData scoreData=new ScoreData(i,userScoreQuestionService.sumOfScore(questionContentID,i));
+                distributeList.add(scoreData);
             }
             map.put("success",true);
             map.put("distributeList",distributeList);

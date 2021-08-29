@@ -422,7 +422,7 @@ public class QuestionnaireController {
             questionContent4.setRequireSig(1);
             questionContent4.setQuestionNote("请您如实填写途径是否途径高风险地区");
             questionContent4.setQuestionScore(0);
-            questionnaireService.addDefaultQuestion(questionContent3);
+            questionnaireService.addDefaultQuestion(questionContent4);
             QuestionContent recentQuestionContent2=questionnaireService.getRecentQuestionByQuestionnaireID(QuestionnaireID);
             Integer questionContentID2=recentQuestionContent2.getQuestionContentID();
             //选项1
@@ -452,7 +452,7 @@ public class QuestionnaireController {
             questionContent5.setRequireSig(1);
             questionContent5.setQuestionNote("是否有发热、咳嗽、呕吐、乏力等症状，请如实填写");
             questionContent5.setQuestionScore(0);
-            questionnaireService.addDefaultQuestion(questionContent3);
+            questionnaireService.addDefaultQuestion(questionContent5);
             QuestionContent recentQuestionContent3=questionnaireService.getRecentQuestionByQuestionnaireID(QuestionnaireID);
             Integer questionContentID3=recentQuestionContent3.getQuestionContentID();
             //选项1
