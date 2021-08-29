@@ -49,6 +49,11 @@
                   <i class="el-icon-star-off"></i>  添加评分题
                 </v-btn>
                 </v-list-item>
+                <v-list-item>
+                <v-btn text color="#2196F3" @click="addProblem(5)">
+                  <i class="el-icon-location"></i>  添加定位题
+                </v-btn>
+                </v-list-item>
 
                 <v-divider class="my-2"></v-divider>
 
@@ -71,14 +76,12 @@
               max-height="98vh"
               rounded="lg"
             >
-              <div style="width:80%;
-              margin: auto;
-              height:100%
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;">
+              <div style="width:80%;margin: auto;height:100%
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;">
                 
               <!--  -->
               <v-text-field
@@ -105,6 +108,13 @@
                       start-placeholder="开始日期"
                       :default-time="['12:00:00']"
                     ></el-date-picker>
+   <!--<el-date-picker
+      v-model="endT"
+      type="date"
+      placeholder="选择日期"
+      format="yyyy 年 MM 月 dd 日"
+      value-format="yyyy-MM-dd">
+    </el-date-picker>-->
                   </v-col>
                 </v-row>
                 
@@ -121,6 +131,7 @@
                         <div v-else-if="item.type==2">(多选题)</div>
                         <div v-else-if="item.type==3">(填空题)</div>
                         <div v-else-if="item.type==4">(评分题)</div>
+                        <div v-else-if="item.type==5">(定位题)</div>
                         </div>
                         {{problems[index].desciption}}
                         </br>
@@ -150,27 +161,9 @@
                             ></v-text-field>
                         </div>
                         <div v-if="problems[index].type===4">
-                        <!--
-                            <v-col cols="12">
-                            <v-slider
-                                class="nodrag"
-                                :max="problems[index].max"
-                                :thumb-size="24"
-                                thumb-label="always"
-                            ></v-slider>
-                            </v-col>
-                            <star :n="problems[index].max"></star>-->
                           <v-row no-gutters style="align-items: center;">
                             <v-col>{{problems[index].lowDesc}}</v-col>
                             <v-col cols="6">
-                              <!--
-                             <v-rating
-                              v-model="rating"
-                              background-color="indigo lighten-3"
-                              color="indigo"
-                              large
-                              :length=problems[index].max
-                            ></v-rating>-->
                             <el-rate
                               class="nodrag"
                               :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
@@ -352,6 +345,32 @@
         </v-card>
         </el-dialog>   
 
+        <el-dialog :visible.sync="position" :show-close="false" class="dialog">
+        <v-card
+            v-if="reveal==5"
+            >
+            <div style="font-weight:900;text-align: center;" v-if="reveal==5">填空题</div>
+            <v-text-field
+                v-model="problems[alter].name"
+                label="问题"
+                required
+            ></v-text-field>
+            <v-textarea
+                solo
+                name="input-7-4"
+                label="问题描述"
+                v-model="problems[alter].desciption"
+            ></v-textarea>
+            <v-switch v-model="problems[alter].must" class="ma-2" label="必做题"></v-switch>
+            <v-card-actions class="pt-0">
+                <v-btn
+                @click="finishProblem">
+                完成问题
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+      </el-dialog>   
+
       </v-container>
     </v-main>
   </v-app>
@@ -389,7 +408,7 @@
         'Updates',
       ],
        
-
+      position:false,
       choose:false,
       fill:false,
       rate:false,
@@ -491,6 +510,9 @@
           case 4:
             this.rate=true
             break;
+          case 4:
+            this.position=true
+            break;
           default:
             break;
         }
@@ -574,6 +596,23 @@
                     },
                   })
                     .then((res) => {
+                      if (res.data.success) {
+                        this.$http({
+                          method: "get",
+                          url: "/showQuestionOptions",
+                          params: {
+                            questionContentID:this.problems[this.alter].id
+                          },
+                        })
+                          .then((res) => {
+                            console.log(res.data)
+                            if (res.data.success) {
+                            }
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                          });
+                      }
                     })
                     .catch((err) => {
                       console.log(err);
@@ -585,6 +624,7 @@
               this.choose=false
               this.fill=false
               this.rate=false
+              this.position=false
             }
           })
           .catch((err) => {
@@ -611,8 +651,10 @@
             },
           })
             .then((res) => {
+              console.log(res.data)
               if (res.data.success) {
                 op.id=res.data.recentQuestionOption.questionOptionID
+                console.log(op)
                 this.$set(this.problems[this.alter].options,this.problems[this.alter].options.length,op)
                 let x=document.querySelector(".dialog")
                 setTimeout(function() {x.scrollTo(0,10000); }, 100)
@@ -726,7 +768,9 @@
             highDesc:"",
           }
           this.$set(this.problems,j,p)
+          console.log(j)
           if(this.problems[j].type==1||this.problems[j].type==2){
+            console.log(j)
             this.$http({
                 method: "get",
                 url: "/showQuestionOptions",
@@ -735,6 +779,7 @@
                 },
               })
                 .then((res) => {
+                  console.log(res.data)
                   if (res.data.success) {
                     let opli=res.data.questionOptionList
                     let k
@@ -746,6 +791,7 @@
                         isAnswer:opli[k].isAnswer,
                         optionKind:opli[k].optionKind,
                       }
+                      console.log(j)
                       this.$set(this.problems[j].options,k,op)
                     }
                   }
@@ -763,9 +809,6 @@
             },
           })
             .then((res) => {
-              console.log(res.data)
-              console.log(j)
-              console.log(this.problems[j])
               if (res.data.success) {
                 let score=res.data.scoreQuestion
                 this.problems[j].scoreId=score.scoreQuestionID
@@ -802,6 +845,7 @@
                   },
                 })
                   .then((res) => {
+                    console.log(res.data)
                     if(res.data.success){
                         let qn=res.data.questionnaire
                         this.qid=qn.questionnaireID
@@ -809,6 +853,7 @@
                         this.isPrivate=qn.isPrivate
                         this.desciption=qn.questionnaireNote
                         let timestamp=qn.endTime
+                        console.log("t")
                         console.log(timestamp)
                         let date
                         if(timestamp!=null){
@@ -823,9 +868,9 @@
                         this.end= Y + M + D + h + m+s;
                         } 
                         
+                        console.log(this.end)
                         this.endMess=qn.endMessage
                         let li=res.data.questionList
-                        console.log(li)
                         let j
                         this.loadPro(0,li)
                       
@@ -843,9 +888,9 @@
         } else{
           this.$http({
           method:"post",
-          url:"/createQuestionnaire",
+          url:"/createCovidQuestionnaire",
           params:{
-            kind:1,
+            kind:5,
             userID:this.userID
           },
         })
@@ -856,6 +901,23 @@
               this.desciption=res.data.recentQuestionnaire.questionnaireNote
               this.endMess=res.data.recentQuestionnaire.endMessage
               this.title=res.data.recentQuestionnaire.title
+              this.$http({
+                  method:"get",
+                  url:"/showQuestionnaireInfo",
+                  params:{
+                    questionnaireID:this.qid
+                  },
+                })
+                  .then((res) => {
+                    if(res.data.success){
+                        let li=res.data.questionList
+                        let j
+                        this.loadPro(0,li)
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err)
+                  })
             }
           })
           .catch((err) => {
@@ -887,7 +949,6 @@
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              this.$message.success("保存成功！");
               let i
         for(i=0;i<this.problems.length;i++){
           this.$http({
@@ -917,38 +978,3 @@
     }
   }
 </script>
-
-<style>
-page {
-		background: #e6f0f9;
-	}
-.bord{
-  border-style:none none groove none
-}
-.chosen {
-  border: solid 1px #3089dc !important;
-}
-.scoll {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 90%;
-  width: 100%;
-}
-.card2 {
-  position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        height:600px;
-        width: 800px;
-}
-.dialog{
-  width:1500px;
-  margin: auto;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-}
-</style>
