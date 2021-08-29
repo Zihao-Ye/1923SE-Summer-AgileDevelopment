@@ -1,0 +1,44 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "7450646",
+      "name": "问卷",
+      "font_class": "wenjuan",
+      "unicode": "e666",
+      "unicode_decimal": 58982
+    },
+    {
+      "icon_id": "15625575",
+      "name": "报名",
+      "font_class": "baomingbeifen2",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "18438532",
+      "name": "疫情管理",
+      "font_class": "yiqingguanli",
+      "unicode": "e6b2",
+      "unicode_decimal": 59058
+    },
+    {
+      "icon_id": "20997755",
+      "name": "投票管理",
+      "font_class": "menu_tpgl",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "21088705",
+      "name": "考试",
+      "font_class": "kaoshi",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    }
+  ]
+}

@@ -54,7 +54,7 @@
 
                 <v-list-item>
                 <v-btn color="#2196F3" @click="save">
-                  <i class="el-icon-download"></i>  保存
+                    保存
                 </v-btn>
                 </v-list-item>
               </v-list>
@@ -71,14 +71,12 @@
               max-height="98vh"
               rounded="lg"
             >
-              <div style="width:80%;
-              margin: auto;
-              height:100%
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;">
+              <div style="width:80%;margin: auto;height:100%
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;">
                 
               <!--  -->
               <v-text-field
@@ -96,7 +94,6 @@
                     <v-switch v-model="haveEnd" class="ma-2" label="添加结束时间" @click="endChange"></v-switch>
                   </v-col>
                   <v-col v-if="haveEnd">
-                
                     <el-date-picker
                       v-model="end"
                         type="datetime"
@@ -125,22 +122,33 @@
                         {{problems[index].desciption}}
                         </br>
                         <div v-if="problems[index].type===1">
-                            <v-radio-group>
+                            <v-row v-for="(it,i) in problems[index].options" :key="i">
+                            <v-col>
                             <v-radio
-                                v-for="(it,i) in problems[index].options"
                                 :key="i"
                                 :label="problems[index].options[i].content"
                                 readonly
                             ></v-radio>
-                            </v-radio-group>
+                            </v-col>
+                            <v-col style="color:black;" v-if="problems[index].haveLef">
+                              最大报名次数:{{it.leftVolume}}
+                            </v-col>
+                          </v-row>
                         </div>
                         <div v-if="problems[index].type===2">
+                            <v-row v-for="(it,i) in problems[index].options" :key="i">
+                            <v-col>
                                   <el-checkbox
                                       style="display:block;zoom:120%"
-                                      v-for="(it,i) in problems[index].options"
                                       :key="i"
                                       :label="problems[index].options[i].content"
+                                      readonly
                                   ></el-checkbox>
+                            </v-col>
+                            <v-col style="color:black;" v-if="problems[index].haveLef">
+                              最大报名次数:{{it.leftVolume}}
+                            </v-col>
+                            </v-row>
                         </div>
                         <div v-if="problems[index].type===3">
                             <v-text-field
@@ -235,7 +243,9 @@
               <v-col md="4">
                 <v-switch v-model="problems[alter].must" class="ma-2" label="必做题"></v-switch>
               </v-col>
-            
+              <v-col md="4">
+                <v-switch v-model="problems[alter].haveLef" class="ma-2" label="设置最大报名次数"></v-switch>
+              </v-col>
               
             </v-row>
             <div v-for="(item,index) in problems[alter].options">
@@ -244,6 +254,14 @@
                 <v-text-field
                     v-model="item.content"
                     label="选项"
+                    required
+                ></v-text-field>
+              </v-col>
+              <v-col md="2">
+                <v-text-field
+                v-if="problems[alter].haveLef"
+                    v-model="item.leftVolume"
+                    label="最大报名次数"
                     required
                 ></v-text-field>
               </v-col>
@@ -405,7 +423,7 @@
       titleReveal:false,
       title:"",
       endMess:"",
-      endT:'',
+      haveLef:false,
     //   problem:{
     //     id:0,
     //     no:1,
@@ -566,14 +584,31 @@
                     url: "/editOption",
                     params: {
                       isAnswer:0,
-                      leftVolume:0,
+                      leftVolume:this.problems[this.alter].options[i].leftVolume,
                       optionContent:this.problems[this.alter].options[i].content,
-                      optionKind:1,
+                      optionKind:2,
                       optionNo:i+1,
                       questionOptionID:this.problems[this.alter].options[i].id
                     },
                   })
                     .then((res) => {
+                      if (res.data.success) {
+                        this.$http({
+                          method: "get",
+                          url: "/showQuestionOptions",
+                          params: {
+                            questionContentID:this.problems[this.alter].id
+                          },
+                        })
+                          .then((res) => {
+                            console.log(res.data)
+                            if (res.data.success) {
+                            }
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                          });
+                      }
                     })
                     .catch((err) => {
                       console.log(err);
@@ -596,7 +631,8 @@
           //add接口 普通1报名2考试3     编辑界面处理添加和删除，完成问题时传所有选项并修改
           let op={
               no:this.problems[this.alter].options.length+1,
-              content:""
+              content:"",
+              leftVolume:0,
           }
           this.$http({
             method: "post",
@@ -605,14 +641,16 @@
               isAnswer:0,
               leftVolume:0,
               optionContent:op.content,
-              optionKind:1,
+              optionKind:2,
               optionNo:op.no,
-              questionContentID:this.problems[this.alter].id
+              questionContentID:this.problems[this.alter].id,
             },
           })
             .then((res) => {
+              console.log(res.data)
               if (res.data.success) {
                 op.id=res.data.recentQuestionOption.questionOptionID
+                console.log(op)
                 this.$set(this.problems[this.alter].options,this.problems[this.alter].options.length,op)
                 let x=document.querySelector(".dialog")
                 setTimeout(function() {x.scrollTo(0,10000); }, 100)
@@ -673,9 +711,9 @@
                     url: "/editOption",
                     params: {
                       isAnswer:0,
-                      leftVolume:0,
+                      leftVolume:this.problems[this.alter].options[j].leftVolume,
                       optionContent:this.problems[this.alter].options[j].content,
-                      optionKind:1,
+                      optionKind:2,
                       optionNo:this.problems[this.alter].options[j].no,
                       questionOptionID:this.problems[this.alter].options[j].id
                     },
@@ -726,7 +764,9 @@
             highDesc:"",
           }
           this.$set(this.problems,j,p)
+          console.log(j)
           if(this.problems[j].type==1||this.problems[j].type==2){
+            console.log(j)
             this.$http({
                 method: "get",
                 url: "/showQuestionOptions",
@@ -735,6 +775,7 @@
                 },
               })
                 .then((res) => {
+                  console.log(res.data)
                   if (res.data.success) {
                     let opli=res.data.questionOptionList
                     let k
@@ -745,7 +786,9 @@
                         content:opli[k].optionContent,
                         isAnswer:opli[k].isAnswer,
                         optionKind:opli[k].optionKind,
+                        leftVolume:opli[k].leftVolume,
                       }
+                      console.log(j)
                       this.$set(this.problems[j].options,k,op)
                     }
                   }
@@ -763,9 +806,6 @@
             },
           })
             .then((res) => {
-              console.log(res.data)
-              console.log(j)
-              console.log(this.problems[j])
               if (res.data.success) {
                 let score=res.data.scoreQuestion
                 this.problems[j].scoreId=score.scoreQuestionID
@@ -803,13 +843,12 @@
                 })
                   .then((res) => {
                     if(res.data.success){
+                      if(res.data.success){
                         let qn=res.data.questionnaire
                         this.qid=qn.questionnaireID
                         this.title=qn.title
                         this.isPrivate=qn.isPrivate
                         this.desciption=qn.questionnaireNote
-                        let timestamp=qn.endTime
-                        console.log(timestamp)
                         let date
                         if(timestamp!=null){
                           this.haveEnd=true
@@ -822,13 +861,11 @@
                         const s = '00'; // 秒
                         this.end= Y + M + D + h + m+s;
                         } 
-                        
                         this.endMess=qn.endMessage
                         let li=res.data.questionList
-                        console.log(li)
                         let j
                         this.loadPro(0,li)
-                      
+                      }
                     }
                   })
                   .catch((err) => {
@@ -843,19 +880,35 @@
         } else{
           this.$http({
           method:"post",
-          url:"/createQuestionnaire",
+          url:"/createSignQuestionnaire",
           params:{
-            kind:1,
+            kind:3,
             userID:this.userID
           },
         })
           .then((res) => {
-            console.log(res.data)
             if(res.data.success){
               this.qid=res.data.recentQuestionnaire.questionnaireID
               this.desciption=res.data.recentQuestionnaire.questionnaireNote
               this.endMess=res.data.recentQuestionnaire.endMessage
               this.title=res.data.recentQuestionnaire.title
+              this.$http({
+                  method:"get",
+                  url:"/showQuestionnaireInfo",
+                  params:{
+                    questionnaireID:this.qid
+                  },
+                })
+                  .then((res) => {
+                    if(res.data.success){
+                        let li=res.data.questionList
+                        let j
+                        this.loadPro(0,li)
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err)
+                  })
             }
           })
           .catch((err) => {
@@ -866,8 +919,7 @@
       },
       
       save() {
-
-      if(!this.haveEnd){
+        if(!this.haveEnd){
         this.end="0000-00-00 00:00:00"
       }else{
         this.end=this.end.slice(0,16)
@@ -887,7 +939,6 @@
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
-              this.$message.success("保存成功！");
               let i
         for(i=0;i<this.problems.length;i++){
           this.$http({
@@ -918,37 +969,3 @@
   }
 </script>
 
-<style>
-page {
-		background: #e6f0f9;
-	}
-.bord{
-  border-style:none none groove none
-}
-.chosen {
-  border: solid 1px #3089dc !important;
-}
-.scoll {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 90%;
-  width: 100%;
-}
-.card2 {
-  position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        height:600px;
-        width: 800px;
-}
-.dialog{
-  width:1500px;
-  margin: auto;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-}
-</style>

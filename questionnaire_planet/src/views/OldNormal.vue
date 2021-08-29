@@ -444,7 +444,7 @@
     watch:{
       problems:{
         handler(){
-          console.log("xiugai")
+          console.log(this.problems)
         },
         deep:true
       }
