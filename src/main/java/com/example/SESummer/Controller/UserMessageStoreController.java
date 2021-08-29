@@ -32,6 +32,8 @@ public class UserMessageStoreController {
     private UserLocateQuestionService userLocateQuestionService;
     @Autowired
     private QuestionnaireService questionnaireService;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     @PostMapping("/resetChoose")
     @ApiOperation("在提交/保存每个选择题前，先执行删除操作，再执行存储")
@@ -220,7 +222,10 @@ public class UserMessageStoreController {
                 //没满，插进去
                 else {
                     for(QuestionOption questionOption:questionOptionList){
+                        Integer volume = questionOption.getVoteVolume();
+                        Integer optionID = questionOption.getQuestionOptionID();
                         questionDataService.addVoteVolume(questionOption.getQuestionOptionID());
+                        webSocketServer.sendTextMessage(String.valueOf(questionnaireID),optionID+"#"+volume);
                     }
                     //找到所有评分题
                     List<QuestionContent> questionContentList=questionnaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);

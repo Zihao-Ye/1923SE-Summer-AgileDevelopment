@@ -47,8 +47,9 @@ public class WebSocketServer {
         for(WebSocketServer webSocket : webSockets) {
             System.out.println("[message]广播消息:"+message);
             try {
-                if (webSocket.session.getId().equals(questionnaireID));
-                session.getAsyncRemote().sendText(message);
+                if (webSocket.session.getId().equals(questionnaireID)){
+                    session.getAsyncRemote().sendText(message);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
