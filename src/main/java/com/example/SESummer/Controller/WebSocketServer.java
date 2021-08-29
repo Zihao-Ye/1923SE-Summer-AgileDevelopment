@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
-@ServerEndpoint("/websocket/{questionnaireID}")
+@ServerEndpoint("/websocket/{userID}/{questionnaireID}")
 //此注解相当于设置访问URL
 public class WebSocketServer {
 
@@ -24,10 +24,10 @@ public class WebSocketServer {
     private static Map<String,Session> sessionPool = new HashMap<>();
 
     @OnOpen
-    public void onOpen(Session session, @PathParam(value="questionnaireID")String questionnaireID) {
+    public void onOpen(Session session, @PathParam(value = "userID")String userID,@PathParam(value="questionnaireID")String questionnaireID) {
         this.session = session;
         webSockets.add(this);
-        sessionPool.put(questionnaireID, session);
+        sessionPool.put(userID+"-"+questionnaireID, session);
         System.out.println("[message]有新的连接，总数为:"+webSockets.size());
     }
 
@@ -43,13 +43,11 @@ public class WebSocketServer {
     }
 
     // 广播消息
-    public void sendAllMessage(String questionnaireID,String message) {
+    public void sendAllMessage(String message) {
         for(WebSocketServer webSocket : webSockets) {
             System.out.println("[message]广播消息:"+message);
             try {
-                if (webSocket.session.getId().equals(questionnaireID)){
-                    session.getAsyncRemote().sendText(message);
-                }
+                webSocket.session.getAsyncRemote().sendText(message);
             } catch (Exception e) {
                 e.printStackTrace();
             }

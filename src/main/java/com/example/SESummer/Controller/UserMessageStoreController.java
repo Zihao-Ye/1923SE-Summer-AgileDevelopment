@@ -225,7 +225,7 @@ public class UserMessageStoreController {
                         Integer volume = questionOption.getVoteVolume()+1;
                         Integer optionID = questionOption.getQuestionOptionID();
                         questionDataService.addVoteVolume(questionOption.getQuestionOptionID());
-                        webSocketServer.sendTextMessage(String.valueOf(questionnaireID),optionID+"#"+volume);
+                        webSocketServer.sendAllMessage(optionID+"#"+volume);
                     }
                     //找到所有评分题
                     List<QuestionContent> questionContentList=questionnaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
