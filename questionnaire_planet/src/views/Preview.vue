@@ -9,12 +9,14 @@
               dark
       >
         <h2 style="color: #EFEBE9">倒计时</h2>
-        <h2 style="color: #FF9100">{{countDown(end)}}</h2>
+        <h2 style="color: #FF9100">{{countDown(questionnaire.endTime)}}</h2>
       </v-card>
     </template>
-  <v-card class="mx-auto" width="1000" elevation="10">
+  <v-card class="mx-auto " width="1000" elevation="10">
+    <div class="text-center">
     <h1 class="text-center" style="padding-top: 40px">{{questionnaire.title}}</h1>
-    <p class="text-center">{{questionnaire.questionnaireNote}}</p>
+    <p class="text-center" style="width: 800px;padding-left: 150px">{{questionnaire.questionnaireNote}}</p>
+    </div>
     <!--单选必做题-->
     <v-card
         v-for="(question,i) in questions"
@@ -94,6 +96,7 @@
       <template v-else-if="question.questionKind===2 && question.requireSig===0">
         <v-card-title>
           <v-row>
+            <p>&nbsp&nbsp</p>
             {{question.questionNo}}. {{question.questionContent}}
             <p class="grey--text">[多选题]</p>
           </v-row>
@@ -552,7 +555,7 @@ export default {
           // 定位出错
           console.log('定位失败错误：', data);
           // 调用ip定位
-          self.getLngLatLocation();
+          self.getLngLatLocation(id);
         }
       })
       var GPS = {
@@ -615,7 +618,7 @@ export default {
         }
       };
     },
-    getLngLatLocation() {
+    getLngLatLocation(id) {
       const self=this
       const AMap=window.AMap
       AMap.plugin('AMap.CitySearch', function () {
@@ -630,14 +633,14 @@ export default {
                 // city 指定进行编码查询的城市，支持传入城市名、adcode 和 citycode
                 city: result.adcode
               })
-
+              //self.$set(self.location,id,result.city)
               var lnglat = result.rectangle.split(';')[0].split(',');
               self.centerPointer=lnglat
               geocoder.getAddress(lnglat, function (status, data) {
-                if (status === 'complete' && data.info === 'OK') {
                   // result为对应的地理位置详细信息
                   console.log(data)
-                }
+                let address=data.regeocode.addressComponent.province+data.regeocode.addressComponent.city+data.regeocode.addressComponent.district
+                  self.$set(self.location,id,address)
               })
             })
           }
