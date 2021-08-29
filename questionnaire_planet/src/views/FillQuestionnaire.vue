@@ -600,6 +600,8 @@ export default {
               if(res.data.success){
                 if(this.questionnaire.kind===1||this.questionnaire.kind===3||this.questionnaire.kind===5){
                   this.$router.push(({name:'ThanksNormal',params:{id:this.questionnaire.questionnaireID}}))
+                }else if(this.questionnaire.kind===2){
+                  this.$router.push({path:'/voteResult/'+this.$route.params.id})
                 }
               }else if(res.data.failure){
                 window.alert("名额已满")
@@ -792,7 +794,7 @@ export default {
     },
     initWebSocket: function () {
       // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
-      this.websock = new WebSocket("ws://39.105.38.175:8080/api/websocket/"+this.questionnaire.questionnaireID);
+      this.websock = new WebSocket("ws://39.105.38.175:8080/api/websocket/"+this.$store.state.userID+"/"+this.questionnaire.questionnaireID);
       this.websock.onopen = this.websocketonopen;
       this.websock.onerror = this.websocketonerror;
       this.websock.onmessage = this.websocketonmessage;
