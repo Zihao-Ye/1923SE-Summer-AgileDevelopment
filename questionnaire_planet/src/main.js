@@ -9,6 +9,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import htmlToPdf from './print/htmlToPdf'
 import VueClipboard from 'vue-clipboard2'
 import './iconfont/iconfont.css'
+import moment from 'moment'
 
 Vue.use(VueClipboard)
 Vue.use(ElementUI);
@@ -16,6 +17,7 @@ Vue.use(htmlToPdf)
 var Cesium = require('cesium/Cesium');
 var widgets= require('cesium/Widgets/widgets.css');
 
+Vue.prototype.$moment = moment
 Vue.prototype.Cesium = Cesium
 Vue.prototype.widgets = widgets
 Vue.config.productionTip = false

@@ -17,6 +17,8 @@ import sign from "../views/sign";
 import covid from "../views/covid";
 import vote from "../views/vote";
 import create from "../views/create";
+import IsFill from "../views/IsFill";
+
 
 import star from "../views/Star";
 Vue.use(VueRouter)
@@ -126,6 +128,11 @@ const routes = [
     name: 'create',
     component: create,
   },
+  {
+    path: '/isFill',
+    name: 'IsFill',
+    component: IsFill,
+  }
 ]
 
 const router = new VueRouter({

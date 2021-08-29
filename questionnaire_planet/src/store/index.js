@@ -8,7 +8,12 @@ export default new Vuex.Store({
     login:false,
     userID:"",
     userName:"",
-    isPrint:false
+    isPrint:false,
+    answer:{
+      radioAnswer:{},
+      optionAnswer:{},
+      text:{},
+    }
   },
   mutations: {
     setLogin(state) {
@@ -28,7 +33,16 @@ export default new Vuex.Store({
     },
     setNoPrint(state){
       state.isPrint = false
-    }
+    },
+    setRadioAnswer(state,answer){
+      state.answer.radioAnswer=answer
+    },
+    setOptionAnswer(state,answer){
+      state.answer.optionAnswer=answer
+    },
+    setText(state,answer){
+      state.answer.text=answer
+    },
   },
   actions: {
   },
