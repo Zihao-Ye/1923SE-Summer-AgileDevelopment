@@ -1020,6 +1020,7 @@ public class QuestionnaireController {
                 testQuestionRank.setShowNo(showNoList.get(i));
                 testQuestionRank.setQuestionContentID(questionContent.getQuestionContentID());
                 questionnaireService.setTestQuestionRank(testQuestionRank);
+                i++;
             }
             List<TestQuestionRank> testQuestionRankList=questionnaireService.getUserTestQuestionRank(questionnaireID,userID);
             map.put("success",true);
