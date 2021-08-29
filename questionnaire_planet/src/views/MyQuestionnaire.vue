@@ -179,19 +179,6 @@
                 </vue-qr>
                 </v-list-item-content>
                 <v-list-item-content >
-                       <v-col>
-                        <v-btn class="fs12" @click="copyCode(item)">
-                        复制链接
-                        <i class="el-icon-document-copy"></i>
-                        </v-btn>
-                        
-                       </v-col> 
-                        <v-col> 
-                       <v-btn color="primary">
-                        下载二维码
-                        <i class="el-icon-download"></i>
-                        </v-btn>
-                        </v-col> 
                        <v-col> 
                         <v-btn @click="reset(item.questionnaireID)" color="success">
                         重新生成链接和二维码
