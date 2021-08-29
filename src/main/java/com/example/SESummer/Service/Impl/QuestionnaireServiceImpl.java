@@ -277,4 +277,16 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     public QuestionOption getQuestionOptionByQuestionOptionID(Integer questionOptionID){
         return questionnaireDao.getQuestionOptionByQuestionOptionID(questionOptionID);
     }
+
+    @Override
+    //设置乱序
+    public void setTestQuestionRank(TestQuestionRank testQuestionRank){
+        questionnaireDao.setTestQuestionRank(testQuestionRank);
+    }
+
+    @Override
+    //获取用户对某张考试问卷的题目顺序
+    public List<TestQuestionRank> getUserTestQuestionRank(Integer questionnaireID,Integer userID){
+        return questionnaireDao.getUserTestQuestionRank(questionnaireID,userID);
+    }
 }

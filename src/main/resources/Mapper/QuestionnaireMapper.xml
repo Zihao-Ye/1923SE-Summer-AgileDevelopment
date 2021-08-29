@@ -260,4 +260,16 @@
         from question_option
         where question_optionid=#{questionOptionID}
     </select>
+    <!-- 设置乱序-->
+    <insert id="setTestQuestionRank" parameterType="TestQuestionRank">
+        insert into test_question_rank(userid, questionnaireid,question_contentid, question_no, show_no)
+        values(#{userID},#{questionnaireID},#{questionContentID},#{questionNo},#{showNo})
+    </insert>
+    <!-- 获取用户对某张考试问卷的题目顺序-->
+    <select id="getUserTestQuestionRank" resultType="TestQuestionRank">
+        select *
+        from test_question_rank
+        where userid=#{userID} and questionnaireid=#{questionnaireID}
+        order by question_no
+    </select>
 </mapper>

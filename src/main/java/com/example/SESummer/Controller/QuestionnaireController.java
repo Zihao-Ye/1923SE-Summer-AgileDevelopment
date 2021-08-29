@@ -14,10 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @Api(tags = "问卷相关接口")
@@ -992,6 +989,40 @@ public class QuestionnaireController {
             Integer originQuestionnaireID=questionnaireService.getOriginQuestionnaireID(encryptQuestionnaireID);
             map.put("success",true);
             map.put("originQuestionnaireID",originQuestionnaireID);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @PostMapping("/randomQuestionNo")
+    @ApiOperation("考试问卷乱序")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> randomQuestionNo(@RequestParam Integer questionnaireID,@RequestParam Integer userID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<QuestionContent> questionList = questionnaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
+            List<Integer> showNoList=new ArrayList<>();
+            for(int i=0;i<questionList.size();i++){
+                showNoList.add(i+1);
+            }
+            Collections.shuffle(showNoList);
+            int i=0;
+            for(QuestionContent questionContent:questionList){
+                TestQuestionRank testQuestionRank=new TestQuestionRank();
+                testQuestionRank.setUserID(userID);
+                testQuestionRank.setQuestionnaireID(questionnaireID);
+                testQuestionRank.setQuestionNo(questionContent.getQuestionNo());
+                testQuestionRank.setShowNo(showNoList.get(i));
+                questionnaireService.setTestQuestionRank(testQuestionRank);
+            }
+            List<TestQuestionRank> testQuestionRankList=questionnaireService.getUserTestQuestionRank(questionnaireID,userID);
+            map.put("success",true);
+            map.put("testQuestionRankList",testQuestionRankList);
         }catch (Exception e){
             e.printStackTrace();
             map.put("success",false);

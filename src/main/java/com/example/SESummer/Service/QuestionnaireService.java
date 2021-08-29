@@ -137,4 +137,10 @@ public interface QuestionnaireService {
 
     //根据选项ID获取选项
     QuestionOption getQuestionOptionByQuestionOptionID(Integer questionOptionID);
+
+    //设置乱序
+    void setTestQuestionRank(TestQuestionRank testQuestionRank);
+
+    //获取用户对某张考试问卷的题目顺序
+    List<TestQuestionRank> getUserTestQuestionRank(Integer questionnaireID,Integer userID);
 }
