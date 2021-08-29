@@ -207,7 +207,7 @@ public class UserMessageStoreController {
                 //循环判断是否已经满了
                 int count=0;
                 for (QuestionOption questionOption:questionOptionList){
-                    if(Objects.equals(questionOption.getLeftVolume(), questionOption.getVoteVolume())){
+                    if(questionOption.getLeftVolume()> questionOption.getVoteVolume()){
                         count+=1;
                     }
                 }
@@ -222,7 +222,7 @@ public class UserMessageStoreController {
                 //没满，插进去
                 else {
                     for(QuestionOption questionOption:questionOptionList){
-                        Integer volume = questionOption.getVoteVolume();
+                        Integer volume = questionOption.getVoteVolume()+1;
                         Integer optionID = questionOption.getQuestionOptionID();
                         questionDataService.addVoteVolume(questionOption.getQuestionOptionID());
                         webSocketServer.sendTextMessage(String.valueOf(questionnaireID),optionID+"#"+volume);
