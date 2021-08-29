@@ -384,6 +384,7 @@
               </v-row>
             </v-card>
             <!--填空必做题数据分析——常规分析-->
+            <v-container></v-container>
             <v-container>
               <v-card  elevation="8">
                 <v-card-title style="color:#6A76AB">填空题用户所填列表</v-card-title>
@@ -436,6 +437,7 @@
               </v-row>
             </v-card>
             <!--填空非必做题数据分析——常规分析-->
+            <v-container></v-container>
             <v-container>
               <v-card  elevation="8">
                 <v-card-title style="color:#6A76AB">填空题用户所填列表</v-card-title>
