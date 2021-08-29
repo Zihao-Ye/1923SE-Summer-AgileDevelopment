@@ -411,7 +411,7 @@ import {formatDate} from '../common/date.js';
         else if(item.kind == 2) return '投票问卷';
         else if(item.kind == 3) return '报名问卷';
         else if(item.kind == 4) return '考试问卷';
-        else if(item.kind == 5) return '疫情防控问卷';
+        else if(item.kind == 5) return '疫情打卡问卷';
       },
 
       statusClass (item) {
@@ -419,6 +419,7 @@ import {formatDate} from '../common/date.js';
         else if(item.kind == 2) return 'secondary';
         else if(item.kind == 3) return 'red';
         else if(item.kind == 4) return 'green';
+        else if(item.kind == 5) return 'blue-grey'
       },
       showMyQuestionnaire() {
       this.$http({

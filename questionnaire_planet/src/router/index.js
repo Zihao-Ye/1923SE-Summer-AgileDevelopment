@@ -18,7 +18,7 @@ import covid from "../views/covid";
 import vote from "../views/vote";
 import create from "../views/create";
 import IsFill from "../views/IsFill";
-
+import VoteResult from "../views/VoteResult";
 
 import star from "../views/Star";
 Vue.use(VueRouter)
@@ -132,6 +132,11 @@ const routes = [
     path: '/isFill',
     name: 'IsFill',
     component: IsFill,
+  },
+  {
+    path: '/voteResult/:id',
+    name: 'VoteResult',
+    component: VoteResult,
   },
   {
     path: '/exam/:id',
