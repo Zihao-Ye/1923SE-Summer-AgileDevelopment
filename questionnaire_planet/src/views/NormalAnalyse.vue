@@ -1441,7 +1441,6 @@ else if(kind=='pie'){
     },
     toPdf(){
       if(this.$store.state.isPrint) {
-        this.msgSuccess(this.$store.state.isPrint);
         this.getPdf();
         this.$store.commit("setNoPrint");
       }

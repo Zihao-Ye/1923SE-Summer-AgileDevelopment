@@ -684,7 +684,6 @@ export default {
     },
     toPdf(){
       if(this.$store.state.isPrint) {
-        this.msgSuccess(this.$store.state.isPrint);
         this.getPdf();
         this.$store.commit("setNoPrint");
       }
@@ -732,7 +731,11 @@ export default {
     this.getQuestionnaireID()
   },
   mounted() {
-    this.toPdf()
+    var that = this;
+     setTimeout(function () {
+     that.toPdf()
+   },2000);
+    
     setInterval(()=>{
       this.now = moment()
     },1000)
