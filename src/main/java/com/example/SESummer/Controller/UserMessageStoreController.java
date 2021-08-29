@@ -360,7 +360,7 @@ public class UserMessageStoreController {
                                     count+=1;
                                 }
                             }
-                            if(count>userChooseQuestionList.size()){
+                            if(count==userChooseQuestionList.size()){
                                 testScoreRecord.setScore(0);
                                 break;
                             }
