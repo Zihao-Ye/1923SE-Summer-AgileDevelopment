@@ -211,7 +211,7 @@
           </v-row>
         </v-card-title>
         <v-card-subtitle>
-          由于测试机型有限，暂只有Windows平台Edge/火狐浏览器可获取定位（为获取准确定位，请给与浏览器定位权限）
+          （为获取准确定位，请给与浏览器定位权限）
         </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
@@ -235,7 +235,7 @@
           {{question.questionNo}}. {{question.questionContent}}
         </v-card-title>
         <v-card-subtitle>
-          由于测试机型有限，暂只有Windows平台Edge/火狐浏览器可获取定位（为获取准确定位，请给与浏览器定位权限）
+          （为获取准确定位，请给与浏览器定位权限）
         </v-card-subtitle>
         <v-card-subtitle>
           {{question.questionNote}}
