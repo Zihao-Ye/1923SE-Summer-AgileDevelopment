@@ -35,6 +35,9 @@ export default {
             console.log(err);
           });
     },
+  },
+  created() {
+    this.getQuestionnaire()
   }
 }
 </script>
