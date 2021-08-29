@@ -48,8 +48,8 @@
                 <v-divider class="my-2"></v-divider>
 
                 <v-list-item>
-                <v-btn color="#2196F3" @click="save">
-                    保存
+                <v-btn color="#C2DFFF" @click="save">
+                  <i class="el-icon-back"></i>  保存并返回
                 </v-btn>
                 </v-list-item>
               </v-list>
@@ -197,12 +197,12 @@
                         </div>
                     <v-row no-gutters>
                       <v-col md="1">
-                        <v-btn class="nodrag"  @click="alterProblem(index)">
+                        <v-btn  color="#FFCBA4" class="nodrag"  @click="alterProblem(index)">
                             编辑问题
                         </v-btn>    
                       </v-col>
                       <v-col md="1" offset-md="1">
-                        <v-btn class="nodrag"  @click="deleteProblem(index)">
+                        <v-btn color="#FAAFBE" class="nodrag"  @click="deleteProblem(index)">
                             删除问题
                         </v-btn>    
                       </v-col>
@@ -231,6 +231,7 @@
         <v-card
         v-if="reveal==1 || reveal==2"
         style="overflow-y:scroll;"
+        flat
         >
             <div style="font-weight:900;text-align: center;" v-if="reveal==1">单选题</div>
             <div style="font-weight:900;text-align: center;" v-if="reveal==2">多选题</div>
@@ -278,7 +279,7 @@
                 ></el-checkbox>
               </v-col>
               <v-col>
-                <v-btn  @click="deleteOption(index)">
+                <v-btn color="#FAAFBE"  @click="deleteOption(index)">
                 删除选项
                 </v-btn>
               </v-col>
@@ -289,12 +290,14 @@
               <v-row no-gutters>
                 <v-col md="4">
                   <v-btn
+                  color="#C2DFFF"
                     @click="addOption">
                     添加选项
                     </v-btn>
                 </v-col>
                 <v-col>
                   <v-btn
+                  color="#ADDFFF"
                     @click="finishProblem">
                     完成问题
                     </v-btn>
@@ -309,6 +312,7 @@
       <el-dialog :visible.sync="fill" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==3"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==3">填空题</div>
             <v-text-field
@@ -345,6 +349,7 @@
             ></v-text-field>
             <v-card-actions class="pt-0">
                 <v-btn
+                color="#ADDFFF"
                 @click="finishProblem">
                 完成问题
                 </v-btn>
@@ -733,6 +738,9 @@
           this.end="0000-00-00 00:00:00"
         }
       },
+      back() {
+        window.location.href="/QuestionnaireManage"
+      },
       loadPro(j,li){
         if(j==li.length){
           return
@@ -743,11 +751,16 @@
             name:li[j].questionContent,
             type:li[j].questionKind,
             desciption:li[j].questionNote,
+            score:li[j].questionScore,
+            haveAnswer:false,
             options:[],
             scoreId:0,
             max:5,
             lowDesc:"",
             highDesc:"",
+          }
+          if(p.score>0){
+            p.haveAnswer=true
           }
           this.$set(this.problems,j,p)
           console.log(j)
@@ -772,6 +785,11 @@
                         content:opli[k].optionContent,
                         isAnswer:opli[k].isAnswer,
                         optionKind:opli[k].optionKind,
+                      }
+                      if(op.isAnswer==1){
+                        op.isAnswer=true
+                      }else{
+                        op.isAnswer=false
                       }
                       console.log(j)
                       this.$set(this.problems[j].options,k,op)
@@ -922,8 +940,12 @@
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
+              this.$message.success("保存成功！");
               let i
-        for(i=0;i<this.problems.length;i++){
+              if(this.problems.length==0){
+                window.location.href="/QuestionnaireManage"
+              }else{
+                for(i=0;i<this.problems.length;i++){
           this.$http({
           method: "post",
           url: "/rankQuestion",
@@ -935,12 +957,15 @@
           .then((res) => {
             
             if (res.data.success) {
+        window.location.href="/QuestionnaireManage"
             }
           })
           .catch((err) => {
             console.log(err);
           });
         }
+              }
+        
             }
           })
           .catch((err) => {

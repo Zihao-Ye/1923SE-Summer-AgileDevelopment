@@ -225,7 +225,7 @@
               solo
               @change="requirePlus(question)"
               readonly
-              @click="getLocation(question.questionNo)"
+              @click="snackbar=true;no=question.questionNo"
           ></v-text-field>
         </v-container>
       </template>
@@ -247,11 +247,35 @@
               outlined
               solo
               readonly
-              @click="getLocation(question.questionNo)"
+              @click="snackbar=true;no=question.questionNo"
           ></v-text-field>
         </v-container>
       </template>
       <v-divider></v-divider>
+      <v-snackbar
+          v-model="snackbar"
+          top
+      >
+        浏览器请求获取你的地址
+        <template v-slot:action="{ attrs }">
+          <v-btn
+              color="orange"
+              text
+              v-bind="attrs"
+              @click="getLocation(no)"
+          >
+            同意
+          </v-btn>
+          <v-btn
+              color="pink"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+          >
+            拒绝
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-card>
       <div class="text-center" style="padding-top: 30px">
       <v-btn class="ma-2" color="info" :disabled="!submitValid" @click="submit" >
@@ -306,6 +330,8 @@ export default {
     now:moment(),
     end:"2021-08-28T12:21:40.000+00:00",
     dialog:false,
+    snackbar:false,
+    no:0,
   }),
   methods:{
     getQuestionnaire(questionnaireID) {
@@ -600,6 +626,8 @@ export default {
               if(res.data.success){
                 if(this.questionnaire.kind===1||this.questionnaire.kind===3||this.questionnaire.kind===5){
                   this.$router.push(({name:'ThanksNormal',params:{id:this.questionnaire.questionnaireID}}))
+                }else if(this.questionnaire.kind===2){
+                  this.$router.push({path:'/voteResult/'+this.$route.params.id})
                 }
               }else if(res.data.failure){
                 window.alert("名额已满")
@@ -614,6 +642,7 @@ export default {
       }, 1000);
     },
     getLocation(id) {
+      this.snackbar=false
       const self = this
       const AMap=window.AMap
       AMap.plugin('AMap.Geolocation', function () {
@@ -792,7 +821,7 @@ export default {
     },
     initWebSocket: function () {
       // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
-      this.websock = new WebSocket("ws://39.105.38.175:8080/api/websocket/"+this.questionnaire.questionnaireID);
+      this.websock = new WebSocket("ws://39.105.38.175:8080/api/websocket/"+this.$store.state.userID+"/"+this.questionnaire.questionnaireID);
       this.websock.onopen = this.websocketonopen;
       this.websock.onerror = this.websocketonerror;
       this.websock.onmessage = this.websocketonmessage;

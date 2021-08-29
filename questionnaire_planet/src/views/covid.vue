@@ -45,11 +45,6 @@
                 </v-btn>
                 </v-list-item>
                 <v-list-item>
-                <v-btn text color="#2196F3" @click="addProblem(4)">
-                  <i class="el-icon-star-off"></i>  添加评分题
-                </v-btn>
-                </v-list-item>
-                <v-list-item>
                 <v-btn text color="#2196F3" @click="addProblem(5)">
                   <i class="el-icon-location"></i>  添加定位题
                 </v-btn>
@@ -57,9 +52,10 @@
 
                 <v-divider class="my-2"></v-divider>
 
+                
                 <v-list-item>
-                <v-btn color="#2196F3" @click="save">
-                  <i class="el-icon-download"></i>  保存
+                <v-btn color="#C2DFFF" @click="save">
+                  <i class="el-icon-back"></i>  保存并返回
                 </v-btn>
                 </v-list-item>
               </v-list>
@@ -136,22 +132,27 @@
                         {{problems[index].desciption}}
                         </br>
                         <div v-if="problems[index].type===1">
-                            <v-radio-group>
+                          <v-row v-for="(it,i) in problems[index].options" :key="i">
+                            <v-col>
                             <v-radio
-                                v-for="(it,i) in problems[index].options"
                                 :key="i"
                                 :label="problems[index].options[i].content"
                                 readonly
                             ></v-radio>
-                            </v-radio-group>
+                            </v-col>
+                          </v-row>
                         </div>
                         <div v-if="problems[index].type===2">
+                          <v-row v-for="(it,i) in problems[index].options" :key="i">
+                            <v-col>
                                   <el-checkbox
                                       style="display:block;zoom:120%"
-                                      v-for="(it,i) in problems[index].options"
                                       :key="i"
                                       :label="problems[index].options[i].content"
+                                      readonly
                                   ></el-checkbox>
+                            </v-col>
+                          </v-row>
                         </div>
                         <div v-if="problems[index].type===3">
                             <v-text-field
@@ -176,12 +177,12 @@
                         </div>
                     <v-row no-gutters>
                       <v-col md="1">
-                        <v-btn class="nodrag"  @click="alterProblem(index)">
+                        <v-btn color="#FFCBA4" class="nodrag"  @click="alterProblem(index)">
                             编辑问题
                         </v-btn>    
                       </v-col>
                       <v-col md="1" offset-md="1">
-                        <v-btn class="nodrag"  @click="deleteProblem(index)">
+                        <v-btn color="#FAAFBE" class="nodrag"  @click="deleteProblem(index)">
                             删除问题
                         </v-btn>    
                       </v-col>
@@ -210,6 +211,7 @@
         <v-card
         v-if="reveal==1 || reveal==2"
         style="overflow-y:scroll;"
+        flat
         >
             <div style="font-weight:900;text-align: center;" v-if="reveal==1">单选题</div>
             <div style="font-weight:900;text-align: center;" v-if="reveal==2">多选题</div>
@@ -241,7 +243,7 @@
                 ></v-text-field>
               </v-col>
               <v-col>
-                <v-btn  @click="deleteOption(index)">
+                <v-btn color="#FAAFBE"  @click="deleteOption(index)">
                 删除选项
                 </v-btn>
               </v-col>
@@ -252,12 +254,14 @@
               <v-row no-gutters>
                 <v-col md="4">
                   <v-btn
+                  color="#C2DFFF"
                     @click="addOption">
                     添加选项
                     </v-btn>
                 </v-col>
                 <v-col>
                   <v-btn
+                  color="#ADDFFF"
                     @click="finishProblem">
                     完成问题
                     </v-btn>
@@ -272,6 +276,7 @@
       <el-dialog :visible.sync="fill" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==3"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==3">填空题</div>
             <v-text-field
@@ -298,6 +303,7 @@
       <el-dialog :visible.sync="rate" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==4"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==4">评分题</div>
             <v-text-field
@@ -338,6 +344,7 @@
             
             <v-card-actions class="pt-0">
                 <v-btn
+                color="#ADDFFF"
                 @click="finishProblem">
                 完成问题
                 </v-btn>
@@ -348,8 +355,9 @@
         <el-dialog :visible.sync="position" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==5"
+            flat
             >
-            <div style="font-weight:900;text-align: center;" v-if="reveal==5">填空题</div>
+            <div style="font-weight:900;text-align: center;" v-if="reveal==5">定位题</div>
             <v-text-field
                 v-model="problems[alter].name"
                 label="问题"
@@ -364,6 +372,7 @@
             <v-switch v-model="problems[alter].must" class="ma-2" label="必做题"></v-switch>
             <v-card-actions class="pt-0">
                 <v-btn
+                color="#ADDFFF"
                 @click="finishProblem">
                 完成问题
                 </v-btn>
@@ -510,7 +519,7 @@
           case 4:
             this.rate=true
             break;
-          case 4:
+          case 5:
             this.position=true
             break;
           default:
@@ -751,6 +760,9 @@
           this.end="0000-00-00 00:00:00"
         }
       },
+      back() {
+        window.location.href="/QuestionnaireManage"
+      },
       loadPro(j,li){
         if(j==li.length){
           return
@@ -949,8 +961,12 @@
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
+              this.$message.success("保存成功！");
               let i
-        for(i=0;i<this.problems.length;i++){
+              if(this.problems.length==0){
+                window.location.href="/QuestionnaireManage"
+              }else{
+                for(i=0;i<this.problems.length;i++){
           this.$http({
           method: "post",
           url: "/rankQuestion",
@@ -962,12 +978,15 @@
           .then((res) => {
             
             if (res.data.success) {
+        window.location.href="/QuestionnaireManage"
             }
           })
           .catch((err) => {
             console.log(err);
           });
         }
+              }
+        
             }
           })
           .catch((err) => {
