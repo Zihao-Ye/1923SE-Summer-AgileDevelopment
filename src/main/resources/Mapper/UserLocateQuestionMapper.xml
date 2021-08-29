@@ -23,4 +23,10 @@
         delete from user_locate_question
         where userid=#{userID} and questionnaireid=#{questionnaireID}
     </delete>
+    <!-- 获取定位题的所有填写情况-->
+    <select id="getAllLocateRecordOfQuestion" resultType="UserLocateQuestion">
+        select *
+        from user_locate_question
+        where question_contentid=#{quesitonContentID}
+    </select>
 </mapper>

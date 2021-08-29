@@ -3,6 +3,8 @@ package com.example.SESummer.Dao;
 import com.example.SESummer.Entity.UserLocateQuestion;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface UserLocateQuestionDao {
     //检索用户是否答过该定位题
@@ -16,4 +18,7 @@ public interface UserLocateQuestionDao {
 
     //删除用户填写该问卷的所有定位记录
     void delRecord(Integer userID,Integer questionnaireID);
+
+    //获取定位题的所有填写情况
+    List<UserLocateQuestion> getAllLocateRecordOfQuestion(Integer questionContentID);
 }

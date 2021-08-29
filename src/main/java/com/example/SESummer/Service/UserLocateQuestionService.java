@@ -2,6 +2,8 @@ package com.example.SESummer.Service;
 
 import com.example.SESummer.Entity.UserLocateQuestion;
 
+import java.util.List;
+
 public interface UserLocateQuestionService {
     //检索用户是否答过该定位题
     UserLocateQuestion getLocateRecordByID(Integer userID, Integer questionnaireID, Integer questionContentID);
@@ -14,4 +16,7 @@ public interface UserLocateQuestionService {
 
     //删除用户填写该问卷的所有定位记录
     void delRecord(Integer userID,Integer questionnaireID);
+
+    //获取定位题的所有填写情况
+    List<UserLocateQuestion> getAllLocateRecordOfQuestion(Integer questionContentID);
 }

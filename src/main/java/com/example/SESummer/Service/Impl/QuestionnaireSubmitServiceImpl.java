@@ -35,4 +35,22 @@ public class QuestionnaireSubmitServiceImpl implements QuestionnaireSubmitServic
     public void setTestScoreRecord(TestScoreRecord testScoreRecord){
         questionnaireSubmitDao.setTestScoreRecord(testScoreRecord);
     }
+
+    @Override
+    //获取考试题平均分
+    public Double getQuestionAverage(Integer questionContentID){
+        return questionnaireSubmitDao.getQuestionAverage(questionContentID);
+    }
+
+    @Override
+    //获取考试题总答题人数
+    public Integer getQuestionTotal(Integer questionContentID){
+        return questionnaireSubmitDao.getQuestionTotal(questionContentID);
+    }
+
+    @Override
+    //获取考试题正确人数
+    public Integer getRightCounts(Integer questionContentID){
+        return questionnaireSubmitDao.getRightCounts(questionContentID);
+    }
 }

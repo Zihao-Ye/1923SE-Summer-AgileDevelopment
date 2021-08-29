@@ -371,4 +371,78 @@ public class UserMessageStoreController {
         }
         return map;
     }
+
+    @GetMapping("/getAllCompletionRecord")
+    @ApiOperation("获取填空题的所有填空情况")
+    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int")
+    public Map<String,Object> getAllCompletionRecord(@RequestParam Integer questionContentID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<UserCompletionQuestion> userCompletionQuestionList=userCompletionQuestionService.getAllCompletionRecordOfQuestion(questionContentID);
+            map.put("success",true);
+            map.put("userCompletionQuestionList",userCompletionQuestionList);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @GetMapping("/getAllLocateRecord")
+    @ApiOperation("获取填空题的所有填空情况")
+    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int")
+    public Map<String,Object> getAllLocateRecord(@RequestParam Integer questionContentID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<UserLocateQuestion> userLocateQuestionList=userLocateQuestionService.getAllLocateRecordOfQuestion(questionContentID);
+            map.put("success",true);
+            map.put("userLocateQuestionList",userLocateQuestionList);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @GetMapping("/getScoreRecordDistribute")
+    @ApiOperation("获取评分题分数分布")
+    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int")
+    public Map<String,Object> getScoreRecordDistribute(@RequestParam Integer questionContentID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            ScoreQuestion scoreQuestion=questionnaireService.getScoreQuestionByQuestionContentID(questionContentID);
+            Integer score=scoreQuestion.getMaxScore();
+            List<Integer> distributeList=new ArrayList<>();
+            for(int i=1;i<=score;i++){
+                distributeList.add(userScoreQuestionService.sumOfScore(questionContentID,i));
+            }
+            map.put("success",true);
+            map.put("distributeList",distributeList);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @GetMapping("/getTestData")
+    @ApiOperation("获取考试题得分情况")
+    @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int")
+    public Map<String,Object> getTestData(@RequestParam Integer questionContentID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            Double average=questionnaireSubmitService.getQuestionAverage(questionContentID);
+            Integer total=questionnaireSubmitService.getQuestionTotal(questionContentID);
+            Integer rightCounts=questionnaireSubmitService.getRightCounts(questionContentID);
+            Double accuracy= (double) (rightCounts / total);
+            map.put("success",true);
+            map.put("average",average);
+            map.put("rightCounts",rightCounts);
+            map.put("accuracy",accuracy);
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
 }

@@ -20,6 +20,23 @@
     </select>
     <!-- 设置用户考试题得分-->
     <insert id="setTestScoreRecord" parameterType="TestScoreRecord">
-
+        insert into test_score_record(userid, score, question_contentid)
+        values(#{userID},#{score},#{questionContentID})
     </insert>
-</mapper>    
+    <!-- 获取考试题平均分-->
+    <select id="getQuestionAverage" resultType="Double">
+        select avg(score) from test_score_record where question_contentid=#{questionContentID}
+    </select>
+    <!-- 获取考试题总答题人数-->
+    <select id="getQuestionTotal" resultType="Integer">
+        select count(*)
+        from test_score_record
+        where question_contentid=#{questionContentID}
+    </select>
+    <!-- 获取考试题正确人数-->
+    <select id="getRightCounts" resultType="Integer">
+        select count(*)
+        from test_score_record
+        where score>0
+    </select>
+</mapper>

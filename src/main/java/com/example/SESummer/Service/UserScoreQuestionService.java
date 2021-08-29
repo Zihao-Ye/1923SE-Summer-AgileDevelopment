@@ -14,4 +14,7 @@ public interface UserScoreQuestionService {
 
     //删除用户填写该问卷的所有评分记录
     void delRecord(Integer userID,Integer questionnaireID);
+
+    //获取评分题分数分布
+    Integer sumOfScore(Integer questionContentID,Integer i);
 }

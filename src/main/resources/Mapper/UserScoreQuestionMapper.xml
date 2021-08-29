@@ -25,4 +25,8 @@
         delete from user_score_question
         where userid=#{userID} and questionnaireid=#{questionnaireID}
     </delete>
+    <!-- 获取评分题分数分布-->
+    <select id="sumOfScore" resultType="Integer">
+        select count(*) from user_score_question where question_contentid=#{quesitonContentID} and score=#{i}
+    </select>
 </mapper>

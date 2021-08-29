@@ -34,4 +34,10 @@ public class UserScoreQuestionServiceImpl implements UserScoreQuestionService {
     public void delRecord(Integer userID,Integer questionnaireID){
         userScoreQuestionDao.delRecord(userID,questionnaireID);
     }
+
+    @Override
+    //获取评分题分数分布
+    public Integer sumOfScore(Integer questionContentID,Integer i){
+        return userScoreQuestionDao.sumOfScore(questionContentID,i);
+    }
 }

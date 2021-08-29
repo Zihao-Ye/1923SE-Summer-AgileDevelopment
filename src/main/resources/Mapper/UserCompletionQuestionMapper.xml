@@ -29,4 +29,10 @@
         delete from user_completion_question
         where userid=#{userID} and questionnaireid=#{questionnaireID}
     </delete>
+    <!-- 获取填空题的所有填写情况-->
+    <select id="getAllCompletionRecordOfQuestion" resultType="UserCompletionQuestion">
+        select *
+        from user_completion_question
+        where question_contentid=#{questionContentID}
+    </select>
 </mapper>

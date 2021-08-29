@@ -7,6 +7,8 @@ import com.example.SESummer.Service.UserCompletionQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserCompletionQuestionServcieImpl implements UserCompletionQuestionService {
     @Autowired
@@ -40,5 +42,11 @@ public class UserCompletionQuestionServcieImpl implements UserCompletionQuestion
     //删除用户填写该问卷的所有填空记录
     public void delRecord(Integer userID,Integer questionnaireID){
         userCompletionQuestionDao.delRecord(userID,questionnaireID);
+    }
+
+    @Override
+    //获取填空题的所有填写情况
+    public List<UserCompletionQuestion> getAllCompletionRecordOfQuestion(Integer questionContentID){
+        return userCompletionQuestionDao.getAllCompletionRecordOfQuestion(questionContentID);
     }
 }

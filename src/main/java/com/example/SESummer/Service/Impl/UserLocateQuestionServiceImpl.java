@@ -6,6 +6,8 @@ import com.example.SESummer.Service.UserLocateQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserLocateQuestionServiceImpl implements UserLocateQuestionService {
     @Autowired
@@ -32,5 +34,11 @@ public class UserLocateQuestionServiceImpl implements UserLocateQuestionService 
     //删除用户填写该问卷的所有定位记录
     public void delRecord(Integer userID,Integer questionnaireID){
         userLocateQuestionDao.delRecord(userID,questionnaireID);
+    }
+
+    @Override
+    //获取定位题的所有填写情况
+    public List<UserLocateQuestion> getAllLocateRecordOfQuestion(Integer questionContentID){
+        return userLocateQuestionDao.getAllLocateRecordOfQuestion(questionContentID);
     }
 }
