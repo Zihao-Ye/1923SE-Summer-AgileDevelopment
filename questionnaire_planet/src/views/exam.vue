@@ -48,7 +48,7 @@
                 <v-divider class="my-2"></v-divider>
 
                 <v-list-item>
-                <v-btn color="#2196F3" @click="save">
+                <v-btn color="#C2DFFF" @click="save">
                   <i class="el-icon-back"></i>  保存并返回
                 </v-btn>
                 </v-list-item>
@@ -197,12 +197,12 @@
                         </div>
                     <v-row no-gutters>
                       <v-col md="1">
-                        <v-btn class="nodrag"  @click="alterProblem(index)">
+                        <v-btn  color="#FFCBA4" class="nodrag"  @click="alterProblem(index)">
                             编辑问题
                         </v-btn>    
                       </v-col>
                       <v-col md="1" offset-md="1">
-                        <v-btn class="nodrag"  @click="deleteProblem(index)">
+                        <v-btn color="#FAAFBE" class="nodrag"  @click="deleteProblem(index)">
                             删除问题
                         </v-btn>    
                       </v-col>
@@ -279,7 +279,7 @@
                 ></el-checkbox>
               </v-col>
               <v-col>
-                <v-btn  @click="deleteOption(index)">
+                <v-btn color="#FAAFBE"  @click="deleteOption(index)">
                 删除选项
                 </v-btn>
               </v-col>
@@ -290,12 +290,14 @@
               <v-row no-gutters>
                 <v-col md="4">
                   <v-btn
+                  color="#C2DFFF"
                     @click="addOption">
                     添加选项
                     </v-btn>
                 </v-col>
                 <v-col>
                   <v-btn
+                  color="#ADDFFF"
                     @click="finishProblem">
                     完成问题
                     </v-btn>
@@ -347,6 +349,7 @@
             ></v-text-field>
             <v-card-actions class="pt-0">
                 <v-btn
+                color="#ADDFFF"
                 @click="finishProblem">
                 完成问题
                 </v-btn>
