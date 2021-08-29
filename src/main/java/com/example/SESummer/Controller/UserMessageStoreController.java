@@ -7,12 +7,12 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Api(tags = "用户填写情况相关接口")
@@ -29,6 +29,8 @@ public class UserMessageStoreController {
     private QuestionDataService questionDataService;
     @Autowired
     private UserLocateQuestionService userLocateQuestionService;
+    @Autowired
+    private QuestionnaireService questionnaireService;
 
     @PostMapping("/resetChoose")
     @ApiOperation("在提交/保存每个选择题前，先执行删除操作，再执行存储")
@@ -40,7 +42,6 @@ public class UserMessageStoreController {
     public Map<String,Object> resetUserChooseOption(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer questionContentID){
         Map<String,Object> map = new HashMap<>();
         try {
-            questionDataService.minusVoteVolume(questionnaireID,userID,questionContentID);
             userChooseQuestionService.delChooseRecord(userID,questionnaireID,questionContentID);
             map.put("success",true);
         }catch (Exception e){
@@ -67,7 +68,6 @@ public class UserMessageStoreController {
             userChooseQuestion.setQuestionContentID(questionContentID);
             userChooseQuestion.setQuestionOptionID(questionOptionID);
             userChooseQuestionService.addChooseRecord(userChooseQuestion);
-            questionDataService.addVoteVolume(questionOptionID);
             map.put("success",true);
         }catch (Exception e){
             e.printStackTrace();
@@ -129,7 +129,6 @@ public class UserMessageStoreController {
             else {
                 userScoreQuestionService.updateScoreRecord(userID,questionnaireID,questionContentID,score);
             }
-            questionDataService.updateAverageScore(questionContentID);
             map.put("success",true);
         }
         catch (Exception e){
@@ -180,15 +179,62 @@ public class UserMessageStoreController {
     public Map<String,Object> userSubmit(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer isSubmit){
         Map<String,Object> map = new HashMap<>();
         try {
-            QuestionnaireSubmit questionnaireSubmit=new QuestionnaireSubmit();
-            questionnaireSubmit.setUserID(userID);
-            questionnaireSubmit.setQuestionnaireID(questionnaireID);
-            questionnaireSubmit.setIsSubmit(isSubmit);
-            questionnaireSubmitService.addQuestionnaireSubmit(questionnaireSubmit);
-            if(isSubmit==1){
-                questionDataService.addRecycleVolume(questionnaireID);
+            if(isSubmit==0){
+                QuestionnaireSubmit questionnaireSubmit=new QuestionnaireSubmit();
+                questionnaireSubmit.setUserID(userID);
+                questionnaireSubmit.setQuestionnaireID(questionnaireID);
+                questionnaireSubmit.setIsSubmit(isSubmit);
+                questionnaireSubmitService.addQuestionnaireSubmit(questionnaireSubmit);
+                map.put("success",true);
             }
-            map.put("success",true);
+            else{
+                //找到所有选项
+                List<UserChooseQuestion> userChooseQuestionList=userChooseQuestionService.getAllChooseRecordOfQuestionnaireByUserIDAndQuestionnaireID(userID,questionnaireID);
+                //找到所有有限额的选项
+                List<QuestionOption> questionOptionList = new ArrayList<>();
+                for(UserChooseQuestion userChooseQuestion:userChooseQuestionList){
+                    Integer questionOptionID=userChooseQuestion.getQuestionOptionID();
+                    QuestionOption questionOption=questionnaireService.getQuestionOptionByQuestionOptionID(questionOptionID);
+                    if(questionOption.getLeftVolume()>0){
+                        questionOptionList.add(questionOption);
+                    }
+                }
+                //循环判断是否已经满了
+                int count=0;
+                for (QuestionOption questionOption:questionOptionList){
+                    if(Objects.equals(questionOption.getLeftVolume(), questionOption.getVoteVolume())){
+                        count+=1;
+                    }
+                }
+                //满了，直接清除所有记录
+                if(count!=questionOptionList.size()){
+                    userChooseQuestionService.delRecord(userID,questionnaireID);
+                    userCompletionQuestionService.delRecord(userID,questionnaireID);
+                    userLocateQuestionService.delRecord(userID,questionnaireID);
+                    userScoreQuestionService.delRecord(userID,questionnaireID);
+                    map.put("failure",true);
+                }
+                //没满，插进去
+                else {
+                    for(QuestionOption questionOption:questionOptionList){
+                        questionDataService.addVoteVolume(questionOption.getQuestionOptionID());
+                    }
+                    //找到所有评分题
+                    List<QuestionContent> questionContentList=questionnaireService.getAllQuestionContentOfQuestionnaireByQuestionnaireID(questionnaireID);
+                    for(QuestionContent questionContent:questionContentList){
+                        if(questionContent.getQuestionKind()==4){
+                            questionDataService.updateAverageScore(questionContent.getQuestionContentID());
+                        }
+                    }
+                    QuestionnaireSubmit questionnaireSubmit=new QuestionnaireSubmit();
+                    questionnaireSubmit.setUserID(userID);
+                    questionnaireSubmit.setQuestionnaireID(questionnaireID);
+                    questionnaireSubmit.setIsSubmit(isSubmit);
+                    questionnaireSubmitService.addQuestionnaireSubmit(questionnaireSubmit);
+                    questionDataService.addRecycleVolume(questionnaireID);
+                    map.put("success",true);
+                }
+            }
         }
         catch (Exception e){
             e.printStackTrace();
@@ -197,7 +243,7 @@ public class UserMessageStoreController {
         return map;
     }
 
-    @PostMapping("/haveFinish")
+    @GetMapping("/haveFinish")
     @ApiOperation("是否已填过这个问卷")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int"),
@@ -220,6 +266,106 @@ public class UserMessageStoreController {
             map.put("haveFinish",haveFinish);
         }
         catch (Exception e){
+            e.printStackTrace();
+            map.put("success",false);
+        }
+        return map;
+    }
+
+    @PostMapping("/setTestScore")
+    @ApiOperation("自动评分")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "questionKind",value = "问题种类",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "questionScore",value = "问题分数",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "questionnaireID",value = "问卷ID",required = true,dataType = "int")
+    })
+    public Map<String ,Object> setTestScore(@RequestParam Integer userID,@RequestParam Integer questionContentID,@RequestParam Integer questionKind,@RequestParam Integer questionScore,@RequestParam Integer questionnaireID){
+        Map<String,Object> map = new HashMap<>();
+        try {
+            if(questionScore>0){
+                TestScoreRecord testScoreRecord=new TestScoreRecord();
+                testScoreRecord.setUserID(userID);
+                testScoreRecord.setQuestionContentID(questionContentID);
+                if(questionKind==3){
+                    UserCompletionQuestion userCompletionQuestion=userCompletionQuestionService.getCompletionRecordByID(userID,questionnaireID,questionContentID);
+                    if(userCompletionQuestion==null){
+                        testScoreRecord.setScore(0);
+                    }
+                    else{
+                        String answer=userCompletionQuestion.getCompletionContent();
+                        CompletionQuestion completionQuestion=userCompletionQuestionService.judgeCompletionScore(questionContentID,answer);
+                        if(completionQuestion!=null){
+                            testScoreRecord.setScore(questionScore);
+                        }
+                        else{
+                            testScoreRecord.setScore(0);
+                        }
+                    }
+                    questionnaireSubmitService.setTestScoreRecord(testScoreRecord);
+                    CompletionQuestion completionQuestion1=questionnaireService.getCompletionQuestionByQuestionContentID(questionContentID);
+                    map.put("success",true);
+                    map.put("score",testScoreRecord.getScore());
+                }
+                else if(questionKind==1){
+                    //获取答案选项，获取填写选项，比较是否一致
+                    List<UserChooseQuestion> userChooseQuestionList=userChooseQuestionService.getUserChooseRecordOfQuestion(userID,questionnaireID,questionContentID);
+                    List<QuestionOption> questionOptionList=questionnaireService.getAllAnswerOptionOfQuestion(questionContentID);
+                    if(userChooseQuestionList.size()!=0){
+                        if(Objects.equals(userChooseQuestionList.get(0).getQuestionOptionID(), questionOptionList.get(0).getQuestionOptionID())){
+                            testScoreRecord.setScore(questionScore);
+                        }
+                        else{
+                            testScoreRecord.setScore(0);
+                        }
+                    }
+                    else{
+                        testScoreRecord.setScore(0);
+                    }
+                    questionnaireSubmitService.setTestScoreRecord(testScoreRecord);
+                    map.put("success",true);
+                    map.put("score",testScoreRecord.getScore());
+                }
+                else if(questionKind==2){
+                    //获取答案选项列表，获取填写选项列表，比较是否一致
+                    List<UserChooseQuestion> userChooseQuestionList=userChooseQuestionService.getUserChooseRecordOfQuestion(userID,questionnaireID,questionContentID);
+                    List<QuestionOption> questionOptionList=questionnaireService.getAllAnswerOptionOfQuestion(questionContentID);
+                    if(userChooseQuestionList.size()!=0){
+                        int match=0;
+                        for(QuestionOption questionOption:questionOptionList){
+                            int count=0;
+                            for(UserChooseQuestion userChooseQuestion:userChooseQuestionList){
+                                if(Objects.equals(userChooseQuestion.getQuestionOptionID(), questionOption.getQuestionOptionID())){
+                                    match+=1;
+                                    break;
+                                }
+                                else{
+                                    count+=1;
+                                }
+                            }
+                            if(count>userChooseQuestionList.size()){
+                                testScoreRecord.setScore(0);
+                                break;
+                            }
+                        }
+                        if(match==userChooseQuestionList.size()){
+                            testScoreRecord.setScore(questionScore);
+                        }
+                    }
+                    else{
+                        testScoreRecord.setScore(0);
+                    }
+                    questionnaireSubmitService.setTestScoreRecord(testScoreRecord);
+                    map.put("success",true);
+                    map.put("score",testScoreRecord.getScore());
+                }
+            }
+            else {
+                map.put("success",true);
+                map.put("message","该问题不是有分数的题");
+            }
+        }catch (Exception e){
             e.printStackTrace();
             map.put("success",false);
         }

@@ -55,7 +55,13 @@ public class QuestionnaireController {
     public Map<String, Object> editQuestionnaire(@RequestParam Integer questionnaireID, @RequestParam String title,@RequestParam String endTime, @RequestParam String questionnaireNote,@RequestParam String endMessage) {
         Map<String, Object> map = new HashMap<>();
         try {
-            Timestamp EndTime=Timestamp.valueOf(endTime);
+            Timestamp EndTime;
+            if(endTime.equals("0000-00-00 00:00:00")){
+                EndTime=null;
+            }
+            else{
+                EndTime=Timestamp.valueOf(endTime);
+            }
             questionnaireService.editQuestionnaire(questionnaireID, title, EndTime, questionnaireNote,endMessage);
             map.put("success", true);
         } catch (Exception e) {
@@ -269,7 +275,7 @@ public class QuestionnaireController {
         Timestamp createTime = new Timestamp(System.currentTimeMillis());
         try {
             Questionnaire questionnaire = new Questionnaire();
-            questionnaire.setTitle("报名问卷");
+            questionnaire.setTitle("考试问卷");
             questionnaire.setQuestionnaireNote("为了给您提供更好的服务，希望您能抽出几分钟时间，将您的感受和建议告诉我们，我们非常重视每位用户的宝贵意见，期待您的参与！现在我们就马上开始吧！");
             questionnaire.setKind(kind);
             questionnaire.setCreateTime(createTime);
@@ -741,7 +747,7 @@ public class QuestionnaireController {
         return map;
     }
 
-    @PostMapping("/showCompletionQuestion")
+    @GetMapping("/showCompletionQuestion")
     @ApiOperation("预览问卷-预览考试填空题答案")
     @ApiImplicitParam(name = "questionContentID", value = "问题ID", required = true, dataType = "int")
     public Map<String, Object> showCompletionQuestion(@RequestParam Integer questionContentID){
@@ -992,5 +998,4 @@ public class QuestionnaireController {
         }
         return map;
     }
-
 }

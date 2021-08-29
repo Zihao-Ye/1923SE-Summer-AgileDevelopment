@@ -18,4 +18,8 @@
         from questionnaire_submit
         where questionnaireid=#{questionnaireID} and userid=#{userID}
     </select>
+    <!-- 设置用户考试题得分-->
+    <insert id="setTestScoreRecord" parameterType="TestScoreRecord">
+
+    </insert>
 </mapper>    

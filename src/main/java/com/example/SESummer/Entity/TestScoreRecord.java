@@ -15,6 +15,7 @@ public class TestScoreRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer testScoreRecordID;//考试分数记录ID
+    private Integer userID;//用户ID
     private Integer questionContentID;//记录对应的问题ID
     private Integer Score;//该问题得分
 }

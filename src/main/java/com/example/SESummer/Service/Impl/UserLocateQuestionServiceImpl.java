@@ -27,4 +27,10 @@ public class UserLocateQuestionServiceImpl implements UserLocateQuestionService 
     public void updateLocateRecord(Integer userID,Integer questionnaireID,Integer questionContentID,String locate){
         userLocateQuestionDao.updateLocateRecord(userID,questionnaireID,questionContentID,locate);
     }
+
+    @Override
+    //删除用户填写该问卷的所有定位记录
+    public void delRecord(Integer userID,Integer questionnaireID){
+        userLocateQuestionDao.delRecord(userID,questionnaireID);
+    }
 }

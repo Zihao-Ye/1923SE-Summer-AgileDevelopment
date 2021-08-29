@@ -242,4 +242,22 @@
         insert into question_option(option_kind, question_contentid, option_content, left_volume, is_answer, option_no)
         values(#{optionKind},#{questionContentID},#{optionContent},#{leftVolume},#{isAnswer},#{optionNo})
     </insert>
+    <!-- 根据问题ID获取问题-->
+    <select id="getQuestionByQuestionContentID" resultType="QuestionContent">
+        select *
+        from question_content
+        where question_contentid=#{questionContentID}
+    </select>
+    <!-- 获取选择的所有正确选项-->
+    <select id="getAllAnswerOptionOfQuestion" resultType="QuestionOption">
+        select *
+        from question_option
+        where question_contentid=#{questionContentID} and is_answer=1
+    </select>
+    <!-- 根据选项ID获取选项-->
+    <select id="getQuestionOptionByQuestionOptionID" resultType="QuestionOption">
+        select *
+        from question_option
+        where question_optionid=#{questionOptionID}
+    </select>
 </mapper>

@@ -259,4 +259,22 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     public void addDefaultOption(QuestionOption questionOption){
         questionnaireDao.addDefaultOption(questionOption);
     }
+
+    @Override
+    //根据问题ID获取问题
+    public QuestionContent getQuestionByQuestionContentID(Integer questionContentID){
+        return questionnaireDao.getQuestionByQuestionContentID(questionContentID);
+    }
+
+    @Override
+    //获取选择的所有正确选项
+    public List<QuestionOption> getAllAnswerOptionOfQuestion(Integer questionContentID){
+        return questionnaireDao.getAllAnswerOptionOfQuestion(questionContentID);
+    }
+
+    @Override
+    //根据选项ID获取选项
+    public QuestionOption getQuestionOptionByQuestionOptionID(Integer questionOptionID){
+        return questionnaireDao.getQuestionOptionByQuestionOptionID(questionOptionID);
+    }
 }

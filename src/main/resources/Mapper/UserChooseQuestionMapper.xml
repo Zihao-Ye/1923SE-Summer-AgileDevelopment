@@ -17,4 +17,21 @@
         insert into user_choose_question(userid, questionnaireid, question_contentid, question_optionid)
         values(#{userID},#{questionnaireID},#{questionContentID},#{questionOptionID})
     </insert>
-</mapper>    
+    <!-- 获取一个选择题的所有选项填写记录-->
+    <select id="getUserChooseRecordOfQuestion" resultType="UserChooseQuestion">
+        select *
+        from user_choose_question
+        where userid=#{userID} and questionnaireid=#{questionnaireID} and question_contentid=#{questionContentID}
+    </select>
+    <!-- 获取用户填写的所有选项-->
+    <select id="getAllChooseRecordOfQuestionnaireByUserIDAndQuestionnaireID" resultType="UserChooseQuestion">
+        select *
+        from user_choose_question
+        where userid=#{userID} and questionnaireid=#{questionnaireID}
+    </select>
+    <!-- 删除用户填写该问卷的所有选项记录-->
+    <delete id="delRecord" parameterType="UserChooseQuestion">
+        delete from user_choose_question
+        where userid=#{userID} and questionnaireid=#{questionnaireID}
+    </delete>
+</mapper>

@@ -1,6 +1,7 @@
 package com.example.SESummer.Dao;
 
 import com.example.SESummer.Entity.QuestionnaireSubmit;
+import com.example.SESummer.Entity.TestScoreRecord;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -13,4 +14,7 @@ public interface QuestionnaireSubmitDao {
 
     //用户是否填过问卷
     QuestionnaireSubmit haveFill(Integer questionnaireID,Integer userID);
+
+    //设置用户考试题得分
+    void setTestScoreRecord(TestScoreRecord testScoreRecord);
 }

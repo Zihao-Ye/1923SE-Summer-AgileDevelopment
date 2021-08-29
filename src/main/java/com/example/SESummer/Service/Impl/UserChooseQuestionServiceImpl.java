@@ -6,6 +6,8 @@ import com.example.SESummer.Service.UserChooseQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserChooseQuestionServiceImpl implements UserChooseQuestionService {
     @Autowired
@@ -27,5 +29,23 @@ public class UserChooseQuestionServiceImpl implements UserChooseQuestionService 
     //添加用户选择题答题记录
     public void addChooseRecord(UserChooseQuestion userChooseQuestion){
         userChooseQuestionDao.addChooseRecord(userChooseQuestion);
+    }
+
+    @Override
+    //获取一个选择题的所有选项填写记录
+    public List<UserChooseQuestion> getUserChooseRecordOfQuestion(Integer userID, Integer questionnaireID, Integer questionContentID){
+        return userChooseQuestionDao.getUserChooseRecordOfQuestion(userID,questionnaireID,questionContentID);
+    }
+
+    @Override
+    //获取用户填写的所有选项
+    public List<UserChooseQuestion> getAllChooseRecordOfQuestionnaireByUserIDAndQuestionnaireID(Integer userID,Integer questionnaireID){
+        return userChooseQuestionDao.getAllChooseRecordOfQuestionnaireByUserIDAndQuestionnaireID(userID,questionnaireID);
+    }
+
+    @Override
+    //删除用户填写该问卷的所有选项记录
+    public void delRecord(Integer userID,Integer questionnaireID){
+        userChooseQuestionDao.delRecord(userID,questionnaireID);
     }
 }

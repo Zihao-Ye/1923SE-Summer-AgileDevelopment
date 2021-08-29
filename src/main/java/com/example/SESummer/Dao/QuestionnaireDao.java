@@ -130,4 +130,13 @@ public interface QuestionnaireDao {
 
     //添加默认选项
     void addDefaultOption(QuestionOption questionOption);
+
+    //根据问题ID获取问题
+    QuestionContent getQuestionByQuestionContentID(Integer questionContentID);
+
+    //获取选择的所有正确选项
+    List<QuestionOption> getAllAnswerOptionOfQuestion(Integer questionContentID);
+
+    //根据选项ID获取选项
+    QuestionOption getQuestionOptionByQuestionOptionID(Integer questionOptionID);
 }

@@ -28,4 +28,10 @@ public class UserScoreQuestionServiceImpl implements UserScoreQuestionService {
     public void updateScoreRecord(Integer userID,Integer questionnaireID,Integer questionContentID,Integer score){
         userScoreQuestionDao.updateScoreRecord(userID,questionnaireID,questionContentID,score);
     }
+
+    @Override
+    //删除用户填写该问卷的所有评分记录
+    public void delRecord(Integer userID,Integer questionnaireID){
+        userScoreQuestionDao.delRecord(userID,questionnaireID);
+    }
 }

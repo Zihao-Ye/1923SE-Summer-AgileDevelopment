@@ -18,4 +18,15 @@
         set completion_content = #{completionContent}
         where userid = #{userID} and questionnaireid = #{questionnaireID} and question_contentid = #{questionContentID}
     </update>
+    <!-- 判断填空题答案是否正确-->
+    <select id="judgeCompletionScore" resultType="CompletionQuestion">
+        select *
+        from completion_question
+        where question_contentid=#{questionContentID} and answer like '%${answer}%'
+    </select>
+    <!-- 删除用户填写该问卷的所有填空记录-->
+    <delete id="delRecord" parameterType="UserCompletionQuestion">
+        delete from user_completion_question
+        where userid=#{userID} and questionnaireid=#{questionnaireID}
+    </delete>
 </mapper>

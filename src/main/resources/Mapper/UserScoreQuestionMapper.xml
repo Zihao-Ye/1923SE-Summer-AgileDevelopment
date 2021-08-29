@@ -20,4 +20,9 @@
         set score = #{score}
         where userid = #{userID} and questionnaireid = #{questionnaireID} and question_contentid = #{questionContentID}
     </update>
+    <!-- 删除用户填写该问卷的所有评分记录-->
+    <delete id="delRecord" parameterType="UserScoreQuestion">
+        delete from user_score_question
+        where userid=#{userID} and questionnaireid=#{questionnaireID}
+    </delete>
 </mapper>

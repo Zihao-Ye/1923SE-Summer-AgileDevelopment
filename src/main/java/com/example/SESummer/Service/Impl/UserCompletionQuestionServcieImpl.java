@@ -1,6 +1,7 @@
 package com.example.SESummer.Service.Impl;
 
 import com.example.SESummer.Dao.UserCompletionQuestionDao;
+import com.example.SESummer.Entity.CompletionQuestion;
 import com.example.SESummer.Entity.UserCompletionQuestion;
 import com.example.SESummer.Service.UserCompletionQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,17 @@ public class UserCompletionQuestionServcieImpl implements UserCompletionQuestion
     //修改用户填空题答题记录
     public void updateCompletionRecord(Integer userID, Integer questionnaireID, Integer questionContentID,String questionContent){
         userCompletionQuestionDao.updateCompletionRecord(userID,questionnaireID,questionContentID,questionContent);
+    }
+
+    @Override
+    //判断填空题答案是否正确
+    public CompletionQuestion judgeCompletionScore(Integer questionContentID, String answer){
+        return userCompletionQuestionDao.judgeCompletionScore(questionContentID,answer);
+    }
+
+    @Override
+    //删除用户填写该问卷的所有填空记录
+    public void delRecord(Integer userID,Integer questionnaireID){
+        userCompletionQuestionDao.delRecord(userID,questionnaireID);
     }
 }
