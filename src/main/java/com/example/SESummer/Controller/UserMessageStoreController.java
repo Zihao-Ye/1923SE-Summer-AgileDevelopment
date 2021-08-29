@@ -398,7 +398,7 @@ public class UserMessageStoreController {
     }
 
     @GetMapping("/getAllLocateRecord")
-    @ApiOperation("获取填空题的所有填空情况")
+    @ApiOperation("获取定位题的所有填空情况")
     @ApiImplicitParam(name = "questionContentID",value = "问题ID",required = true,dataType = "int")
     public Map<String,Object> getAllLocateRecord(@RequestParam Integer questionContentID){
         Map<String,Object> map=new HashMap<>();
