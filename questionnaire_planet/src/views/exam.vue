@@ -49,7 +49,7 @@
 
                 <v-list-item>
                 <v-btn color="#2196F3" @click="save">
-                    保存
+                  <i class="el-icon-back"></i>  保存并返回
                 </v-btn>
                 </v-list-item>
               </v-list>
@@ -231,6 +231,7 @@
         <v-card
         v-if="reveal==1 || reveal==2"
         style="overflow-y:scroll;"
+        flat
         >
             <div style="font-weight:900;text-align: center;" v-if="reveal==1">单选题</div>
             <div style="font-weight:900;text-align: center;" v-if="reveal==2">多选题</div>
@@ -309,6 +310,7 @@
       <el-dialog :visible.sync="fill" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==3"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==3">填空题</div>
             <v-text-field
@@ -733,6 +735,9 @@
           this.end="0000-00-00 00:00:00"
         }
       },
+      back() {
+        window.location.href="/QuestionnaireManage"
+      },
       loadPro(j,li){
         if(j==li.length){
           return
@@ -743,11 +748,16 @@
             name:li[j].questionContent,
             type:li[j].questionKind,
             desciption:li[j].questionNote,
+            score:li[j].questionScore,
+            haveAnswer:false,
             options:[],
             scoreId:0,
             max:5,
             lowDesc:"",
             highDesc:"",
+          }
+          if(p.score>0){
+            p.haveAnswer=true
           }
           this.$set(this.problems,j,p)
           console.log(j)
@@ -772,6 +782,11 @@
                         content:opli[k].optionContent,
                         isAnswer:opli[k].isAnswer,
                         optionKind:opli[k].optionKind,
+                      }
+                      if(op.isAnswer==1){
+                        op.isAnswer=true
+                      }else{
+                        op.isAnswer=false
                       }
                       console.log(j)
                       this.$set(this.problems[j].options,k,op)
@@ -922,8 +937,12 @@
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
+              this.$message.success("保存成功！");
               let i
-        for(i=0;i<this.problems.length;i++){
+              if(this.problems.length==0){
+                window.location.href="/QuestionnaireManage"
+              }else{
+                for(i=0;i<this.problems.length;i++){
           this.$http({
           method: "post",
           url: "/rankQuestion",
@@ -935,12 +954,15 @@
           .then((res) => {
             
             if (res.data.success) {
+        window.location.href="/QuestionnaireManage"
             }
           })
           .catch((err) => {
             console.log(err);
           });
         }
+              }
+        
             }
           })
           .catch((err) => {

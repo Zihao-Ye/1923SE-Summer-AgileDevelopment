@@ -45,11 +45,6 @@
                 </v-btn>
                 </v-list-item>
                 <v-list-item>
-                <v-btn text color="#2196F3" @click="addProblem(4)">
-                  <i class="el-icon-star-off"></i>  添加评分题
-                </v-btn>
-                </v-list-item>
-                <v-list-item>
                 <v-btn text color="#2196F3" @click="addProblem(5)">
                   <i class="el-icon-location"></i>  添加定位题
                 </v-btn>
@@ -57,9 +52,10 @@
 
                 <v-divider class="my-2"></v-divider>
 
+                
                 <v-list-item>
                 <v-btn color="#2196F3" @click="save">
-                  <i class="el-icon-download"></i>  保存
+                  <i class="el-icon-back"></i>  保存并返回
                 </v-btn>
                 </v-list-item>
               </v-list>
@@ -210,6 +206,7 @@
         <v-card
         v-if="reveal==1 || reveal==2"
         style="overflow-y:scroll;"
+        flat
         >
             <div style="font-weight:900;text-align: center;" v-if="reveal==1">单选题</div>
             <div style="font-weight:900;text-align: center;" v-if="reveal==2">多选题</div>
@@ -272,6 +269,7 @@
       <el-dialog :visible.sync="fill" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==3"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==3">填空题</div>
             <v-text-field
@@ -298,6 +296,7 @@
       <el-dialog :visible.sync="rate" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==4"
+            flat
             >
             <div style="font-weight:900;text-align: center;" v-if="reveal==4">评分题</div>
             <v-text-field
@@ -348,8 +347,9 @@
         <el-dialog :visible.sync="position" :show-close="false" class="dialog">
         <v-card
             v-if="reveal==5"
+            flat
             >
-            <div style="font-weight:900;text-align: center;" v-if="reveal==5">填空题</div>
+            <div style="font-weight:900;text-align: center;" v-if="reveal==5">定位题</div>
             <v-text-field
                 v-model="problems[alter].name"
                 label="问题"
@@ -510,7 +510,7 @@
           case 4:
             this.rate=true
             break;
-          case 4:
+          case 5:
             this.position=true
             break;
           default:
@@ -751,6 +751,9 @@
           this.end="0000-00-00 00:00:00"
         }
       },
+      back() {
+        window.location.href="/QuestionnaireManage"
+      },
       loadPro(j,li){
         if(j==li.length){
           return
@@ -949,8 +952,12 @@
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
+              this.$message.success("保存成功！");
               let i
-        for(i=0;i<this.problems.length;i++){
+              if(this.problems.length==0){
+                window.location.href="/QuestionnaireManage"
+              }else{
+                for(i=0;i<this.problems.length;i++){
           this.$http({
           method: "post",
           url: "/rankQuestion",
@@ -962,12 +969,15 @@
           .then((res) => {
             
             if (res.data.success) {
+        window.location.href="/QuestionnaireManage"
             }
           })
           .catch((err) => {
             console.log(err);
           });
         }
+              }
+        
             }
           })
           .catch((err) => {

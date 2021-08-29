@@ -132,7 +132,27 @@ const routes = [
     path: '/isFill',
     name: 'IsFill',
     component: IsFill,
-  }
+  },
+  {
+    path: '/exam/:id',
+    name: 'exam',
+    component: exam,
+  },
+  {
+    path: '/sign/:id',
+    name: 'sign',
+    component: sign,
+  },
+  {
+    path: '/covid/:id',
+    name: 'covid',
+    component: covid,
+  },
+  {
+    path: '/vote/:id',
+    name: 'vote',
+    component: vote,
+  },
 ]
 
 const router = new VueRouter({
