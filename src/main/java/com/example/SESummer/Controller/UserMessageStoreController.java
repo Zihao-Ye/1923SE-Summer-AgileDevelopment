@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
@@ -179,11 +180,13 @@ public class UserMessageStoreController {
     public Map<String,Object> userSubmit(@RequestParam Integer userID,@RequestParam Integer questionnaireID,@RequestParam Integer isSubmit){
         Map<String,Object> map = new HashMap<>();
         try {
+            Timestamp timestamp=new Timestamp(System.currentTimeMillis());
             if(isSubmit==0){
                 QuestionnaireSubmit questionnaireSubmit=new QuestionnaireSubmit();
                 questionnaireSubmit.setUserID(userID);
                 questionnaireSubmit.setQuestionnaireID(questionnaireID);
                 questionnaireSubmit.setIsSubmit(isSubmit);
+                questionnaireSubmit.setSubmitTime(timestamp);
                 questionnaireSubmitService.addQuestionnaireSubmit(questionnaireSubmit);
                 map.put("success",true);
             }
@@ -230,6 +233,7 @@ public class UserMessageStoreController {
                     questionnaireSubmit.setUserID(userID);
                     questionnaireSubmit.setQuestionnaireID(questionnaireID);
                     questionnaireSubmit.setIsSubmit(isSubmit);
+                    questionnaireSubmit.setSubmitTime(timestamp);
                     questionnaireSubmitService.addQuestionnaireSubmit(questionnaireSubmit);
                     questionDataService.addRecycleVolume(questionnaireID);
                     map.put("success",true);
