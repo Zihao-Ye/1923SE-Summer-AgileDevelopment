@@ -404,25 +404,7 @@
               </v-row>
             </v-card>
             <!--填空必做题数据分析——常规分析-->
-            <v-container>
-              <v-card  elevation="8">
-                <v-card-title style="color:#6A76AB">填空题用户所填列表</v-card-title>
-                <el-table
-                    :data="userCompletionQuestionList[question.questionNo]"
-                    style="width: 100%">
-                  <el-table-column fixed label="序号" width="90"   align="center">
-                    <template slot-scope="scope">
-                      <span>{{(scope.$index + 1)}} </span>
-                    </template>
-                  </el-table-column>>
-                  <el-table-column
-                      prop="completionContent"
-                      label="用户所填内容"
-                      width="650">
-                  </el-table-column>
-                </el-table>
-              </v-card>
-            </v-container>
+
           </template>
           <!--填空非必做题-->
           <template v-else-if="question.questionKind===3 && question.requireSig===0">
@@ -459,25 +441,7 @@
               </v-row>
             </v-card>
             <!--填空非必做题数据分析——常规分析-->
-            <v-container>
-              <v-card  elevation="8">
-                <v-card-title style="color:#6A76AB">填空题用户所填列表</v-card-title>
-                <el-table
-                    :data="userCompletionQuestionList[question.questionNo]"
-                    style="width: 100%">
-                  <el-table-column fixed label="序号" width="90"   align="center">
-                    <template slot-scope="scope">
-                      <span>{{(scope.$index + 1)}} </span>
-                    </template>
-                  </el-table-column>>
-                  <el-table-column
-                      prop="completionContent"
-                      label="用户所填内容"
-                      width="650">
-                  </el-table-column>
-                </el-table>
-              </v-card>
-            </v-container>
+
           </template>
           <!--评分必做题-->
           <template v-else-if="question.questionKind===4 && question.requireSig===1">
@@ -729,19 +693,6 @@
           </v-btn>
         </div> -->
       </v-card>
-      <v-btn
-          absolute
-          class="goback"
-          fab
-          dark
-          small
-          color="primary"
-          :to="{path:'/QuestionnaireManage'}"
-      >
-        <v-icon dark>
-          mdi-close
-        </v-icon>
-      </v-btn>
     </div>
   </div>
 </template>
@@ -1629,10 +1580,10 @@ export default {
     var that = this;
     setTimeout(function () {
       that.drawcharts(103,'bar')
-      that.radioAnswer=that.$store.state.answer.radioAnswer
-      that.optionAnswer=that.$store.state.answer.optionAnswer
-      that.text=that.$store.state.answer.text
     },1000);
+    that.radioModel=that.$store.state.answer.radioAnswer
+    that.checkboxModel=that.$store.state.answer.optionAnswer
+    that.text=that.$store.state.answer.text
     // this.drawcharts()
   }
 }

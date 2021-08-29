@@ -586,6 +586,10 @@ export default {
           });
     },
     submit(){
+      this.$store.commit('setRadioAnswer',this.radioModel)
+      this.$store.commit('setOptionAnswer',this.checkboxModel)
+      this.$store.commit('setText',this.text)
+      this.$store.commit('setQuestions',this.questions)
       for(const index in this.radioAnswer){
         console.log(this.radioAnswer[index])
         let option=this.radioAnswer[index]
@@ -608,10 +612,7 @@ export default {
         this.submitLocate(this.location[index],index-1)
       }
       this.timer = setTimeout(() => {
-        this.$store.commit('setRadioAnswer',this.radioAnswer)
-        this.$store.commit('setOptionAnswer',this.optionAnswer)
-        this.$store.commit('setText',this.text)
-        this.$store.commit('setQuestions',this.questions)
+
         //设置延迟执行
         this.$http({
           method: "post",
